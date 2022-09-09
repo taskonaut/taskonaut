@@ -1,18 +1,15 @@
 <template>
-  <hello-world />
+  <v-card>
+    <v-layout>
+      <Sidebar />
+      <v-main style="height: 100vh">      
+        <Main />
+      </v-main>
+    </v-layout>
+  </v-card>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-
-// Components
-import HelloWorld from '../components/HelloWorld.vue';
-
-export default defineComponent({
-  name: 'HomeView',
-
-  components: {
-    HelloWorld,
-  },
-});
+<script setup lang="ts">
+  import Main from '../components/Main.vue';
+  import Sidebar from '../components/Sidebar.vue';
 </script>
