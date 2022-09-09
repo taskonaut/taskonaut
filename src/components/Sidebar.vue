@@ -1,6 +1,8 @@
 <template>
     <v-navigation-drawer
-        permanent
+        app
+        bottom
+        v-model="drawer"
       >
         <template v-slot:prepend>
           <v-list-item
@@ -26,4 +28,8 @@
         { title: 'Upcoming', icon: 'mdi-account-group-outline', value: 'upcoming' },
         { title: 'Calendar', icon: 'mdi-calendar', value: 'calendar' },
     ];
+
+    const props = defineProps({
+        drawer: Boolean
+    });
 </script>
