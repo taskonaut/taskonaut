@@ -1,50 +1,50 @@
 <template>
     <v-layout>
-      <v-app-bar
-        color="primary"
-        app
-      >
-          <v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-          <v-toolbar-title>Taskominator</v-toolbar-title>
-          
-          <v-spacer></v-spacer>
+        <v-app-bar color="primary" app>
+            <v-app-bar-nav-icon
+                variant="text"
+                @click.stop="drawer = !drawer"
+            ></v-app-bar-nav-icon>
+            <v-toolbar-title>Taskominator</v-toolbar-title>
 
-          <v-btn variant="text" icon="mdi-magnify"></v-btn>
-          <v-btn variant="text" icon="mdi-filter"></v-btn>
-          <v-btn variant="text" icon="mdi-dots-vertical"></v-btn>
-      </v-app-bar>
+            <v-spacer></v-spacer>
 
-      <Sidebar :drawer="drawer" />
+            <v-btn variant="text" icon="mdi-magnify"></v-btn>
+            <v-btn variant="text" icon="mdi-filter"></v-btn>
+            <v-btn variant="text" icon="mdi-dots-vertical"></v-btn>
+        </v-app-bar>
 
-      <v-main style="height: 100vh">      
-        <Main />
-      </v-main>
-    </v-layout> 
+        <Sidebar :drawer="drawer" />
+
+        <v-main style="height: 100vh">
+            <Main />
+        </v-main>
+    </v-layout>
 </template>
 
 <script setup lang="ts">
-  import { ref } from 'vue';
-  import Main from '../components/Main.vue';
-  import Sidebar from '../components/Sidebar.vue';
+import { ref } from 'vue';
+import Main from '../components/Main.vue';
+import Sidebar from '../components/Sidebar.vue';
 
-  const drawer = ref(false);
+const drawer = ref(false);
 
-  const items = [
-        {
-          title: 'Foo',
-          value: 'foo',
-        },
-        {
-          title: 'Bar',
-          value: 'bar',
-        },
-        {
-          title: 'Fizz',
-          value: 'fizz',
-        },
-        {
-          title: 'Buzz',
-          value: 'buzz',
-        },
-      ];
+const items = [
+    {
+        title: 'Foo',
+        value: 'foo',
+    },
+    {
+        title: 'Bar',
+        value: 'bar',
+    },
+    {
+        title: 'Fizz',
+        value: 'fizz',
+    },
+    {
+        title: 'Buzz',
+        value: 'buzz',
+    },
+];
 </script>
