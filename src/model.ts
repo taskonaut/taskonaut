@@ -10,5 +10,5 @@ export interface Task {
 export interface List {
     uuid: string;
     name: string;
-    tasks: Task[];
+    taskIds: string[];
 }
