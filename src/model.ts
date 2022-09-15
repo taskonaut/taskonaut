@@ -3,8 +3,8 @@ export interface Task {
     header: string;
     body: string;
     dateCreated: Date;
-    dueDate: Date;
-    dateCompleted: Date;
+    dueDate: null | Date;
+    dateCompleted: null | Date;
 }
 
 export interface List {
