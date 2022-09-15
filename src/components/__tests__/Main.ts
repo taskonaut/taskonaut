@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { mount } from '@vue/test-utils';
-import Main from '../Main.vue';
+import Main from '../MainView.vue';
 
 describe('Main', () => {
     it('renders properly', () => {
