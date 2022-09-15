@@ -24,8 +24,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import Main from '../components/Main.vue';
-import Sidebar from '../components/Sidebar.vue';
+import Main from '../components/MainView.vue';
+import Sidebar from '../components/SidebarComponent.vue';
 
 const drawer = ref(false);
 
