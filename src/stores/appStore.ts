@@ -80,6 +80,14 @@ export const useAppStore = defineStore({
             state.groups.find((group) => group.uuid == groupId),
         getGroupTasks: (state) => (groupId: string) =>
             state.tasks.filter((task) => task.projectId == groupId),
+        getInboxTasks: (state) => () =>
+            state.tasks.filter((task) => !task.projectId),
+        getTodayTasks: (state) => () => {
+            const today = new Date().getDate();
+            return state.tasks.filter(
+                (task) => task.dueDate?.getDate() == today
+            );
+        },
     },
     actions: {
         toggleTask(taskId: string) {
