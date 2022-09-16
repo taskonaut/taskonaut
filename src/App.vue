@@ -16,13 +16,16 @@
                     <v-btn variant="text" icon="mdi-dots-vertical"></v-btn>
                 </v-app-bar>
                 <AppSidebar v-model:drawer="drawer" />
-                <v-main style="height: 100vh"></v-main>
+                <v-main style="height: 100vh">
+                    <router-view :key="useRoute().fullPath"
+                /></v-main>
             </v-layout>
         </v-main>
     </v-app>
 </template>
 
 <script setup lang="ts">
+import { useRoute } from 'vue-router';
 import { ref } from 'vue';
 
 const drawer = ref(true);

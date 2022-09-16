@@ -30,6 +30,7 @@
                 :title="list.name"
                 :value="list.name"
                 :active="false"
+                @click="switchList(list.uuid)"
             >
             </v-list-item>
         </v-list>
@@ -37,6 +38,7 @@
 </template>
 
 <script setup lang="ts">
+import router from '@/router';
 import { computed } from 'vue';
 import { useAppStore } from '../stores/appStore';
 
@@ -56,4 +58,8 @@ const menuItems = [
     { title: 'Upcoming', icon: 'mdi-account-group-outline', value: 'upcoming' },
     { title: 'Calendar', icon: 'mdi-calendar', value: 'calendar' },
 ];
+
+function switchList(listId: string) {
+    router.push({ name: 'project', params: { id: listId } });
+}
 </script>
