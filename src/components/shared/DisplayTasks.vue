@@ -49,18 +49,19 @@
 </template>
 
 <script setup lang="ts">
-import { useAppStore } from '@/stores/appStore';
+import type { Task } from '@/model';
 import { computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { useAppStore } from '@/stores/appStore';
 
+const props = defineProps<{
+    tasks: Task[];
+}>();
 const store = useAppStore();
-const tasks = computed(() => store.getGroupTasks(useRoute().params.id[0]));
-
 const ongoingTasks = computed(() =>
-    tasks.value.filter((task) => !task.complete)
+    props.tasks.filter((task) => !task.complete)
 );
 const completeTasks = computed(() =>
-    tasks.value.filter((task) => task.complete)
+    props.tasks.filter((task) => task.complete)
 );
 
 function toggleTask(taskId: string) {
