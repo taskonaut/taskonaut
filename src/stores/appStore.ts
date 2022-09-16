@@ -1,4 +1,4 @@
-import type { List, Task } from '@/model';
+import type { Group, Task } from '@/model';
 import { defineStore } from 'pinia';
 
 export const useAppStore = defineStore({
@@ -56,7 +56,7 @@ export const useAppStore = defineStore({
                 dueDate: new Date(),
             },
         ] as Task[],
-        lists: [
+        groups: [
             {
                 uuid: '1',
                 name: 'Keep On Livin 🌭',
@@ -72,14 +72,14 @@ export const useAppStore = defineStore({
                 name: '3rd Group',
                 taskOrder: [],
             },
-        ] as List[],
+        ] as Group[],
     }),
     getters: {
-        getLists: (state) => state.lists,
-        getListById: (state) => (listId: string) =>
-            state.lists.find((list) => list.uuid == listId),
-        getProjectTasks: (state) => (projectId: string) =>
-            state.tasks.filter((task) => task.projectId == projectId),
+        getGroups: (state) => state.groups,
+        getGroupById: (state) => (groupId: string) =>
+            state.groups.find((group) => group.uuid == groupId),
+        getGroupTasks: (state) => (groupId: string) =>
+            state.tasks.filter((task) => task.projectId == groupId),
     },
     actions: {
         toggleTask(taskId: string) {

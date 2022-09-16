@@ -54,7 +54,7 @@ import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 
 const store = useAppStore();
-const tasks = computed(() => store.getProjectTasks(useRoute().params.id[0]));
+const tasks = computed(() => store.getGroupTasks(useRoute().params.id[0]));
 
 const ongoingTasks = computed(() =>
     tasks.value.filter((task) => !task.complete)

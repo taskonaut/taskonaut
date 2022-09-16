@@ -9,7 +9,7 @@ export interface Task {
     dateCompleted: null | Date;
 }
 
-export interface List {
+export interface Group {
     uuid: string;
     name: string;
     taskOrder: string[];

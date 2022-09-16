@@ -24,13 +24,13 @@
         <v-list density="compact" nav select-strategy="single-leaf">
             <v-list-subheader>PROJECTS</v-list-subheader>
             <v-list-item
-                v-for="list in lists"
-                :key="list.uuid"
+                v-for="group in groups"
+                :key="group.uuid"
                 :prependIcon="'mdi-file-document'"
-                :title="list.name"
-                :value="list.name"
-                :active="list.uuid == router.currentRoute.value.params.id"
-                @click="switchList(list.uuid)"
+                :title="group.name"
+                :value="group.name"
+                :active="group.uuid == router.currentRoute.value.params.id"
+                @click="switchList(group.uuid)"
             >
             </v-list-item>
         </v-list>
@@ -51,7 +51,7 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const store = useAppStore();
-const lists = computed(() => store.getLists);
+const groups = computed(() => store.getGroups);
 const menuItems = [
     { title: 'Inbox', icon: 'mdi-home-city', value: 'inbox' },
     { title: 'Today', icon: 'mdi-account', value: 'today' },
