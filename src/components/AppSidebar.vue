@@ -8,7 +8,6 @@
                 subtitle="Logged in"
             ></v-list-item>
         </template>
-
         <v-divider></v-divider>
         <v-list density="compact" nav>
             <v-list-item
@@ -17,7 +16,8 @@
                 :prependIcon="item.icon"
                 :title="item.title"
                 :value="item.value"
-                :active="false"
+                :active="router.currentRoute.value.name == item.value"
+                @click="switchRoute(item.value)"
             >
             </v-list-item>
         </v-list>
@@ -29,8 +29,8 @@
                 :prependIcon="'mdi-file-document'"
                 :title="group.name"
                 :value="group.name"
-                :active="group.uuid == router.currentRoute.value.params.id"
-                @click="switchList(group.uuid)"
+                :active="group.uuid == router.currentRoute.value.name"
+                @click="switchGroupRoute(group.uuid)"
             >
             </v-list-item>
         </v-list>
@@ -52,6 +52,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const store = useAppStore();
 const groups = computed(() => store.getGroups);
+
 const menuItems = [
     { title: 'Inbox', icon: 'mdi-home-city', value: 'inbox' },
     { title: 'Today', icon: 'mdi-account', value: 'today' },
@@ -59,7 +60,11 @@ const menuItems = [
     { title: 'Calendar', icon: 'mdi-calendar', value: 'calendar' },
 ];
 
-function switchList(listId: string) {
-    router.push({ name: 'project', params: { id: listId } });
+function switchGroupRoute(listId: string) {
+    router.push({ name: 'group', params: { id: listId } });
+}
+
+function switchRoute(routeName: string) {
+    if (router.hasRoute(routeName)) router.push({ name: routeName });
 }
 </script>
