@@ -15,10 +15,8 @@
                     <v-btn variant="text" icon="mdi-filter"></v-btn>
                     <v-btn variant="text" icon="mdi-dots-vertical"></v-btn>
                 </v-app-bar>
-
                 <AppSidebar v-model:drawer="drawer" />
-
-                <v-main style="height: 100vh"> </v-main>
+                <v-main style="height: 100vh"></v-main>
             </v-layout>
         </v-main>
     </v-app>
