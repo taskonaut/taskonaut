@@ -46,7 +46,7 @@ export const useAppStore = defineStore({
                 dueDate: new Date(),
             },
             {
-                uuid: '4',
+                uuid: '5',
                 projectId: '3',
                 header: 'Task',
                 body: 'should be in 3rd group and today',
