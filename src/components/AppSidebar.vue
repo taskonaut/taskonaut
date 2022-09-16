@@ -26,10 +26,10 @@
             <v-list-item
                 v-for="list in lists"
                 :key="list.uuid"
-                :prependIcon="'mdi-circle-small'"
+                :prependIcon="'mdi-file-document'"
                 :title="list.name"
                 :value="list.name"
-                :active="false"
+                :active="list.uuid == router.currentRoute.value.params.id"
                 @click="switchList(list.uuid)"
             >
             </v-list-item>
