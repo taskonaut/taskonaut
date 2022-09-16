@@ -3,7 +3,17 @@ import App from './App.vue';
 import vuetify from './plugins/vuetify';
 import { loadFonts } from './plugins/webfontloader';
 import router from './router';
+import { createPinia } from 'pinia';
+
+//App Components
+import AppSidebar from './components/AppSidebar.vue';
+
+const pinia = createPinia();
+const app = createApp(App);
+
+app.component('AppSidebar', AppSidebar);
 
 loadFonts();
 
-createApp(App).use(router).use(vuetify).mount('#app');
+app.use(pinia).use(router).use(vuetify);
+app.mount('#app');
