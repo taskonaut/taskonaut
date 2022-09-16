@@ -10,6 +10,11 @@ export const useAppStore = defineStore({
                 name: 'various things',
                 taskIds: ['1', '2'],
             },
+            {
+                uuid: '2',
+                name: 'cool things',
+                taskIds: ['1', '2'],
+            },
         ] as List[],
         tasks: [
             {
@@ -38,6 +43,8 @@ export const useAppStore = defineStore({
             },
         ] as Task[],
     }),
-    getters: {},
+    getters: {
+        getLists: (state) => state.lists,
+    },
     actions: {},
 });
