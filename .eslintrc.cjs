@@ -25,5 +25,6 @@ module.exports = {
                 endOfLine: 'auto',
             },
         ],
+        '@typescript-eslint/no-unused-vars': 'error',
     },
 };
