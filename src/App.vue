@@ -13,12 +13,23 @@
 
                     <v-btn variant="text" icon="mdi-magnify"></v-btn>
                     <v-btn variant="text" icon="mdi-filter"></v-btn>
-                    <v-btn variant="text" icon="mdi-dots-vertical"></v-btn>
+                    <v-btn
+                        v-if="loggedIn"
+                        variant="text"
+                        icon="mdi-logout"
+                        @click="userStore.logout"
+                    ></v-btn>
+                    <v-btn
+                        v-else
+                        variant="text"
+                        icon="mdi-login"
+                        @click="userStore.login"
+                    ></v-btn>
                 </v-app-bar>
                 <AppSidebar v-model:drawer="drawer" />
                 <v-main style="height: 100vh">
-                    <router-view :key="useRoute().fullPath"
-                /></v-main>
+                    <router-view :key="useRoute().fullPath" />
+                </v-main>
             </v-layout>
         </v-main>
     </v-app>
@@ -27,8 +38,13 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
 import { ref } from 'vue';
+import { useUserStore } from './stores/userStore';
+import { computed } from '@vue/reactivity';
 
 const drawer = ref(true);
+
+const userStore = useUserStore();
+const loggedIn = computed(() => !!userStore.uid);
 
 function toggleDrawer() {
     drawer.value = !drawer.value;
