@@ -22,6 +22,7 @@
                 <DateChip :date="task.dueDate" />
                 <v-btn icon="mdi-dots-vertical" variant="text"></v-btn>
             </template>
+            <slot name="list1 slot"></slot>
         </v-list-item>
     </v-list>
     <v-list v-if="tasks.length" select-strategy="leaf">
@@ -56,9 +57,16 @@ import { computed } from 'vue';
 import { useAppStore } from '@/stores/appStore';
 import DateChip from '../partials/DateChip.vue';
 
-const props = defineProps<{
+export interface Props {
     tasks: Task[];
-}>();
+    header1?: string;
+    header2?: string;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+    header1: 'ONGOING',
+    header2: 'COMPLETE',
+});
 const store = useAppStore();
 const ongoingTasks = computed(() =>
     props.tasks.filter((task) => !task.complete)
