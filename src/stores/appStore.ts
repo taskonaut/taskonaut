@@ -23,7 +23,7 @@ export const useAppStore = defineStore({
                 dateCreated: new Date(),
                 complete: false,
                 dateCompleted: null,
-                dueDate: new Date(2022, 9, 29),
+                dueDate: new Date(2022, 9, 27),
             },
             {
                 uuid: '3',
@@ -83,9 +83,9 @@ export const useAppStore = defineStore({
         getInboxTasks: (state) => () =>
             state.tasks.filter((task) => !task.projectId),
         getTodayTasks: (state) => () => {
-            const today = new Date().getDate();
+            const today = new Date().getUTCDate();
             return state.tasks.filter(
-                (task) => task.dueDate?.getDate() == today
+                (task) => task.dueDate?.getUTCDate() == today
             );
         },
     },
