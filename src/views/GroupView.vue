@@ -1,12 +1,9 @@
 <template>
-    <DisplayTasks :tasks="tasks">
-        <template v-slot:list1-slot><AddListItem></AddListItem></template>
-    </DisplayTasks>
+    <DisplayTasks :tasks="tasks" />
 </template>
 
 <script setup lang="ts">
 import DisplayTasks from '@/components/shared/DisplayTasks.vue';
-import AddListItem from '../components/partials/AddListItem.vue';
 import { useAppStore } from '@/stores/appStore';
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';

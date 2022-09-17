@@ -24,6 +24,7 @@
             </template>
         </v-list-item>
         <slot name="list1-slot"></slot>
+        <AddListItem></AddListItem>
     </v-list>
     <v-list v-if="tasks.length" select-strategy="leaf">
         <v-list-subheader>COMPLETE</v-list-subheader>
@@ -56,6 +57,7 @@ import type { Task } from '@/model';
 import { computed } from 'vue';
 import { useAppStore } from '@/stores/appStore';
 import DateChip from '../partials/DateChip.vue';
+import AddListItem from '../partials/AddListItem.vue';
 
 export interface Props {
     tasks: Task[];
