@@ -1,11 +1,11 @@
 <template>
     <v-navigation-drawer app bottom :model-value="props.drawer">
         <template v-slot:prepend>
+            <!-- :prependAvatar="photoURL" -->
             <v-list-item
                 twoLine
-                prependAvatar="https://randomuser.me/api/portraits/women/81.jpg"
-                title="Jane Smith"
-                subtitle="Logged in"
+                :title="displayName || 'Anonymous'"
+                :subtitle="displayName ? 'Logged in' : 'Not logged in'"
             ></v-list-item>
         </template>
         <v-divider></v-divider>
@@ -41,6 +41,7 @@
 import router from '@/router';
 import { computed } from 'vue';
 import { useAppStore } from '../stores/appStore';
+import { useUserStore } from '../stores/userStore';
 
 export interface Props {
     drawer: boolean;
@@ -51,6 +52,11 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const store = useAppStore();
+const userStore = useUserStore();
+
+const displayName = computed(() => userStore.displayName);
+const photoURL = computed(() => userStore.photoURL as string);
+
 const groups = computed(() => store.getGroups);
 
 const menuItems = [
