@@ -44,7 +44,7 @@
 import { useRoute } from 'vue-router';
 import { ref } from 'vue';
 import { useUserStore } from './stores/userStore';
-import { computed } from '@vue/reactivity';
+import { computed } from 'vue';
 import { useTheme } from 'vuetify';
 
 const drawer = ref(true);
