@@ -7,11 +7,12 @@ import { createPinia } from 'pinia';
 
 //App Components
 import AppSidebar from './components/AppSidebar.vue';
+import DisplayTasks from './components/shared/DisplayTasks.vue';
 
 const pinia = createPinia();
 const app = createApp(App);
 
-app.component('AppSidebar', AppSidebar);
+app.component('AppSidebar', AppSidebar).component('DisplayTasks', DisplayTasks);
 
 loadFonts();
 
