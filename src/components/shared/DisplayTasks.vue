@@ -19,6 +19,7 @@
                 </v-list-item-action>
             </template>
             <template v-slot:append>
+                <DateChip :date="task.dueDate" />
                 <v-btn icon="mdi-dots-vertical" variant="text"></v-btn>
             </template>
         </v-list-item>
@@ -42,6 +43,7 @@
                 </v-list-item-action>
             </template>
             <template v-slot:append>
+                <DateChip :date="task.dueDate" />
                 <v-btn icon="mdi-dots-vertical" variant="text"></v-btn>
             </template>
         </v-list-item>
@@ -52,6 +54,7 @@
 import type { Task } from '@/model';
 import { computed } from 'vue';
 import { useAppStore } from '@/stores/appStore';
+import DateChip from '../partials/DateChip.vue';
 
 const props = defineProps<{
     tasks: Task[];
