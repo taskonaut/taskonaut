@@ -4,7 +4,7 @@ An application that will help you organize your daily life and arrange all the t
 
 # Features
 
-- [ ] describe features
+- Adding Tasks and Stuff...🤔
 
 # Screenshots
 
