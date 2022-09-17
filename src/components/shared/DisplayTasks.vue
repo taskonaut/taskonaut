@@ -22,8 +22,8 @@
                 <DateChip :date="task.dueDate" />
                 <v-btn icon="mdi-dots-vertical" variant="text"></v-btn>
             </template>
-            <slot name="list1 slot"></slot>
         </v-list-item>
+        <slot name="list1-slot"></slot>
     </v-list>
     <v-list v-if="tasks.length" select-strategy="leaf">
         <v-list-subheader>COMPLETE</v-list-subheader>
