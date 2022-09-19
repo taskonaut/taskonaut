@@ -14,6 +14,11 @@
                     <v-btn variant="text" icon="mdi-magnify"></v-btn>
                     <v-btn variant="text" icon="mdi-filter"></v-btn>
                     <v-btn
+                        @click="toggleTheme"
+                        variant="text"
+                        icon="mdi-theme-light-dark"
+                    ></v-btn>
+                    <v-btn
                         v-if="loggedIn"
                         variant="text"
                         icon="mdi-logout"
@@ -40,14 +45,22 @@ import { useRoute } from 'vue-router';
 import { ref } from 'vue';
 import { useUserStore } from './stores/userStore';
 import { computed } from '@vue/reactivity';
+import { useTheme } from 'vuetify';
 
 const drawer = ref(true);
 
 const userStore = useUserStore();
 const loggedIn = computed(() => !!userStore.uid);
+const theme = useTheme();
 
 function toggleDrawer() {
     drawer.value = !drawer.value;
+}
+
+function toggleTheme() {
+    theme.global.name.value = theme.global.current.value.dark
+        ? 'light'
+        : 'dark';
 }
 </script>
 
