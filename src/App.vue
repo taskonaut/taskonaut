@@ -1,5 +1,6 @@
 <template>
     <v-app>
+        <AppSidebar v-model="drawer" />
         <v-main>
             <v-layout>
                 <v-app-bar color="primary" app>
@@ -31,7 +32,6 @@
                         @click="userStore.login"
                     ></v-btn>
                 </v-app-bar>
-                <AppSidebar v-model:drawer="drawer" />
                 <v-main style="height: 100vh">
                     <router-view :key="useRoute().fullPath" />
                 </v-main>
@@ -46,6 +46,7 @@ import { ref } from 'vue';
 import { useUserStore } from './stores/userStore';
 import { computed } from 'vue';
 import { useTheme } from 'vuetify';
+import AppSidebar from './components/AppSidebar.vue';
 
 const drawer = ref(true);
 
