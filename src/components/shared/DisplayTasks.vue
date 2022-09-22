@@ -2,7 +2,11 @@
     <TaskList :tasks="ongoingTasks" :subheader="'ONGOING'">
         <AddListItem />
     </TaskList>
-    <TaskList :tasks="completeTasks" :subheader="'COMPLETED'" />
+    <TaskList
+        v-if="completeTasks.length"
+        :tasks="completeTasks"
+        :subheader="'COMPLETED'"
+    />
 </template>
 <script setup lang="ts">
 import type { Task } from '@/model';
