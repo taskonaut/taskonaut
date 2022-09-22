@@ -1,5 +1,8 @@
 <template>
-    <v-navigation-drawer app bottom :model-value="props.drawer">
+    <v-navigation-drawer
+        :model-value="props.drawer"
+        @update:model-value="(value) => emits('update', value)"
+    >
         <template v-slot:prepend>
             <!-- :prependAvatar="photoURL" -->
             <v-list-item
@@ -43,19 +46,18 @@ import { computed } from 'vue';
 import { useAppStore } from '../stores/appStore';
 import { useUserStore } from '../stores/userStore';
 
-export interface Props {
+const props = defineProps<{
     drawer: boolean;
-}
+}>();
 
-const props = withDefaults(defineProps<Props>(), {
-    drawer: true,
-});
-
+const emits = defineEmits<{
+    (e: 'update', state: boolean): void;
+}>();
 const store = useAppStore();
 const userStore = useUserStore();
 
 const displayName = computed(() => userStore.displayName);
-const photoURL = computed(() => userStore.photoURL as string);
+//const photoURL = computed(() => userStore.photoURL as string);
 
 const groups = computed(() => store.getGroups);
 
