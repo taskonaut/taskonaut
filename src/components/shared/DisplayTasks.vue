@@ -6,7 +6,7 @@
             v-for="task in ongoingTasks"
             :key="task.uuid"
             :title="task.header"
-            :subtitle="task.body"
+            :subtitle="task.body || undefined"
             :value="task.uuid"
             :active="task.complete"
         >
@@ -20,10 +20,12 @@
             </template>
             <template v-slot:append>
                 <DateChip :date="task.dueDate" />
-                <v-btn icon="mdi-dots-vertical" variant="text"></v-btn>
+                <v-btn icon="mdi-dots-vertical" variant="text" />
+                <TaskDialog :task="task" />
             </template>
         </v-list-item>
         <slot name="list1-slot"></slot>
+        <AddListItem></AddListItem>
     </v-list>
     <v-list v-if="tasks.length" select-strategy="leaf">
         <v-list-subheader>COMPLETE</v-list-subheader>
@@ -31,9 +33,10 @@
             v-for="task in completeTasks"
             :key="task.uuid"
             :title="task.header"
-            :subtitle="task.body"
+            :subtitle="task.body || undefined"
             :value="task.uuid"
             :active="task.complete"
+            lines="three"
         >
             <template v-slot:prepend>
                 <v-list-item-action start>
@@ -45,7 +48,8 @@
             </template>
             <template v-slot:append>
                 <DateChip :date="task.dueDate" />
-                <v-btn icon="mdi-dots-vertical" variant="text"></v-btn>
+                <v-btn icon="mdi-dots-vertical" variant="text" />
+                <TaskDialog :task="task" />
             </template>
         </v-list-item>
     </v-list>
@@ -56,6 +60,8 @@ import type { Task } from '@/model';
 import { computed } from 'vue';
 import { useAppStore } from '@/stores/appStore';
 import DateChip from '../partials/DateChip.vue';
+import AddListItem from '../partials/AddListItem.vue';
+import TaskDialog from '../TaskDialog.vue';
 
 export interface Props {
     tasks: Task[];

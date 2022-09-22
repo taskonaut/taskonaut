@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 import type { Group, Task } from '@/model';
 import { defineStore } from 'pinia';
 
@@ -90,6 +91,26 @@ export const useAppStore = defineStore({
         },
     },
     actions: {
+        createTask(header: string, body?: string, groupId?: string) {
+            this.tasks.push({
+                uuid: uuidv4(),
+                projectId: groupId || null,
+                header: header,
+                body: body || null,
+                dateCreated: new Date(),
+                complete: false,
+                dateCompleted: null,
+                dueDate: null,
+            });
+        },
+        updateTask(taskId: string, header: string, body: string) {
+            this.tasks.map((task) => {
+                if (task.uuid == taskId) {
+                    task.header = header;
+                    task.body = body;
+                }
+            });
+        },
         toggleTask(taskId: string) {
             this.tasks.map((task) => {
                 if (task.uuid == taskId) task.complete = !task.complete;
