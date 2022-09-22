@@ -2,7 +2,7 @@ export interface Task {
     uuid: string;
     projectId: null | string;
     header: string;
-    body: string;
+    body: null | string;
     dateCreated: Date;
     dueDate: null | Date;
     complete: boolean;
