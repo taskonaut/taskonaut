@@ -30,6 +30,10 @@
                         :rules="formData.rules"
                         required
                         ref="nameInput"
+                        @keydown.enter="
+                            if (!formData.name && !formData.body)
+                                dialogOpen = false;
+                        "
                     ></v-text-field>
                     <v-textarea
                         auto-grow
