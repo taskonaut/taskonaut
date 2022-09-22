@@ -1,6 +1,5 @@
 <template>
     <v-dialog
-        md:fullscreen
         v-model="dialogOpen"
         activator="parent"
         :scrim="false"
@@ -43,13 +42,12 @@
                         @keydown="textareaHandler($event)"
                     ></v-textarea>
                     <v-select
-                        v-model="formData.select"
+                        v-model="formData.groupId"
                         :items="taskGroups"
                         item-title="name"
                         item-value="uuid"
                         label="Select"
                         persistent-hint
-                        return-object
                         single-line
                     ></v-select>
                     <v-btn
@@ -87,17 +85,22 @@ const formData = reactive({
     rules: [(v: any) => !!v || 'Name is required'],
     name: props.task?.header || '',
     body: props.task?.body || '',
-    select: undefined,
+    groupId: props.task?.groupId || '',
 });
 
 const taskGroups = computed(() => appStore.getGroups);
 
 function formSubmit() {
     if (props.task) {
-        appStore.updateTask(props.task.uuid, formData.name, formData.body);
+        appStore.updateTask(
+            props.task.uuid,
+            formData.name,
+            formData.body,
+            formData.groupId
+        );
         dialogOpen.value = false;
     } else {
-        appStore.createTask(formData.name, formData.body);
+        appStore.createTask(formData.name, formData.body, formData.groupId);
         form.value.reset();
         nameInput.value.focus();
     }

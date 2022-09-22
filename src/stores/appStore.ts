@@ -8,7 +8,7 @@ export const useAppStore = defineStore({
         tasks: [
             {
                 uuid: '1',
-                projectId: '1',
+                groupId: '1',
                 header: 'Breathe',
                 body: 'this have no due date',
                 dateCreated: new Date(),
@@ -18,7 +18,7 @@ export const useAppStore = defineStore({
             },
             {
                 uuid: '2',
-                projectId: '1',
+                groupId: '1',
                 header: 'Sleep',
                 body: 'this is due on 29 of September',
                 dateCreated: new Date(),
@@ -28,7 +28,7 @@ export const useAppStore = defineStore({
             },
             {
                 uuid: '3',
-                projectId: '1',
+                groupId: '1',
                 header: 'Wake Up',
                 body: 'this is due today',
                 dateCreated: new Date(),
@@ -38,7 +38,7 @@ export const useAppStore = defineStore({
             },
             {
                 uuid: '4',
-                projectId: null,
+                groupId: null,
                 header: 'Inbox Task',
                 body: 'should be in inbox and today',
                 dateCreated: new Date(),
@@ -48,7 +48,7 @@ export const useAppStore = defineStore({
             },
             {
                 uuid: '5',
-                projectId: '3',
+                groupId: '3',
                 header: 'Task',
                 body: 'should be in 3rd group and today',
                 dateCreated: new Date(),
@@ -80,9 +80,9 @@ export const useAppStore = defineStore({
         getGroupById: (state) => (groupId: string) =>
             state.groups.find((group) => group.uuid == groupId),
         getGroupTasks: (state) => (groupId: string) =>
-            state.tasks.filter((task) => task.projectId == groupId),
+            state.tasks.filter((task) => task.groupId == groupId),
         getInboxTasks: (state) => () =>
-            state.tasks.filter((task) => !task.projectId),
+            state.tasks.filter((task) => !task.groupId),
         getTodayTasks: (state) => () => {
             const today = new Date().getUTCDate();
             return state.tasks.filter(
@@ -91,10 +91,10 @@ export const useAppStore = defineStore({
         },
     },
     actions: {
-        createTask(header: string, body?: string, groupId?: string) {
+        createTask(header: string, body?: string, groupId?: string | null) {
             this.tasks.push({
                 uuid: uuidv4(),
-                projectId: groupId || null,
+                groupId: groupId || null,
                 header: header,
                 body: body || null,
                 dateCreated: new Date(),
@@ -103,11 +103,17 @@ export const useAppStore = defineStore({
                 dueDate: null,
             });
         },
-        updateTask(taskId: string, header: string, body: string) {
+        updateTask(
+            taskId: string,
+            header: string,
+            body: string,
+            groupId?: string
+        ) {
             this.tasks.map((task) => {
                 if (task.uuid == taskId) {
                     task.header = header;
                     task.body = body;
+                    groupId ? (task.groupId = groupId) : null;
                 }
             });
         },
