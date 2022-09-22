@@ -1,7 +1,7 @@
 <template>
     <v-navigation-drawer
-        :model-value="props.drawer"
-        @update:model-value="(value) => emits('update', value)"
+        :model-value="props.modelValue"
+        @update:model-value="(value) => emits('update:modelValue', value)"
     >
         <template v-slot:prepend>
             <!-- :prependAvatar="photoURL" -->
@@ -47,12 +47,13 @@ import { useAppStore } from '../stores/appStore';
 import { useUserStore } from '../stores/userStore';
 
 const props = defineProps<{
-    drawer: boolean;
+    modelValue: boolean;
 }>();
 
 const emits = defineEmits<{
-    (e: 'update', state: boolean): void;
+    (e: 'update:modelValue', state: boolean): void;
 }>();
+
 const store = useAppStore();
 const userStore = useUserStore();
 
