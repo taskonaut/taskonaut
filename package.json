@@ -16,6 +16,7 @@
     "@mdi/font": "5.9.55",
     "firebase": "^9.10.0",
     "pinia": "^2.0.21",
+    "pinia-plugin-persistedstate": "^2.2.0",
     "roboto-fontface": "*",
     "uuid": "^9.0.0",
     "vue": "^3.2.38",
