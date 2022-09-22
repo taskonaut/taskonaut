@@ -1,6 +1,6 @@
 <template>
     <v-app>
-        <AppSidebar :drawer="drawer" @update="drawer = $event" />
+        <AppSidebar v-model="drawer" />
         <v-main>
             <v-layout>
                 <v-app-bar color="primary" app>
