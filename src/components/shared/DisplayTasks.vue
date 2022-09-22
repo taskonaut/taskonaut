@@ -36,7 +36,6 @@
             :subtitle="task.body || undefined"
             :value="task.uuid"
             :active="task.complete"
-            lines="three"
         >
             <template v-slot:prepend>
                 <v-list-item-action start>
