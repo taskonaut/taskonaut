@@ -4,9 +4,9 @@
             <v-list-item-action start>
                 <v-btn variant="tonal" icon="mdi-plus" size="small"></v-btn>
             </v-list-item-action>
-            <TaskDialog />
         </template>
     </v-list-item>
+    <TaskDialog />
 </template>
 
 <script setup lang="ts">
