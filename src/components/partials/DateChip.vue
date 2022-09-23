@@ -1,6 +1,6 @@
 <template>
     <v-chip size="x-small" :color="color" label v-if="props.date">{{
-        `${props.date.getDate()} / ${props.date.getMonth()}`
+        `${new Date(props.date).getDate()} / ${new Date(props.date).getMonth()}`
     }}</v-chip>
 </template>
 
@@ -8,12 +8,14 @@
 import { computed } from 'vue';
 
 const props = defineProps<{
-    date: null | Date;
+    date: null | number;
 }>();
 
 const today = new Date();
 
-const dueToday = computed(() => today.getUTCDate() >= props.date!.getUTCDate());
+const dueToday = computed(
+    () => today.getUTCDate() >= new Date(props.date!).getUTCDate()
+);
 const color = computed(() => (dueToday.value ? 'pink' : 'gray'));
 </script>
 
