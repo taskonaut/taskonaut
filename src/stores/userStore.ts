@@ -4,6 +4,7 @@ import {
     onAuthStateChanged,
     signInWithPopup,
     signOut,
+    type User,
 } from 'firebase/auth';
 import { defineStore } from 'pinia';
 
@@ -44,14 +45,14 @@ export const useUserStore = defineStore({
             }
         },
         currentUser() {
-            return new Promise((resolve, reject) => {
+            return new Promise<User>((resolve, reject) => {
                 const unsubscribe = onAuthStateChanged(
                     getAuth(),
                     (user) => {
                         this.photoURL = user?.photoURL || null;
                         this.uid = user?.uid || null;
                         this.displayName = user?.displayName || null;
-                        resolve(user);
+                        resolve(user as User);
                     },
                     (e) => reject(e)
                 );
