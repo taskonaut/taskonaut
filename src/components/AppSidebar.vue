@@ -4,8 +4,8 @@
         @update:model-value="(value) => emits('update:modelValue', value)"
     >
         <template v-slot:prepend>
-            <!-- :prependAvatar="photoURL" -->
             <v-list-item
+                :prependAvatar="photoURL"
                 twoLine
                 :title="displayName || 'Anonymous'"
                 :subtitle="displayName ? 'Logged in' : 'Not logged in'"
@@ -58,7 +58,7 @@ const store = useAppStore();
 const userStore = useUserStore();
 
 const displayName = computed(() => userStore.displayName);
-//const photoURL = computed(() => userStore.photoURL as string);
+const photoURL = computed(() => userStore.photoURL as string);
 
 const groups = computed(() => store.getGroups);
 
