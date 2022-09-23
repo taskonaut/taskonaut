@@ -44,15 +44,18 @@
 import { useRoute } from 'vue-router';
 import { ref } from 'vue';
 import { useUserStore } from './stores/userStore';
+import { useAppStore } from './stores/appStore';
 import { computed } from 'vue';
 import { useTheme } from 'vuetify';
 import AppSidebar from './components/AppSidebar.vue';
 
 const drawer = ref(true);
 
+const appStore = useAppStore();
 const userStore = useUserStore();
 const loggedIn = computed(() => !!userStore.uid);
 const theme = useTheme();
+appStore.setup();
 
 function toggleDrawer() {
     drawer.value = !drawer.value;
