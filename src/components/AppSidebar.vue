@@ -5,6 +5,7 @@
     >
         <template v-slot:prepend>
             <v-list-item
+                :prependAvatar="photoURL"
                 twoLine
                 :prepend-avatar="photoURL"
                 :title="displayName || 'Anonymous'"
@@ -32,7 +33,7 @@
                 :prependIcon="'mdi-file-document'"
                 :title="group.name"
                 :value="group.name"
-                :active="group.uuid == router.currentRoute.value.name"
+                :active="group.uuid == router.currentRoute.value.params.id"
                 @click="switchGroupRoute(group.uuid)"
             >
             </v-list-item>
