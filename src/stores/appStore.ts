@@ -81,18 +81,5 @@ export const useAppStore = defineStore({
     persist: {
         storage: localStorage,
         paths: ['tasks', 'groups'],
-        afterRestore: (ctx) => {
-            // recreate Date objects from stringified json
-            ctx.store.$state.tasks = ctx.store.$state.tasks.map(
-                (task: Task) => ({
-                    ...task,
-                    dateCreated: new Date(task.dateCreated),
-                    dueDate: task.dueDate ? new Date(task.dueDate) : null,
-                    dateCompleted: task.dateCompleted
-                        ? new Date(task.dateCompleted)
-                        : null,
-                })
-            );
-        },
     },
 });
