@@ -3,10 +3,10 @@ export interface Task {
     groupId: null | string;
     header: string;
     body: null | string;
-    dateCreated: Date;
-    dueDate: null | Date;
+    dateCreated: number;
+    dueDate: null | number;
     complete: boolean;
-    dateCompleted: null | Date;
+    dateCompleted: null | number;
 }
 
 export interface Group {

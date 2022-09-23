@@ -40,22 +40,23 @@ export const useAppStore = defineStore({
         getTodayTasks: (state) => () => {
             const today = new Date().getUTCDate();
             return state.tasks.filter(
-                (task) => task.dueDate?.getUTCDate() == today
+                (task) => new Date(task.dueDate as number).getUTCDate() == today
             );
         },
     },
     actions: {
         createTask(header: string, body?: string, groupId?: string | null) {
-            this.tasks.push({
+            const task = {
                 uuid: uuidv4(),
                 groupId: groupId || null,
                 header: header,
                 body: body || null,
-                dateCreated: new Date(),
+                dateCreated: new Date().getTime(),
                 complete: false,
                 dateCompleted: null,
                 dueDate: null,
-            });
+            };
+            this.tasks.push(task);
         },
         updateTask(
             taskId: string,
@@ -80,18 +81,5 @@ export const useAppStore = defineStore({
     persist: {
         storage: localStorage,
         paths: ['tasks', 'groups'],
-        afterRestore: (ctx) => {
-            // recreate Date objects from stringified json
-            ctx.store.$state.tasks = ctx.store.$state.tasks.map(
-                (task: Task) => ({
-                    ...task,
-                    dateCreated: new Date(task.dateCreated),
-                    dueDate: task.dueDate ? new Date(task.dueDate) : null,
-                    dateCompleted: task.dateCompleted
-                        ? new Date(task.dateCompleted)
-                        : null,
-                })
-            );
-        },
     },
 });

@@ -5,8 +5,8 @@
     >
         <template v-slot:prepend>
             <v-list-item
-                :prependAvatar="photoURL"
                 twoLine
+                :prepend-avatar="photoURL"
                 :title="displayName || 'Anonymous'"
                 :subtitle="displayName ? 'Logged in' : 'Not logged in'"
             ></v-list-item>
