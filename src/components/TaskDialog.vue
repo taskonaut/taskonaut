@@ -1,11 +1,13 @@
 <template>
     <v-dialog
+        max-width="600"
+        min-width="200"
         v-model="dialogOpen"
         activator="parent"
         :scrim="false"
         transition="dialog-bottom-transition"
     >
-        <v-card min-width="600">
+        <v-card>
             <v-toolbar dark color="primary">
                 <v-btn icon dark @click="closeDialog()">
                     <v-icon>mdi-close</v-icon>
