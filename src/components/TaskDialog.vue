@@ -123,6 +123,7 @@ function formSubmit() {
     } else {
         appStore.createTask(formData.name, formData.body, formData.groupId);
         form.value.reset();
+        formData.groupId = selectedGroup;
         nameInput.value.focus();
     }
 }
