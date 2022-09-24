@@ -20,17 +20,17 @@
         </template>
         <template v-slot:append>
             <DateChip :date="props.task.dueDate" />
-            <div>
-                <v-btn
-                    icon="mdi-dots-horizontal"
-                    variant="text"
-                    @click="showDialog = true"
-                />
-            </div>
+            <v-btn
+                icon="mdi-dots-horizontal"
+                variant="text"
+                @click="showDialog = true"
+                class="show-on-hover"
+            />
             <v-btn
                 icon="mdi-delete"
                 variant="text"
                 @click="deleteTask(task.uuid)"
+                class="show-on-hover"
             />
         </template>
     </v-list-item>
