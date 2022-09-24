@@ -77,6 +77,7 @@
 
 <script setup lang="ts">
 import type { Task } from '@/model';
+import router from '@/router';
 import { useAppStore } from '@/stores/appStore';
 import { reactive, ref, computed } from 'vue';
 import { useDisplay } from 'vuetify';
@@ -92,12 +93,16 @@ const appStore = useAppStore();
 const dialogOpen = ref(false);
 const form = ref();
 const nameInput = ref();
+const selectedGroup =
+    router.currentRoute.value.name === 'group'
+        ? (router.currentRoute?.value?.params?.id as string)
+        : '';
 const formData = reactive({
     valid: false,
     rules: [(v: any) => !!v || 'Name is required'],
     name: props.task?.header || '',
     body: props.task?.body || '',
-    groupId: props.task?.groupId || '',
+    groupId: props.task?.groupId || selectedGroup,
 });
 
 const taskGroups = computed(() => appStore.getGroups);
