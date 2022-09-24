@@ -102,8 +102,6 @@ const formData = reactive({
 
 const taskGroups = computed(() => appStore.getGroups);
 
-const dialogWidth = computed(() => (mobile ? '100vw' : '600'));
-
 function formSubmit() {
     if (props.task) {
         appStore.updateTask(
