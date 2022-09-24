@@ -7,23 +7,21 @@
         :scrim="false"
         transition="dialog-bottom-transition"
     >
-        <v-card>
-            <v-toolbar dark color="primary">
-                <v-btn icon dark @click="closeDialog()">
-                    <v-icon>mdi-close</v-icon>
-                </v-btn>
-                <v-toolbar-title v-if="!props.task">
-                    Add New Task
-                </v-toolbar-title>
-                <v-toolbar-title v-if="props.task"> Edit Task </v-toolbar-title>
-                <v-spacer></v-spacer>
-            </v-toolbar>
-            <v-card-text>
-                <v-form
-                    ref="form"
-                    v-model="formData.valid"
-                    :submit="formSubmit"
-                >
+        <v-form ref="form" v-model="formData.valid" :submit="formSubmit">
+            <v-card>
+                <v-toolbar dark color="primary">
+                    <v-btn icon dark @click="closeDialog()">
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                    <v-toolbar-title v-if="!props.task">
+                        Add New Task
+                    </v-toolbar-title>
+                    <v-toolbar-title v-if="props.task">
+                        Edit Task
+                    </v-toolbar-title>
+                    <v-spacer></v-spacer>
+                </v-toolbar>
+                <v-card-text>
                     <v-text-field
                         autofocus
                         v-model="formData.name"
@@ -52,6 +50,9 @@
                         persistent-hint
                         single-line
                     ></v-select>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
                     <v-btn
                         :disabled="!formData.valid"
                         color="success"
@@ -62,9 +63,15 @@
                     <v-btn color="success" type="submit" v-if="props.task"
                         >Save</v-btn
                     >
-                </v-form>
-            </v-card-text>
-        </v-card>
+                    <v-btn
+                        color="warning"
+                        @click="deleteTask"
+                        v-if="props.task?.uuid"
+                        >Delete</v-btn
+                    >
+                </v-card-actions>
+            </v-card>
+        </v-form>
     </v-dialog>
 </template>
 
@@ -120,5 +127,13 @@ function textareaHandler(event: KeyboardEvent) {
         if (formData.name) formSubmit();
     }
 }
+
+function deleteTask() {
+    appStore.deleteTask(props.task?.uuid as string);
+}
 </script>
-<style scoped></style>
+<style scoped>
+button {
+    text-transform: uppercase;
+}
+</style>
