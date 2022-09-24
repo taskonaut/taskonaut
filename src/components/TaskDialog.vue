@@ -1,14 +1,14 @@
 <template>
     <v-dialog
-        max-width="600"
-        min-width="200"
+        :max-width="!mobile ? '600' : '100vw'"
         v-model="dialogOpen"
         activator="parent"
         :scrim="false"
+        :fullscreen="mobile"
         transition="dialog-bottom-transition"
     >
         <v-form ref="form" v-model="formData.valid" :submit="formSubmit">
-            <v-card>
+            <v-card :height="mobile ? '100vh' : 'auto'">
                 <v-toolbar dark color="primary">
                     <v-btn icon dark @click="closeDialog()">
                         <v-icon>mdi-close</v-icon>
@@ -79,10 +79,13 @@
 import type { Task } from '@/model';
 import { useAppStore } from '@/stores/appStore';
 import { reactive, ref, computed } from 'vue';
+import { useDisplay } from 'vuetify';
 
 const props = defineProps<{
     task?: Task;
 }>();
+
+const { mobile } = useDisplay();
 
 const appStore = useAppStore();
 
@@ -98,6 +101,8 @@ const formData = reactive({
 });
 
 const taskGroups = computed(() => appStore.getGroups);
+
+const dialogWidth = computed(() => (mobile ? '100vw' : '600'));
 
 function formSubmit() {
     if (props.task) {
