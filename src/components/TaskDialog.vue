@@ -117,7 +117,7 @@ function textareaHandler(event: KeyboardEvent) {
         formData.body += '\n';
     } else if (!event.ctrlKey && event.key === 'Enter') {
         event.preventDefault();
-        formSubmit();
+        if (formData.name) formSubmit();
     }
 }
 </script>
