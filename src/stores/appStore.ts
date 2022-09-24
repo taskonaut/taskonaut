@@ -1,11 +1,22 @@
 import type { Group, Task } from '@/model';
+import {
+    addDoc,
+    collection,
+    CollectionReference,
+    Firestore,
+    getFirestore,
+} from '@firebase/firestore';
 import { defineStore } from 'pinia';
 import { v4 as uuidv4 } from 'uuid';
+import { useUserStore } from './userStore';
 
 export interface AppStore {
     tasks: Task[];
     groups: Group[];
 }
+
+let firebaseStore: Firestore;
+let collectionRef: CollectionReference;
 
 export const useAppStore = defineStore({
     id: 'appStore',
@@ -58,6 +69,21 @@ export const useAppStore = defineStore({
         },
     },
     actions: {
+        async setup() {
+            useUserStore()
+                .currentUser()
+                .then((user) => {
+                    if (user) {
+                        console.log(user.uid);
+                        firebaseStore = getFirestore();
+                        collectionRef = collection(
+                            firebaseStore,
+                            `${user.uid}`
+                        );
+                        this.sync('tasks', collectionRef);
+                    }
+                });
+        },
         createTask(header: string, body?: string, groupId?: string | null) {
             const task = {
                 uuid: uuidv4(),
@@ -70,6 +96,10 @@ export const useAppStore = defineStore({
                 dueDate: null,
             };
             this.tasks.push(task);
+
+            if (useUserStore().uid) {
+                addDoc(collectionRef, task);
+            }
         },
         updateTask(
             taskId: string,
