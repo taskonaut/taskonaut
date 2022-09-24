@@ -29,7 +29,7 @@
             <v-list-item
                 v-for="group in groups"
                 :key="group.uuid"
-                :prependIcon="'mdi-file-document'"
+                prependIcon="mdi-format-list-bulleted"
                 :title="group.name"
                 :value="group.name"
                 :active="group.uuid == router.currentRoute.value.params.id"
@@ -63,10 +63,10 @@ const photoURL = computed(() => userStore.photoURL as string);
 const groups = computed(() => store.getGroups);
 
 const menuItems = [
-    { title: 'Inbox', icon: 'mdi-home-city', value: 'inbox' },
-    { title: 'Today', icon: 'mdi-account', value: 'today' },
-    { title: 'Upcoming', icon: 'mdi-account-group-outline', value: 'upcoming' },
-    { title: 'Calendar', icon: 'mdi-calendar', value: 'calendar' },
+    { title: 'Inbox', icon: 'mdi-inbox-arrow-down', value: 'inbox' },
+    { title: 'Today', icon: 'mdi-calendar-clock', value: 'today' },
+    { title: 'Upcoming', icon: 'mdi-view-week', value: 'upcoming' },
+    //{ title: 'Calendar', icon: 'mdi-calendar', value: 'calendar' },
 ];
 
 function switchGroupRoute(listId: string) {
