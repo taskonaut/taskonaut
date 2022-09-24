@@ -20,8 +20,15 @@
         </template>
         <template v-slot:append>
             <DateChip :date="props.task.dueDate" />
-            <v-btn icon="mdi-dots-horizontal" variant="text" />
-            <TaskDialog :task="task" />
+            <div>
+                <v-btn icon="mdi-dots-horizontal" variant="text" />
+                <TaskDialog :task="task" />
+            </div>
+            <v-btn
+                icon="mdi-delete"
+                variant="text"
+                @click="deleteTask(task.uuid)"
+            />
         </template>
     </v-list-item>
 </template>
@@ -39,6 +46,10 @@ const props = defineProps<{
 const appStore = useAppStore();
 function toggleTask(taskId: string) {
     appStore.toggleTask(taskId);
+}
+
+function deleteTask(taskId: string) {
+    appStore.deleteTask(taskId);
 }
 </script>
 
