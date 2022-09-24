@@ -2,6 +2,7 @@ import { useUserStore } from '@/stores/userStore';
 import GroupView from '@/views/GroupView.vue';
 import InboxView from '@/views/InboxView.vue';
 import TodayView from '@/views/TodayView.vue';
+import UpcomingView from '@/views/UpcomingView.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 
 const router = createRouter({
@@ -16,6 +17,11 @@ const router = createRouter({
             path: '/today',
             name: 'today',
             component: TodayView,
+        },
+        {
+            path: '/upcoming',
+            name: 'upcoming',
+            component: UpcomingView,
         },
         {
             path: '/group/:id',

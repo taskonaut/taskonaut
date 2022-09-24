@@ -43,6 +43,19 @@ export const useAppStore = defineStore({
                 (task) => new Date(task.dueDate as number).getUTCDate() == today
             );
         },
+        getUpcomingTasks: (state) => () => {
+            const date = new Date();
+            date.setDate(date.getUTCDate() + 7);
+
+            return state.tasks.filter((task) => {
+                if (task.dueDate != null) {
+                    return (
+                        new Date(task.dueDate as number).getUTCDate() <=
+                        date.getUTCDate()
+                    );
+                }
+            });
+        },
     },
     actions: {
         createTask(header: string, body?: string, groupId?: string | null) {
