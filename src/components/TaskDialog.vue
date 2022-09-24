@@ -1,11 +1,11 @@
 <template>
     <v-dialog
         :max-width="!mobile ? '600' : '100vw'"
-        v-model="dialogOpen"
-        activator="parent"
+        v-model="showDialog"
         :scrim="false"
         :fullscreen="mobile"
         transition="dialog-bottom-transition"
+        @keydown.esc="emits('closeDialog')"
     >
         <v-form ref="form" v-model="formData.valid" :submit="formSubmit">
             <v-card :height="mobile ? '100vh' : 'auto'">
@@ -31,7 +31,7 @@
                         ref="nameInput"
                         @keydown.enter="
                             if (!formData.name && !formData.body)
-                                dialogOpen = false;
+                                emits('closeDialog');
                         "
                     ></v-text-field>
                     <v-textarea
@@ -84,13 +84,17 @@ import { useDisplay } from 'vuetify';
 
 const props = defineProps<{
     task?: Task;
+    showDialog: boolean;
+}>();
+
+const emits = defineEmits<{
+    (e: 'closeDialog', state: void): void;
 }>();
 
 const { mobile } = useDisplay();
 
 const appStore = useAppStore();
 
-const dialogOpen = ref(false);
 const form = ref();
 const nameInput = ref();
 const selectedGroup =
@@ -115,7 +119,7 @@ function formSubmit() {
             formData.body,
             formData.groupId
         );
-        dialogOpen.value = false;
+        emits('closeDialog');
     } else {
         appStore.createTask(formData.name, formData.body, formData.groupId);
         form.value.reset();
@@ -124,7 +128,7 @@ function formSubmit() {
 }
 
 function closeDialog() {
-    dialogOpen.value = false;
+    emits('closeDialog');
     if (!props.task) form.value.reset();
 }
 function textareaHandler(event: KeyboardEvent) {
@@ -138,6 +142,10 @@ function textareaHandler(event: KeyboardEvent) {
 
 function deleteTask() {
     appStore.deleteTask(props.task?.uuid as string);
+}
+
+function destroy() {
+    console.log('destroyed');
 }
 </script>
 <style scoped>

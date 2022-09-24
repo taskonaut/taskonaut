@@ -21,8 +21,11 @@
         <template v-slot:append>
             <DateChip :date="props.task.dueDate" />
             <div>
-                <v-btn icon="mdi-dots-horizontal" variant="text" />
-                <TaskDialog :task="task" />
+                <v-btn
+                    icon="mdi-dots-horizontal"
+                    variant="text"
+                    @click="showDialog = true"
+                />
             </div>
             <v-btn
                 icon="mdi-delete"
@@ -31,6 +34,13 @@
             />
         </template>
     </v-list-item>
+    <div v-if="showDialog">
+        <TaskDialog
+            :task="task"
+            :show-dialog="showDialog"
+            @close-dialog="showDialog = false"
+        />
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -38,6 +48,9 @@ import TaskDialog from '../TaskDialog.vue';
 import DateChip from '../partials/DateChip.vue';
 import type { Task } from '@/model';
 import { useAppStore } from '@/stores/appStore';
+import { ref } from 'vue';
+
+const showDialog = ref(false);
 
 const props = defineProps<{
     task: Task;
