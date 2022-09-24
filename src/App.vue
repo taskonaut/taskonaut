@@ -6,7 +6,9 @@
                 variant="text"
                 @click="toggleDrawer()"
             ></v-app-bar-nav-icon>
-            <v-toolbar-title>{{ getRouteName() }}</v-toolbar-title>
+            <v-toolbar-title>
+                <span id="routeName">{{ getRouteName() }}</span>
+            </v-toolbar-title>
             <v-spacer></v-spacer>
             <v-btn variant="text" icon="mdi-magnify"></v-btn>
             <v-btn variant="text" icon="mdi-filter"></v-btn>
@@ -72,8 +74,7 @@ function getRouteName(): string {
             const id = router.currentRoute.value.params.id[0];
             result = appStore.getGroupById(id)?.name as string;
         } else {
-            let groupName = router.currentRoute.value.name as string;
-            result = groupName.charAt(0).toUpperCase() + groupName.slice(1);
+            result = router.currentRoute.value.name as string;
         }
     }
 
@@ -81,4 +82,8 @@ function getRouteName(): string {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+#routeName {
+    text-transform: capitalize;
+}
+</style>
