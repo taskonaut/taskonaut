@@ -6,7 +6,7 @@
                 variant="text"
                 @click="toggleDrawer()"
             ></v-app-bar-nav-icon>
-            <v-toolbar-title>Taskominator</v-toolbar-title>
+            <v-toolbar-title>{{ getRouteName() }}</v-toolbar-title>
             <v-spacer></v-spacer>
             <v-btn variant="text" icon="mdi-magnify"></v-btn>
             <v-btn variant="text" icon="mdi-filter"></v-btn>
@@ -44,6 +44,7 @@ import { useAppStore } from './stores/appStore';
 import { computed } from 'vue';
 import { useTheme } from 'vuetify';
 import AppSidebar from './components/AppSidebar.vue';
+import router from './router';
 
 const drawer = ref(true);
 
@@ -61,6 +62,22 @@ function toggleTheme() {
     theme.global.name.value = theme.global.current.value.dark
         ? 'light'
         : 'dark';
+}
+
+function getRouteName(): string {
+    const name = router.currentRoute.value.name;
+    let result = '';
+    if (name) {
+        if (name == 'group') {
+            const id = router.currentRoute.value.params.id[0];
+            result = appStore.getGroupById(id)?.name as string;
+        } else {
+            let groupName = router.currentRoute.value.name as string;
+            result = groupName.charAt(0).toUpperCase() + groupName.slice(1);
+        }
+    }
+
+    return result;
 }
 </script>
 
