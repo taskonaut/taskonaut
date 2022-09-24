@@ -6,7 +6,12 @@
         :active="props.task.complete"
     >
         <template v-slot:prepend>
-            <v-list-item-action start>
+            <v-list-item-action>
+                <v-icon
+                    class="show-on-hover"
+                    :end="true"
+                    icon="mdi-dots-vertical"
+                />
                 <v-checkbox-btn
                     @change="toggleTask(task.uuid)"
                     :model-value="task.complete"
@@ -15,7 +20,7 @@
         </template>
         <template v-slot:append>
             <DateChip :date="props.task.dueDate" />
-            <v-btn icon="mdi-dots-vertical" variant="text" />
+            <v-btn icon="mdi-dots-horizontal" variant="text" />
             <TaskDialog :task="task" />
         </template>
     </v-list-item>
@@ -37,4 +42,12 @@ function toggleTask(taskId: string) {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.show-on-hover {
+    opacity: 0;
+}
+
+.v-list-item:hover .show-on-hover {
+    opacity: 100;
+}
+</style>
