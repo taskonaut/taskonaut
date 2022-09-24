@@ -1,12 +1,14 @@
 <template>
-    <TaskList :tasks="ongoingTasks" :subheader="'ONGOING'">
-        <AddListItem />
-    </TaskList>
-    <TaskList
-        v-if="completeTasks.length"
-        :tasks="completeTasks"
-        :subheader="'COMPLETED'"
-    />
+    <v-card rounded="lg">
+        <TaskList :tasks="ongoingTasks" :subheader="'ONGOING'">
+            <AddListItem />
+        </TaskList>
+        <TaskList
+            v-if="completeTasks.length"
+            :tasks="completeTasks"
+            :subheader="'COMPLETED'"
+        />
+    </v-card>
 </template>
 <script setup lang="ts">
 import type { Task } from '@/model';
