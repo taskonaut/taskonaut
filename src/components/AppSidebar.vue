@@ -25,26 +25,36 @@
             </v-list-item>
         </v-list>
         <v-list density="compact" nav select-strategy="single-leaf">
-            <v-list-subheader>PROJECTS</v-list-subheader>
-            <v-list-item
+            <v-row class="justify-space-between align-center my-1 mx-1">
+                <v-list-subheader
+                    class="d-flex align-content-center"
+                    title="PROJECTS"
+                />
+                <v-btn
+                    :rounded="true"
+                    size="x-small"
+                    icon="mdi-plus"
+                    variant="flat"
+                    @click="groupDialog = true"
+                />
+            </v-row>
+            <GroupItem
                 v-for="group in groups"
                 :key="group.uuid"
-                prependIcon="mdi-format-list-bulleted"
-                :title="group.name"
-                :value="group.name"
-                :active="group.uuid == router.currentRoute.value.params.id"
-                @click="switchGroupRoute(group.uuid)"
-            >
-            </v-list-item>
+                :group="group"
+            />
         </v-list>
+        <GroupDialog v-model="groupDialog"></GroupDialog>
     </v-navigation-drawer>
 </template>
 
 <script setup lang="ts">
 import router from '@/router';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useAppStore } from '../stores/appStore';
 import { useUserStore } from '../stores/userStore';
+import GroupDialog from './GroupDialog.vue';
+import GroupItem from './shared/GroupItem.vue';
 
 const props = defineProps<{
     modelValue: boolean;
@@ -54,6 +64,7 @@ const emits = defineEmits<{
     (e: 'update:modelValue', state: boolean): void;
 }>();
 
+const groupDialog = ref(false);
 const store = useAppStore();
 const userStore = useUserStore();
 
@@ -68,10 +79,6 @@ const menuItems = [
     { title: 'Upcoming', icon: 'mdi-view-week', value: 'upcoming' },
     //{ title: 'Calendar', icon: 'mdi-calendar', value: 'calendar' },
 ];
-
-function switchGroupRoute(listId: string) {
-    router.push({ name: 'group', params: { id: listId } });
-}
 
 function switchRoute(routeName: string) {
     if (router.hasRoute(routeName)) router.push({ name: routeName });
