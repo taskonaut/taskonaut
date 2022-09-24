@@ -1,5 +1,5 @@
 <template>
-    <v-container>
+    <div>
         <v-list-item
             title="Add New Task"
             value="add"
@@ -15,7 +15,7 @@
         <div v-if="showDialog">
             <TaskDialog v-model="showDialog" />
         </div>
-    </v-container>
+    </div>
 </template>
 
 <script setup lang="ts">
