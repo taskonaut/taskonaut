@@ -1,7 +1,7 @@
 <template>
     <v-app>
         <AppSidebar v-model="drawer" />
-        <v-app-bar color="primary" :floating="true">
+        <v-app-bar color="primary" :floating="true" density="compact">
             <v-app-bar-nav-icon
                 variant="text"
                 @click="toggleDrawer()"
