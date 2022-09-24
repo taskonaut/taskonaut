@@ -1,13 +1,7 @@
 import type { Group, Task } from '@/model';
-import {
-    addDoc,
-    collection,
-    CollectionReference,
-    Firestore,
-    getFirestore,
-} from '@firebase/firestore';
 import { defineStore } from 'pinia';
 import { v4 as uuidv4 } from 'uuid';
+import { FirebaseAdapter } from './firebaseAdapter';
 import { useUserStore } from './userStore';
 
 export interface AppStore {
@@ -15,8 +9,7 @@ export interface AppStore {
     groups: Group[];
 }
 
-let firebaseStore: Firestore;
-let collectionRef: CollectionReference;
+let firebaseAdapter: FirebaseAdapter;
 
 export const useAppStore = defineStore({
     id: 'appStore',
@@ -69,18 +62,13 @@ export const useAppStore = defineStore({
         },
     },
     actions: {
-        async setup() {
+        setup() {
             useUserStore()
                 .currentUser()
                 .then((user) => {
                     if (user) {
-                        console.log(user.uid);
-                        firebaseStore = getFirestore();
-                        collectionRef = collection(
-                            firebaseStore,
-                            `${user.uid}`
-                        );
-                        this.sync('tasks', collectionRef);
+                        firebaseAdapter = new FirebaseAdapter(user.uid);
+                        this.sync('tasks', firebaseAdapter.collectionRef);
                     }
                 });
         },
@@ -97,8 +85,8 @@ export const useAppStore = defineStore({
             };
             this.tasks.push(task);
 
-            if (useUserStore().uid) {
-                addDoc(collectionRef, task);
+            if (firebaseAdapter) {
+                firebaseAdapter.setDoc(task);
             }
         },
         updateTask(
@@ -114,11 +102,29 @@ export const useAppStore = defineStore({
                     groupId ? (task.groupId = groupId) : null;
                 }
             });
+
+            if (firebaseAdapter) {
+                firebaseAdapter.updateDoc(taskId, { header, body, groupId });
+            }
         },
         toggleTask(taskId: string) {
             this.tasks.map((task) => {
-                if (task.uuid == taskId) task.complete = !task.complete;
+                if (task.uuid == taskId) {
+                    task.complete = !task.complete;
+
+                    if (firebaseAdapter) {
+                        firebaseAdapter.updateDoc(taskId, {
+                            complete: task.complete,
+                        });
+                    }
+                }
             });
+        },
+        deleteTask(taskId: string) {
+            this.tasks = this.tasks.filter((task) => taskId !== task.uuid);
+            if (firebaseAdapter) {
+                firebaseAdapter.deleteDoc(taskId);
+            }
         },
     },
     persist: {
