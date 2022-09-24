@@ -71,8 +71,8 @@ function getRouteName(): string {
     let result = '';
     if (name) {
         if (name == 'group') {
-            const id = router.currentRoute.value.params.id[0];
-            result = appStore.getGroupById(id)?.name as string;
+            const id = router.currentRoute.value.params.id;
+            result = appStore.getGroupById(id as string)?.name as string;
         } else {
             result = router.currentRoute.value.name as string;
         }
