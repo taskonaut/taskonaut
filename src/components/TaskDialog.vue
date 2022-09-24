@@ -1,11 +1,11 @@
 <template>
     <v-dialog
         :max-width="!mobile ? '600' : '100vw'"
-        v-model="showDialog"
-        :scrim="false"
+        @update:model-value="emits('update:modelValue', $event)"
+        :model-value="props.modelValue"
+        :scrim="true"
         :fullscreen="mobile"
         transition="dialog-bottom-transition"
-        @keydown.esc="emits('closeDialog')"
     >
         <v-form ref="form" v-model="formData.valid" :submit="formSubmit">
             <v-card :height="mobile ? '100vh' : 'auto'">
@@ -30,10 +30,10 @@
                         required
                         ref="nameInput"
                         @keydown.enter="
-                            if (!formData.name && !formData.body)
-                                emits('closeDialog');
+                            if (!formData.name && !formData.body) closeDialog();
                         "
                     ></v-text-field>
+
                     <v-textarea
                         auto-grow
                         label="Description (optional)"
@@ -84,11 +84,11 @@ import { useDisplay } from 'vuetify';
 
 const props = defineProps<{
     task?: Task;
-    showDialog: boolean;
+    modelValue: boolean;
 }>();
 
 const emits = defineEmits<{
-    (e: 'closeDialog', state: void): void;
+    (e: 'update:modelValue', state: boolean): void;
 }>();
 
 const { mobile } = useDisplay();
@@ -119,7 +119,7 @@ function formSubmit() {
             formData.body,
             formData.groupId
         );
-        emits('closeDialog');
+        closeDialog();
     } else {
         appStore.createTask(formData.name, formData.body, formData.groupId);
         form.value.reset();
@@ -128,8 +128,7 @@ function formSubmit() {
 }
 
 function closeDialog() {
-    emits('closeDialog');
-    if (!props.task) form.value.reset();
+    emits('update:modelValue', false);
 }
 function textareaHandler(event: KeyboardEvent) {
     if (event.ctrlKey && event.key === 'Enter') {
@@ -142,10 +141,6 @@ function textareaHandler(event: KeyboardEvent) {
 
 function deleteTask() {
     appStore.deleteTask(props.task?.uuid as string);
-}
-
-function destroy() {
-    console.log('destroyed');
 }
 </script>
 <style scoped>

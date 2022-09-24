@@ -35,11 +35,7 @@
         </template>
     </v-list-item>
     <div v-if="showDialog">
-        <TaskDialog
-            :task="task"
-            :show-dialog="showDialog"
-            @close-dialog="showDialog = false"
-        />
+        <TaskDialog :task="task" v-model="showDialog" />
     </div>
 </template>
 
