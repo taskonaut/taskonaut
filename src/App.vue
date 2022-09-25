@@ -45,7 +45,7 @@ import { useUserStore } from './stores/userStore';
 import { useAppStore } from './stores/appStore';
 import { computed } from 'vue';
 import { useTheme } from 'vuetify';
-import AppSidebar from './components/AppSidebar.vue';
+import AppSidebar from '@/components/AppSidebar/AppSidebar.vue';
 import router from './router';
 
 const drawer = ref(true);

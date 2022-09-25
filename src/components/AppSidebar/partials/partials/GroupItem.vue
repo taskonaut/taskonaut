@@ -22,11 +22,11 @@
 
 <script setup lang="ts">
 import type { Group } from '@/model';
-import GroupDialog from '../GroupDialog.vue';
+import GroupDialog from '@/components/dialogs/GroupDialog.vue';
 import router from '@/router';
 import { computed, ref } from 'vue';
 import { useAppStore } from '@/stores/appStore';
-import TaskCounter from '../partials/TaskCounter.vue';
+import TaskCounter from '@/components/shared/TaskCounter.vue';
 
 const props = defineProps<{
     group: Group;
