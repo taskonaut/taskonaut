@@ -3,7 +3,7 @@
         <v-list-subheader v-if="props.subheader">
             {{ props.subheader }}
         </v-list-subheader>
-        <TaskItem v-for="task in tasks" :key="task.uuid" :task="task" />
+        <TaskItem v-for="task in tasks" :key="task.uuid" :taskId="task.uuid" />
         <slot></slot>
     </v-list>
 </template>

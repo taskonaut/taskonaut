@@ -1,9 +1,9 @@
 <template>
     <v-list-item
-        :title="props.task.header"
-        :subtitle="props.task.body || undefined"
-        :value="props.task.uuid"
-        :active="props.task.complete"
+        :title="task!.header"
+        :subtitle="task!.body || undefined"
+        :value="task!.uuid"
+        :active="task!.complete"
     >
         <template v-slot:prepend>
             <v-list-item-action>
@@ -13,13 +13,13 @@
                     icon="mdi-dots-vertical"
                 />
                 <v-checkbox-btn
-                    @change="toggleTask(task.uuid)"
-                    :model-value="task.complete"
+                    @change="toggleTask(task!.uuid)"
+                    :model-value="task!.complete"
                 ></v-checkbox-btn>
             </v-list-item-action>
         </template>
         <template v-slot:append>
-            <DateChip :date="props.task.dueDate" />
+            <DateChip :date="task!.dueDate" />
             <v-btn
                 icon="mdi-dots-horizontal"
                 variant="text"
@@ -29,7 +29,7 @@
             <v-btn
                 icon="mdi-delete"
                 variant="text"
-                @click="deleteTask(task.uuid)"
+                @click="deleteTask(task!.uuid)"
                 class="show-on-hover"
             />
         </template>
@@ -42,17 +42,19 @@
 <script setup lang="ts">
 import TaskDialog from '@/components/dialogs/TaskDialog.vue';
 import DateChip from '@/components/shared/DateChip.vue';
-import type { Task } from '@/model';
 import { useAppStore } from '@/stores/appStore';
+import { computed } from 'vue';
 import { ref } from 'vue';
 
 const showDialog = ref(false);
 
 const props = defineProps<{
-    task: Task;
+    taskId: string;
 }>();
 
 const appStore = useAppStore();
+const task = computed(() => appStore.getTaskById(props.taskId));
+
 function toggleTask(taskId: string) {
     appStore.toggleTask(taskId);
 }

@@ -35,6 +35,8 @@ export const useAppStore = defineStore({
         ],
     }),
     getters: {
+        getTaskById: (state) => (taskId: string) =>
+            state.tasks.find((task) => task.uuid == taskId),
         getGroups: (state) => state.groups,
         getGroupById: (state) => (groupId: string) =>
             state.groups.find((group) => group.uuid == groupId),
@@ -48,6 +50,9 @@ export const useAppStore = defineStore({
                 (task) => new Date(task.dueDate as number).getUTCDate() == today
             );
         },
+        getGroupOrder: (state) => (groupId: string) =>
+            state.groups.find((group) => group.uuid == groupId)
+                ?.taskOrder as string[],
         getUpcomingTasks: (state) => () => {
             const date = new Date();
             date.setDate(date.getUTCDate() + 7);
@@ -76,7 +81,7 @@ export const useAppStore = defineStore({
         createTask(header: string, body?: string, groupId?: string | null) {
             const task = {
                 uuid: uuidv4(),
-                groupId: groupId || null,
+                groupId: groupId || '',
                 header: header,
                 body: body || null,
                 dateCreated: new Date().getTime(),
@@ -85,6 +90,13 @@ export const useAppStore = defineStore({
                 dueDate: null,
             };
             this.tasks.push(task);
+            if (task.groupId != '') {
+                this.groups.map((group) => {
+                    if (group.uuid == task.groupId) {
+                        group.taskOrder.push(task.uuid);
+                    }
+                });
+            }
 
             if (firebaseAdapter) {
                 firebaseAdapter.setDoc(task);
@@ -94,13 +106,37 @@ export const useAppStore = defineStore({
             taskId: string,
             header: string,
             body: string,
-            groupId?: string
+            groupId: string
         ) {
             this.tasks.map((task) => {
                 if (task.uuid == taskId) {
                     task.header = header;
                     task.body = body;
-                    groupId ? (task.groupId = groupId) : null;
+                    // Checking if group ID changed
+                    if (groupId != task.groupId) {
+                        // Check if task had a group before and remove it from that group order
+                        if (task.groupId) {
+                            console.log('task had a group', task.groupId);
+                            this.groups.map((group) => {
+                                if (group.uuid == task.groupId) {
+                                    group.taskOrder = group.taskOrder.filter(
+                                        (ti) => ti != task.uuid
+                                    );
+                                }
+                            });
+                        }
+                        // Check if task have a new group and add it to group order
+                        if (groupId) {
+                            console.log('task has a new group', groupId);
+                            this.groups.map((group) => {
+                                if (group.uuid == groupId) {
+                                    group.taskOrder.push(taskId);
+                                }
+                            });
+                        }
+                        // Setting new value
+                        task.groupId = groupId;
+                    }
                 }
             });
 
@@ -122,7 +158,20 @@ export const useAppStore = defineStore({
             });
         },
         deleteTask(taskId: string) {
+            const groupId = this.tasks.find(
+                (task) => task.uuid == taskId
+            )?.groupId;
+            if (groupId) {
+                this.groups.map((group) => {
+                    if (group.uuid == groupId) {
+                        group.taskOrder = group.taskOrder.filter(
+                            (ti) => ti != taskId
+                        );
+                    }
+                });
+            }
             this.tasks = this.tasks.filter((task) => taskId !== task.uuid);
+
             if (firebaseAdapter) {
                 firebaseAdapter.deleteDoc(taskId);
             }
@@ -146,6 +195,11 @@ export const useAppStore = defineStore({
         deleteGroup(groupId: string) {
             this.groups = this.groups.filter((group) => group.uuid != groupId);
             this.tasks = this.tasks.filter((task) => task.groupId != groupId);
+        },
+        setGroupOrder(groupId: string, order: string[]) {
+            this.groups.map((group) => {
+                if (group.uuid == groupId) group.taskOrder = order;
+            });
         },
     },
     persist: {
