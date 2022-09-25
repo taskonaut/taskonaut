@@ -3,7 +3,7 @@
         <TaskList :tasks="ongoingTasks" :subheader="'ONGOING'">
             <AddListItem />
         </TaskList>
-        <v-divider></v-divider>
+        <v-divider v-if="completeTasks.length" />
         <TaskList
             v-if="completeTasks.length"
             :tasks="completeTasks"
