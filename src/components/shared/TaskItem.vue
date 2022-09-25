@@ -8,7 +8,7 @@
         <template v-slot:prepend>
             <v-list-item-action>
                 <v-icon
-                    class="show-on-hover"
+                    class="show-on-hover handle"
                     :end="true"
                     icon="mdi-dots-vertical"
                 />
@@ -42,6 +42,7 @@
 <script setup lang="ts">
 import TaskDialog from '@/components/dialogs/TaskDialog.vue';
 import DateChip from '@/components/shared/DateChip.vue';
+import type { Task } from '@/model';
 import { useAppStore } from '@/stores/appStore';
 import { computed } from 'vue';
 import { ref } from 'vue';
@@ -49,11 +50,11 @@ import { ref } from 'vue';
 const showDialog = ref(false);
 
 const props = defineProps<{
-    taskId: string;
+    task: Task;
 }>();
 
 const appStore = useAppStore();
-const task = computed(() => appStore.getTaskById(props.taskId));
+const task = computed(() => appStore.getTaskById(props.task.uuid));
 
 function toggleTask(taskId: string) {
     appStore.toggleTask(taskId);
