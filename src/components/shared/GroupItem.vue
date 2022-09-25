@@ -14,6 +14,7 @@
                 class="show-on-hover"
                 size="extra-small"
             />
+            <TaskCounter :count="taskCount" />
         </template>
     </v-list-item>
     <GroupDialog :group="props.group" v-model="showDialog" />
@@ -23,13 +24,22 @@
 import type { Group } from '@/model';
 import GroupDialog from '../GroupDialog.vue';
 import router from '@/router';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
+import { useAppStore } from '@/stores/appStore';
+import TaskCounter from '../partials/TaskCounter.vue';
 
 const props = defineProps<{
     group: Group;
 }>();
 
 const showDialog = ref(false);
+const taskCount = computed(
+    () =>
+        useAppStore()
+            .getGroupTasks(props.group.uuid)
+            .filter((task) => !task.complete).length
+);
+
 function switchGroupRoute(listId: string) {
     router.push({ name: 'group', params: { id: listId } });
 }
@@ -37,10 +47,18 @@ function switchGroupRoute(listId: string) {
 
 <style scoped>
 .show-on-hover {
-    opacity: 0;
+    display: none;
 }
 
 .v-list-item:hover .show-on-hover {
-    opacity: 100;
+    display: flex;
+}
+
+.hide-on-hover {
+    display: flex;
+}
+
+.v-list-item:hover .hide-on-hover {
+    display: none;
 }
 </style>
