@@ -26,7 +26,7 @@ import GroupDialog from '@/components/dialogs/GroupDialog.vue';
 import router from '@/router';
 import { computed, ref } from 'vue';
 import { useAppStore } from '@/stores/appStore';
-import TaskCounter from '@/components/shared/TaskCounter.vue';
+import TaskCounter from './TaskCounter.vue';
 
 const props = defineProps<{
     group: Group;

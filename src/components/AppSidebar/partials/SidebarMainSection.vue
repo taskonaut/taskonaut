@@ -37,7 +37,7 @@
 import router from '@/router';
 import { useAppStore } from '@/stores/appStore';
 import { computed } from 'vue';
-import TaskCounter from '@/components/shared/TaskCounter.vue';
+import TaskCounter from './partials/TaskCounter.vue';
 
 //{ title: 'Calendar', icon: 'mdi-calendar', value: 'calendar' },
 
