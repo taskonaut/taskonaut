@@ -20,7 +20,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import TaskDialog from '../TaskDialog.vue';
+import TaskDialog from '@/components/dialogs/TaskDialog.vue';
 
 const showDialog = ref(false);
 </script>
