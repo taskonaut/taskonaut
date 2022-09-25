@@ -40,8 +40,8 @@
 </template>
 
 <script setup lang="ts">
-import TaskDialog from '../TaskDialog.vue';
-import DateChip from '../partials/DateChip.vue';
+import TaskDialog from '@/components/dialogs/TaskDialog.vue';
+import DateChip from '@/components/shared/DateChip.vue';
 import type { Task } from '@/model';
 import { useAppStore } from '@/stores/appStore';
 import { ref } from 'vue';
