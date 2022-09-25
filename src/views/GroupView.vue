@@ -2,10 +2,10 @@
     <v-card rounded="lg">
         <v-list select-strategy="leaf">
             <v-list-subheader title="ONGOING" />
-            <draggable item-key="uuid" v-model="tasks">
+            <draggable item-key="uuid" v-model="tasks" handle=".handle">
                 <template #item="{ element }">
                     <div v-if="!element.complete">
-                        <TaskItem :taskId="element.uuid" />
+                        <TaskItem :task="element" />
                     </div>
                 </template>
             </draggable>
@@ -14,8 +14,8 @@
             <v-list-subheader v-if="doneTasks.length" title="COMPLETE" />
             <TaskItem
                 v-for="task in doneTasks"
-                :key="task!.uuid"
-                :task-id="task!.uuid"
+                :key="task?.uuid"
+                :task="task"
             />
         </v-list>
     </v-card>
@@ -43,7 +43,20 @@ const tasks = computed({
         ),
 });
 
-const doneTasks = computed(() => tasks.value.filter((task) => task?.complete));
+const doneTasks = computed(() =>
+    store.getGroupTasks(groupId.value).filter((task) => task.complete)
+);
 </script>
 
-<style scoped></style>
+<style scoped>
+/* .sortable-chosen {
+    background-color: greenyellow !important;
+}
+.sortable-ghost {
+    opacity: 100 !important;
+    background-color: rebeccapurple !important;
+}
+.sortable-drag {
+    background-color: red !important;
+} */
+</style>
