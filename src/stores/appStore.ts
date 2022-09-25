@@ -48,6 +48,8 @@ export const useAppStore = defineStore({
                 (task) => new Date(task.dueDate as number).getUTCDate() == today
             );
         },
+        getGroupOrder: (state) => (groupId: string) =>
+            state.groups.find((group) => group.uuid == groupId)?.taskOrder,
         getUpcomingTasks: (state) => () => {
             const date = new Date();
             date.setDate(date.getUTCDate() + 7);
@@ -146,6 +148,11 @@ export const useAppStore = defineStore({
         deleteGroup(groupId: string) {
             this.groups = this.groups.filter((group) => group.uuid != groupId);
             this.tasks = this.tasks.filter((task) => task.groupId != groupId);
+        },
+        setGroupOrder(groupId: string, order: string[]) {
+            this.groups.map((group) => {
+                if (group.uuid == groupId) group.taskOrder = order;
+            });
         },
     },
     persist: {
