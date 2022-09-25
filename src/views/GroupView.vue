@@ -9,6 +9,7 @@
                     </div>
                 </template>
             </draggable>
+            <AddListItem />
             <v-divider v-if="doneTasks.length" />
             <v-list-subheader v-if="doneTasks.length" title="COMPLETE" />
             <TaskItem
@@ -26,6 +27,7 @@ import { useAppStore } from '@/stores/appStore';
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 import TaskItem from '@/components/shared/TaskItem.vue';
+import AddListItem from '@/components/shared/AddListItem.vue';
 
 const store = useAppStore();
 const groupId = computed(() => useRoute().params.id as string);
