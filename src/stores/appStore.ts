@@ -1,4 +1,5 @@
 import type { Group, Task } from '@/model';
+import router from '@/router';
 import { defineStore } from 'pinia';
 import { v4 as uuidv4 } from 'uuid';
 import { FirebaseAdapter } from './firebaseAdapter';
@@ -125,6 +126,26 @@ export const useAppStore = defineStore({
             if (firebaseAdapter) {
                 firebaseAdapter.deleteDoc(taskId);
             }
+        },
+        createGroup(name: string) {
+            const group = {
+                uuid: uuidv4(),
+                name: name,
+                taskOrder: [],
+            };
+            this.groups.push(group);
+            router.push({ name: 'group', params: { id: group.uuid } });
+        },
+        updateGroup(groupId: string, name: string) {
+            this.groups.map((group) => {
+                if (group.uuid == groupId) {
+                    group.name = name;
+                }
+            });
+        },
+        deleteGroup(groupId: string) {
+            this.groups = this.groups.filter((group) => group.uuid != groupId);
+            this.tasks = this.tasks.filter((task) => task.groupId != groupId);
         },
     },
     persist: {

@@ -20,32 +20,28 @@
         </template>
         <template v-slot:append>
             <DateChip :date="props.task.dueDate" />
-            <div>
-                <v-btn
-                    icon="mdi-dots-horizontal"
-                    variant="text"
-                    @click="showDialog = true"
-                />
-            </div>
+            <v-btn
+                icon="mdi-dots-horizontal"
+                variant="text"
+                @click="showDialog = true"
+                class="show-on-hover"
+            />
             <v-btn
                 icon="mdi-delete"
                 variant="text"
                 @click="deleteTask(task.uuid)"
+                class="show-on-hover"
             />
         </template>
     </v-list-item>
     <div v-if="showDialog">
-        <TaskDialog
-            :task="task"
-            :show-dialog="showDialog"
-            @close-dialog="showDialog = false"
-        />
+        <TaskDialog :task="task" v-model="showDialog" />
     </div>
 </template>
 
 <script setup lang="ts">
-import TaskDialog from '../TaskDialog.vue';
-import DateChip from '../partials/DateChip.vue';
+import TaskDialog from '@/components/dialogs/TaskDialog.vue';
+import DateChip from '@/components/shared/DateChip.vue';
 import type { Task } from '@/model';
 import { useAppStore } from '@/stores/appStore';
 import { ref } from 'vue';

@@ -6,7 +6,9 @@
                 variant="text"
                 @click="toggleDrawer()"
             ></v-app-bar-nav-icon>
-            <v-toolbar-title>{{ getRouteName() }}</v-toolbar-title>
+            <v-toolbar-title>
+                <span id="routeName">{{ getRouteName() }}</span>
+            </v-toolbar-title>
             <v-spacer></v-spacer>
             <v-btn variant="text" icon="mdi-magnify"></v-btn>
             <v-btn variant="text" icon="mdi-filter"></v-btn>
@@ -43,7 +45,7 @@ import { useUserStore } from './stores/userStore';
 import { useAppStore } from './stores/appStore';
 import { computed } from 'vue';
 import { useTheme } from 'vuetify';
-import AppSidebar from './components/AppSidebar.vue';
+import AppSidebar from '@/components/AppSidebar/AppSidebar.vue';
 import router from './router';
 
 const drawer = ref(true);
@@ -69,11 +71,10 @@ function getRouteName(): string {
     let result = '';
     if (name) {
         if (name == 'group') {
-            const id = router.currentRoute.value.params.id[0];
-            result = appStore.getGroupById(id)?.name as string;
+            const id = router.currentRoute.value.params.id;
+            result = appStore.getGroupById(id as string)?.name as string;
         } else {
-            let groupName = router.currentRoute.value.name as string;
-            result = groupName.charAt(0).toUpperCase() + groupName.slice(1);
+            result = router.currentRoute.value.name as string;
         }
     }
 
@@ -81,4 +82,8 @@ function getRouteName(): string {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+#routeName {
+    text-transform: capitalize;
+}
+</style>

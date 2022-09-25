@@ -15,7 +15,7 @@
 import type { Task } from '@/model';
 import { computed } from 'vue';
 import TaskList from './TaskList.vue';
-import AddListItem from '../partials/AddListItem.vue';
+import AddListItem from './AddListItem.vue';
 
 const props = defineProps<{
     tasks: Task[];

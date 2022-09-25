@@ -9,7 +9,9 @@ import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 
 const store = useAppStore();
-const tasks = computed(() => store.getGroupTasks(useRoute().params.id[0]));
+const tasks = computed(() =>
+    store.getGroupTasks(useRoute().params.id as string)
+);
 </script>
 
 <style scoped></style>

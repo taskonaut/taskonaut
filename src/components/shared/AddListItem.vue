@@ -1,5 +1,5 @@
 <template>
-    <v-container>
+    <div>
         <v-list-item
             title="Add New Task"
             value="add"
@@ -13,17 +13,14 @@
             </template>
         </v-list-item>
         <div v-if="showDialog">
-            <TaskDialog
-                :showDialog="showDialog"
-                @closeDialog="showDialog = false"
-            />
+            <TaskDialog v-model="showDialog" />
         </div>
-    </v-container>
+    </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import TaskDialog from '../TaskDialog.vue';
+import TaskDialog from '@/components/dialogs/TaskDialog.vue';
 
 const showDialog = ref(false);
 </script>
