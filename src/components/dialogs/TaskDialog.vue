@@ -51,7 +51,7 @@
                         auto-grow
                         label="Description (optional)"
                         v-model="formData.body"
-                        rows="1"
+                        rows="3"
                         @keydown="textareaHandler($event)"
                     ></v-textarea>
                     <v-select
@@ -59,19 +59,14 @@
                         :items="taskGroups"
                         item-title="name"
                         item-value="uuid"
-                        label="Select"
+                        label="Select group (optional)"
                         persistent-hint
                         single-line
                     ></v-select>
                 </v-card-text>
-                <v-card-actions>
+                <v-card-actions v-if="props.task?.uuid">
                     <v-spacer></v-spacer>
-                    <v-btn
-                        color="warning"
-                        @click="deleteTask"
-                        v-if="props.task?.uuid"
-                        >Delete</v-btn
-                    >
+                    <v-btn color="warning" @click="deleteTask">Delete</v-btn>
                 </v-card-actions>
             </v-card>
         </v-form>
@@ -103,7 +98,7 @@ const nameInput = ref();
 const selectedGroup =
     router.currentRoute.value.name === 'group'
         ? (router.currentRoute?.value?.params?.id as string)
-        : '';
+        : undefined;
 const formData = reactive({
     valid: false,
     rules: [(v: any) => !!v || 'Name is required'],

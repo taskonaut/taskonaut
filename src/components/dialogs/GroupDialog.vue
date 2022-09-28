@@ -45,14 +45,9 @@
                         @keydown.enter="closeDialog()"
                     ></v-text-field>
                 </v-card-text>
-                <v-card-actions>
+                <v-card-actions v-if="props.group">
                     <v-spacer></v-spacer>
-                    <v-btn
-                        color="warning"
-                        @click="deleteGroup"
-                        v-if="props.group"
-                        >Delete</v-btn
-                    >
+                    <v-btn color="warning" @click="deleteGroup">Delete</v-btn>
                 </v-card-actions>
             </v-card>
         </v-form>
