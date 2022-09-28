@@ -44,6 +44,13 @@
                         ref="nameInput"
                         @keydown.enter="closeDialog()"
                     ></v-text-field>
+                    <v-textarea
+                        auto-grow
+                        label="Description (optional)"
+                        v-model="formData.description"
+                        rows="3"
+                        @keydown="textareaHandler($event)"
+                    ></v-textarea>
                 </v-card-text>
                 <v-card-actions v-if="props.group">
                     <v-spacer></v-spacer>
@@ -80,7 +87,17 @@ const formData = reactive({
     valid: false,
     rules: [(v: any) => !!v || 'Name is required'],
     name: props.group?.name || '',
+    description: props.group?.description || '',
 });
+
+function textareaHandler(event: KeyboardEvent) {
+    if (event.ctrlKey && event.key === 'Enter') {
+        formData.description += '\n';
+    } else if (!event.ctrlKey && event.key === 'Enter') {
+        event.preventDefault();
+        if (formData.name) formSubmit();
+    }
+}
 
 function closeDialog() {
     emits('update:modelValue', false);
@@ -88,9 +105,13 @@ function closeDialog() {
 
 function formSubmit() {
     if (props.group) {
-        appStore.updateGroup(props.group.uuid, formData.name);
+        appStore.updateGroup(
+            props.group.uuid,
+            formData.name,
+            formData.description
+        );
     } else {
-        appStore.createGroup(formData.name);
+        appStore.createGroup(formData.name, formData.description);
         form.value.reset();
     }
     closeDialog();

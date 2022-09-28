@@ -37,7 +37,7 @@ const groupId = computed(() => useRoute().params.id as string);
 const taskOrder = computed(() => store.getGroupOrder(groupId.value));
 
 const tasks = computed({
-    get: () => taskOrder.value.map((id) => store.getTaskById(id)),
+    get: () => taskOrder?.value?.map((id) => store.getTaskById(id)),
     set: (tasks) =>
         store.setGroupOrder(
             groupId.value,

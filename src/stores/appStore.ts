@@ -203,11 +203,13 @@ export const useAppStore = defineStore({
             });
         },
 
-        createGroup(name: string) {
+        createGroup(name: string, description: string) {
             const group = {
                 uuid: uuidv4(),
-                name: name,
+                name,
                 taskOrder: [],
+                dateCreated: new Date().getTime(),
+                description,
             };
             this.groups.push(group);
             router.push({ name: 'group', params: { id: group.uuid } });
@@ -215,14 +217,19 @@ export const useAppStore = defineStore({
                 firebaseAdapter.setDoc(group, 'groups');
             }
         },
-        updateGroup(groupId: string, name: string) {
+        updateGroup(groupId: string, name: string, description: string) {
             this.groups.map((group) => {
                 if (group.uuid == groupId) {
                     group.name = name;
+                    group.description = description;
                 }
             });
             if (firebaseAdapter) {
-                firebaseAdapter.updateDoc(groupId, { name }, 'groups');
+                firebaseAdapter.updateDoc(
+                    groupId,
+                    { name, description },
+                    'groups'
+                );
             }
         },
         deleteGroup(groupId: string) {
@@ -231,6 +238,7 @@ export const useAppStore = defineStore({
             if (firebaseAdapter) {
                 firebaseAdapter.deleteDoc(groupId, 'groups');
             }
+            router.push({ name: 'inbox' });
         },
         setGroupOrder(groupId: string, order: string[]) {
             this.groups.map((group) => {
