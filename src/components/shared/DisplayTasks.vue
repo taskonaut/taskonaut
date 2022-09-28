@@ -4,11 +4,13 @@
             <AddListItem />
         </TaskList>
         <v-divider v-if="completeTasks.length" />
-        <TaskList
-            v-if="completeTasks.length"
-            :tasks="completeTasks"
-            :subheader="'COMPLETED'"
-        />
+        <div class="completed">
+            <TaskList
+                v-if="completeTasks.length"
+                :tasks="completeTasks"
+                :subheader="'COMPLETED'"
+            />
+        </div>
     </v-card>
 </template>
 <script setup lang="ts">

@@ -1,5 +1,5 @@
 <template>
-    <v-list select-strategy="leaf" class="tasks-list">
+    <v-list select-strategy="leaf">
         <v-list-subheader v-if="props.subheader">
             {{ props.subheader }}
         </v-list-subheader>
@@ -18,11 +18,4 @@ const props = defineProps<{
 }>();
 </script>
 
-<style>
-.tasks-list .v-list-item__overlay {
-    display: none;
-}
-.tasks-list .v-list-item--active .v-list-item-title {
-    text-decoration: line-through;
-}
-</style>
+<style scoped></style>

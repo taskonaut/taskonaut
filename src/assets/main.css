@@ -1,3 +1,7 @@
 html {
     overflow-y: hidden;
 }
+
+.completed .v-list-item--active .v-list-item-title {
+    text-decoration: line-through;
+}
