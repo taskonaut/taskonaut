@@ -20,6 +20,19 @@
                         Edit Group
                     </v-toolbar-title>
                     <v-spacer></v-spacer>
+                    <v-toolbar-items>
+                        <v-btn
+                            :disabled="!formData.valid"
+                            type="submit"
+                            text
+                            dark
+                            v-if="!props.group"
+                            >Add</v-btn
+                        >
+                        <v-btn text dark type="submit" v-if="props.group"
+                            >Save</v-btn
+                        >
+                    </v-toolbar-items>
                 </v-toolbar>
                 <v-card-text>
                     <v-text-field
@@ -34,16 +47,6 @@
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn
-                        :disabled="!formData.valid"
-                        color="success"
-                        type="submit"
-                        v-if="!props.group"
-                        >Add</v-btn
-                    >
-                    <v-btn color="success" type="submit" v-if="props.group"
-                        >Save</v-btn
-                    >
                     <v-btn
                         color="warning"
                         @click="deleteGroup"

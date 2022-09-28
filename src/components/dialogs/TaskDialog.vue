@@ -20,6 +20,19 @@
                         Edit Task
                     </v-toolbar-title>
                     <v-spacer></v-spacer>
+                    <v-toolbar-items>
+                        <v-btn
+                            :disabled="!formData.valid"
+                            type="submit"
+                            v-if="!props.task"
+                            text
+                            dark
+                            >Add</v-btn
+                        >
+                        <v-btn type="submit" v-if="props.task" text dark
+                            >Save</v-btn
+                        >
+                    </v-toolbar-items>
                 </v-toolbar>
                 <v-card-text>
                     <v-text-field
@@ -53,16 +66,6 @@
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn
-                        :disabled="!formData.valid"
-                        color="success"
-                        type="submit"
-                        v-if="!props.task"
-                        >Add</v-btn
-                    >
-                    <v-btn color="success" type="submit" v-if="props.task"
-                        >Save</v-btn
-                    >
                     <v-btn
                         color="warning"
                         @click="deleteTask"
