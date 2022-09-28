@@ -16,23 +16,7 @@ export const useAppStore = defineStore({
     id: 'appStore',
     state: (): AppStore => ({
         tasks: [],
-        groups: [
-            {
-                uuid: '1',
-                name: 'Keep On Livin 🌭',
-                taskOrder: [],
-            },
-            {
-                uuid: '2',
-                name: 'Empty List',
-                taskOrder: [],
-            },
-            {
-                uuid: '3',
-                name: '3rd Group',
-                taskOrder: [],
-            },
-        ],
+        groups: [],
     }),
     getters: {
         getTaskById: (state) => (taskId: string) =>
@@ -73,8 +57,17 @@ export const useAppStore = defineStore({
                 .currentUser()
                 .then((user) => {
                     if (user) {
+                        const tasksCollection = 'tasks';
+                        const groupsCollection = 'groups';
                         firebaseAdapter = new FirebaseAdapter(user.uid);
-                        this.sync('tasks', firebaseAdapter.collectionRef);
+                        this.sync(
+                            tasksCollection,
+                            firebaseAdapter.collectionRef(tasksCollection)
+                        );
+                        this.sync(
+                            groupsCollection,
+                            firebaseAdapter.collectionRef(groupsCollection)
+                        );
                     }
                 });
         },
@@ -99,7 +92,12 @@ export const useAppStore = defineStore({
             }
 
             if (firebaseAdapter) {
-                firebaseAdapter.setDoc(task);
+                firebaseAdapter.setDoc(task, 'tasks');
+                firebaseAdapter.updateDoc(
+                    task.groupId,
+                    { taskOrder: [task.uuid] },
+                    'groups'
+                );
             }
         },
         updateTask(
@@ -131,7 +129,11 @@ export const useAppStore = defineStore({
             });
 
             if (firebaseAdapter) {
-                firebaseAdapter.updateDoc(taskId, { header, body, groupId });
+                firebaseAdapter.updateDoc(
+                    taskId,
+                    { header, body, groupId },
+                    'tasks'
+                );
             }
         },
         toggleTask(taskId: string) {
@@ -147,9 +149,13 @@ export const useAppStore = defineStore({
                         }
                     }
                     if (firebaseAdapter) {
-                        firebaseAdapter.updateDoc(taskId, {
-                            complete: task.complete,
-                        });
+                        firebaseAdapter.updateDoc(
+                            taskId,
+                            {
+                                complete: task.complete,
+                            },
+                            'tasks'
+                        );
                     }
                 }
             });
@@ -170,7 +176,7 @@ export const useAppStore = defineStore({
             this.tasks = this.tasks.filter((task) => taskId !== task.uuid);
 
             if (firebaseAdapter) {
-                firebaseAdapter.deleteDoc(taskId);
+                firebaseAdapter.deleteDoc(taskId, 'tasks');
             }
         },
 
@@ -205,6 +211,9 @@ export const useAppStore = defineStore({
             };
             this.groups.push(group);
             router.push({ name: 'group', params: { id: group.uuid } });
+            if (firebaseAdapter) {
+                firebaseAdapter.setDoc(group, 'groups');
+            }
         },
         updateGroup(groupId: string, name: string) {
             this.groups.map((group) => {
@@ -212,15 +221,28 @@ export const useAppStore = defineStore({
                     group.name = name;
                 }
             });
+            if (firebaseAdapter) {
+                firebaseAdapter.updateDoc(groupId, { name }, 'groups');
+            }
         },
         deleteGroup(groupId: string) {
             this.groups = this.groups.filter((group) => group.uuid != groupId);
             this.tasks = this.tasks.filter((task) => task.groupId != groupId);
+            if (firebaseAdapter) {
+                firebaseAdapter.deleteDoc(groupId, 'groups');
+            }
         },
         setGroupOrder(groupId: string, order: string[]) {
             this.groups.map((group) => {
                 if (group.uuid == groupId) group.taskOrder = order;
             });
+            if (firebaseAdapter) {
+                firebaseAdapter.updateDoc(
+                    groupId,
+                    { taskOrder: order },
+                    'groups'
+                );
+            }
         },
     },
     persist: {

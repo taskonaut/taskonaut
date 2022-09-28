@@ -10,31 +10,43 @@ import {
 } from '@firebase/firestore';
 
 export class FirebaseAdapter {
-    collectionName: string;
+    userId: string;
     db: Firestore;
 
-    constructor(collectionName: string) {
+    constructor(userId: string) {
         this.db = getFirestore();
-        this.collectionName = collectionName;
+        this.userId = userId;
     }
 
-    async setDoc(document: DocumentData) {
+    async setDoc(document: DocumentData, collectionName: string) {
         return setDoc(
-            doc(this.db, this.collectionName, document.uuid),
+            doc(this.db, collectionName, this.userId, 'items', document.uuid),
             document
         );
     }
 
-    async updateDoc(documentId: string, document: Partial<DocumentData>) {
-        const documentRef = doc(this.db, this.collectionName, documentId);
+    async updateDoc(
+        documentId: string,
+        document: Partial<DocumentData>,
+        collectionName: string
+    ) {
+        const documentRef = doc(
+            this.db,
+            collectionName,
+            this.userId,
+            'items',
+            documentId
+        );
         return await updateDoc(documentRef, document);
     }
 
-    async deleteDoc(documentId: string) {
-        return deleteDoc(doc(this.db, this.collectionName, documentId));
+    async deleteDoc(documentId: string, collectionName: string) {
+        return deleteDoc(
+            doc(this.db, collectionName, this.userId, 'items', documentId)
+        );
     }
 
-    get collectionRef() {
-        return collection(this.db, this.collectionName);
+    collectionRef(collectionName: string) {
+        return collection(this.db, collectionName, this.userId, 'items');
     }
 }
