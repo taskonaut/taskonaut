@@ -10,8 +10,6 @@
                 <span id="routeName">{{ getRouteName() }}</span>
             </v-toolbar-title>
             <v-spacer></v-spacer>
-            <v-btn variant="text" icon="mdi-magnify"></v-btn>
-            <v-btn variant="text" icon="mdi-filter"></v-btn>
             <v-btn
                 @click="toggleTheme"
                 variant="text"
