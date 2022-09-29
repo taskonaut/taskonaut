@@ -71,7 +71,12 @@ export const useAppStore = defineStore({
                     }
                 });
         },
-        createTask(header: string, body?: string, groupId?: string | null) {
+        createTask(
+            header: string,
+            body?: string,
+            groupId?: string | null,
+            dueDate?: number | null
+        ) {
             const task = {
                 uuid: uuidv4(),
                 groupId: groupId || '',
@@ -80,7 +85,7 @@ export const useAppStore = defineStore({
                 dateCreated: new Date().getTime(),
                 complete: false,
                 dateCompleted: null,
-                dueDate: null,
+                dueDate: dueDate || null,
             };
             this.tasks.push(task);
             if (task.groupId) {
@@ -107,12 +112,14 @@ export const useAppStore = defineStore({
             taskId: string,
             header: string,
             body: string,
-            groupId: string | undefined
+            groupId: string | undefined,
+            dueDate?: number | null
         ) {
             this.tasks.map((task) => {
                 if (task.uuid == taskId) {
                     task.header = header;
                     task.body = body;
+                    task.dueDate = dueDate || null;
                     // Checking if group ID changed
                     if (groupId != task.groupId) {
                         // Check if task had a group before and remove it from that group order
@@ -126,7 +133,7 @@ export const useAppStore = defineStore({
                             this.addToGroupOrder(groupId, task.uuid);
                         }
                         // Setting new value
-                        task.groupId = groupId;
+                        task.groupId = groupId || '';
                     }
                 }
             });
@@ -134,7 +141,7 @@ export const useAppStore = defineStore({
             if (firebaseAdapter) {
                 firebaseAdapter.updateDoc(
                     taskId,
-                    { header, body, groupId },
+                    { header, body, groupId, dueDate },
                     'tasks'
                 );
             }

@@ -63,6 +63,16 @@
                         persistent-hint
                         single-line
                     ></v-select>
+                    <Datepicker
+                        v-model="formData.dueDate"
+                        modelType="timestamp"
+                        :enableTimePicker="false"
+                        showNowButton
+                        nowButtonLabel="Today"
+                        placeholder="Due Date"
+                        dark
+                        autoApply
+                    />
                 </v-card-text>
                 <v-card-actions v-if="props.task?.uuid">
                     <v-spacer></v-spacer>
@@ -105,6 +115,7 @@ const formData = reactive({
     name: props.task?.header || '',
     body: props.task?.body || '',
     groupId: props.task?.groupId || selectedGroup,
+    dueDate: props.task?.dueDate || undefined,
 });
 
 const taskGroups = computed(() => appStore.getGroups);
@@ -115,13 +126,19 @@ function formSubmit() {
             props.task.uuid,
             formData.name,
             formData.body,
-            formData.groupId
+            formData.groupId,
+            formData.dueDate
         );
         closeDialog();
     } else {
-        appStore.createTask(formData.name, formData.body, formData.groupId);
+        appStore.createTask(
+            formData.name,
+            formData.body,
+            formData.groupId,
+            formData.dueDate
+        );
         form.value.reset();
-        formData.groupId = selectedGroup;
+        formData.groupId = selectedGroup || undefined;
         nameInput.value.focus();
     }
 }
