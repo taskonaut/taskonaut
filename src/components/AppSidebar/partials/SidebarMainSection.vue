@@ -30,6 +30,16 @@
                 <TaskCounter :count="upcomingCount" />
             </template>
         </v-list-item>
+        <!-- Expired -->
+        <v-list-item
+            title="Expired"
+            prepend-icon="mdi-clock"
+            :active="router.currentRoute.value.name == 'expired'"
+            @click="switchRoute('expired')"
+            ><template v-slot:append>
+                <TaskCounter :count="expiredCount" />
+            </template>
+        </v-list-item>
     </v-list>
 </template>
 
@@ -50,6 +60,9 @@ const todayCount = computed(
 );
 const upcomingCount = computed(
     () => appStore.getUpcomingTasks().filter((task) => !task.complete).length
+);
+const expiredCount = computed(
+    () => appStore.getExpiredTasks().filter((task) => !task.complete).length
 );
 
 function switchRoute(routeName: string) {

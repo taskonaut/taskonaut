@@ -50,6 +50,12 @@ export const useAppStore = defineStore({
                 }
             });
         },
+        getExpiredTasks: (state) => () => {
+            const today = new Date().getTime();
+            return state.tasks
+                .filter((task) => task.dueDate)
+                .filter((task) => (task.dueDate as number) < today);
+        },
     },
     actions: {
         setup() {

@@ -1,4 +1,5 @@
 import { useUserStore } from '@/stores/userStore';
+import ExpiredView from '@/views/ExpiredView.vue';
 import GroupView from '@/views/GroupView.vue';
 import InboxView from '@/views/InboxView.vue';
 import TodayView from '@/views/TodayView.vue';
@@ -22,6 +23,11 @@ const router = createRouter({
             path: '/upcoming',
             name: 'upcoming',
             component: UpcomingView,
+        },
+        {
+            path: '/expired',
+            name: 'expired',
+            component: ExpiredView,
         },
         {
             path: '/group/:id',
