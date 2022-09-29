@@ -83,28 +83,31 @@ export const useAppStore = defineStore({
                 dueDate: null,
             };
             this.tasks.push(task);
-            if (task.groupId != '') {
+            if (task.groupId) {
                 this.groups.map((group) => {
                     if (group.uuid == task.groupId) {
                         group.taskOrder.push(task.uuid);
+                        if (firebaseAdapter) {
+                            firebaseAdapter.updateDoc(
+                                task.groupId,
+                                { taskOrder: group.taskOrder },
+                                'groups'
+                            );
+                        }
                     }
+                    return group;
                 });
             }
 
             if (firebaseAdapter) {
                 firebaseAdapter.setDoc(task, 'tasks');
-                firebaseAdapter.updateDoc(
-                    task.groupId,
-                    { taskOrder: [task.uuid] },
-                    'groups'
-                );
             }
         },
         updateTask(
             taskId: string,
             header: string,
             body: string,
-            groupId: string
+            groupId: string | undefined
         ) {
             this.tasks.map((task) => {
                 if (task.uuid == taskId) {

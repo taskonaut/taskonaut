@@ -1,6 +1,6 @@
 export interface Task {
     uuid: string;
-    groupId: string;
+    groupId: string | undefined;
     header: string;
     body: null | string;
     dateCreated: number;
