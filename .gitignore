@@ -25,3 +25,8 @@ coverage
 *.njsproj
 *.sln
 *.sw?
+dev-dist/registerSW.js
+dev-dist/sw.js
+dev-dist/workbox-3ea082d2.js
+dev-dist/workbox-3589c0c5.js
+dev-dist/workbox-cc8906f2.js

@@ -1,4 +1,4 @@
-import '@/assets/main.css';
+import './assets/main.css';
 import { createPinia } from 'pinia';
 import { PiniaFirestoreSync } from 'pinia-plugin-firestore-sync';
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';
