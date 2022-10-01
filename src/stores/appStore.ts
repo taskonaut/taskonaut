@@ -8,6 +8,7 @@ import { useUserStore } from './userStore';
 export interface AppStore {
     tasks: Task[];
     groups: Group[];
+    groupOrder: string[];
 }
 
 let firebaseAdapter: FirebaseAdapter;
@@ -17,6 +18,7 @@ export const useAppStore = defineStore({
     state: (): AppStore => ({
         tasks: [],
         groups: [],
+        groupOrder: [],
     }),
     getters: {
         getTaskById: (state) => (taskId: string) =>
@@ -228,6 +230,7 @@ export const useAppStore = defineStore({
                 description,
             };
             this.groups.push(group);
+            this.groupOrder.push(group.uuid);
             router.push({ name: 'group', params: { id: group.uuid } });
             if (firebaseAdapter) {
                 firebaseAdapter.setDoc(group, 'groups');
@@ -251,6 +254,7 @@ export const useAppStore = defineStore({
         deleteGroup(groupId: string) {
             this.groups = this.groups.filter((group) => group.uuid != groupId);
             this.tasks = this.tasks.filter((task) => task.groupId != groupId);
+            this.groupOrder = this.groupOrder.filter((id) => id != groupId);
             if (firebaseAdapter) {
                 firebaseAdapter.deleteDoc(groupId, 'groups');
             }

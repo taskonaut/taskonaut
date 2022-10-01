@@ -13,12 +13,20 @@
                 @click="openDialog = true"
             />
         </v-row>
-        <GroupItem v-for="group in groups" :key="group.uuid" :group="group" />
+        <draggable item-key="uuid" v-model="groups">
+            <template #item="{ element }">
+                <div>
+                    <TaskItem :task="element" />
+                    <GroupItem :key="element.uuid" :group="element" />
+                </div>
+            </template>
+        </draggable>
     </v-list>
     <GroupDialog v-model="openDialog"></GroupDialog>
 </template>
 
 <script setup lang="ts">
+import Draggable from 'vuedraggable';
 import GroupDialog from '@/components/dialogs/GroupDialog.vue';
 import GroupItem from './partials/GroupItem.vue';
 import { useAppStore } from '@/stores/appStore';
@@ -26,7 +34,14 @@ import { ref, computed } from 'vue';
 
 const store = useAppStore();
 const openDialog = ref(false);
-const groups = computed(() => store.getGroups);
+
+const groups = computed({
+    get: () =>
+        store.groupOrder.map((id) =>
+            store.groups.find((group) => group.uuid == id)
+        ),
+    set: (groups) => (store.groupOrder = groups.map((group) => group!.uuid)),
+});
 </script>
 
 <style scoped></style>
