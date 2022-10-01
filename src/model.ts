@@ -1,12 +1,12 @@
 export interface Task {
     uuid: string;
-    groupId: string | undefined;
+    groupId: undefined | string;
     header: string;
-    body: null | string;
+    body: undefined | string;
     dateCreated: number;
-    dueDate: null | number;
+    dueDate: undefined | number;
     complete: boolean;
-    dateCompleted: null | number;
+    dateCompleted: undefined | number;
 }
 
 export interface Group {

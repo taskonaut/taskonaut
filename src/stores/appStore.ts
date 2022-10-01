@@ -80,18 +80,18 @@ export const useAppStore = defineStore({
         createTask(
             header: string,
             body?: string,
-            groupId?: string | null,
-            dueDate?: number | null
+            groupId?: undefined | string,
+            dueDate?: undefined | number
         ) {
             const task = {
                 uuid: uuidv4(),
                 groupId: groupId || '',
                 header: header,
-                body: body || null,
+                body: body || undefined,
                 dateCreated: new Date().getTime(),
                 complete: false,
-                dateCompleted: null,
-                dueDate: dueDate || null,
+                dateCompleted: undefined,
+                dueDate: dueDate || undefined,
             };
             this.tasks.push(task);
             if (task.groupId) {
@@ -119,13 +119,13 @@ export const useAppStore = defineStore({
             header: string,
             body: string,
             groupId: string | undefined,
-            dueDate?: number | null
+            dueDate?: number | undefined
         ) {
             this.tasks.map((task) => {
                 if (task.uuid == taskId) {
                     task.header = header;
                     task.body = body;
-                    task.dueDate = dueDate || null;
+                    task.dueDate = dueDate || undefined;
                     // Checking if group ID changed
                     if (groupId != task.groupId) {
                         // Check if task had a group before and remove it from that group order
