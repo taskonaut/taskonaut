@@ -16,7 +16,6 @@
         <draggable item-key="uuid" v-model="groups">
             <template #item="{ element }">
                 <div>
-                    <TaskItem :task="element" />
                     <GroupItem :key="element.uuid" :group="element" />
                 </div>
             </template>

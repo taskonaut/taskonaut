@@ -40,23 +40,28 @@ export const useAppStore = defineStore({
             state.groups.find((group) => group.uuid == groupId)
                 ?.taskOrder as string[],
         getUpcomingTasks: (state) => () => {
+            const today = new Date();
+            today.setUTCHours(0, 0, 0, 0);
             const date = new Date();
-            date.setDate(date.getUTCDate() + 7);
+            date.setDate(date.getDate() + 7);
+            date.setUTCHours(0, 0, 0, 0);
 
-            return state.tasks.filter((task) => {
-                if (task.dueDate != null) {
-                    return (
-                        new Date(task.dueDate as number).getUTCDate() <=
-                        date.getUTCDate()
-                    );
-                }
-            });
+            return state.tasks
+                .filter((task) => {
+                    const dueDate = new Date(task.dueDate as number);
+                    dueDate.setUTCHours(0, 0, 0, 0);
+                    return dueDate <= date && dueDate >= today;
+                })
+                .sort((a, b) => a.dueDate! - b.dueDate!);
         },
         getExpiredTasks: (state) => () => {
-            const today = new Date().getTime();
-            return state.tasks
-                .filter((task) => task.dueDate)
-                .filter((task) => (task.dueDate as number) < today);
+            const today = new Date();
+            today.setUTCHours(0, 0, 0, 0);
+            return state.tasks.filter((task) => {
+                const date = new Date(task.dueDate as number);
+                date.setUTCHours(0, 0, 0, 0);
+                return date < today;
+            });
         },
     },
     actions: {

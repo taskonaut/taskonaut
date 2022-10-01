@@ -10,15 +10,28 @@
 import { computed } from 'vue';
 
 const props = defineProps<{
-    date: null | number;
+    date: undefined | number;
 }>();
 
 const today = new Date();
+today.setUTCHours(0, 0, 0, 0);
 
-const dueToday = computed(
-    () => today.getUTCDate() >= new Date(props.date!).getUTCDate()
-);
-const color = computed(() => (dueToday.value ? 'pink' : 'gray'));
+const propDate = new Date(props.date as number);
+propDate.setUTCHours(0, 0, 0, 0);
+
+const dueToday = computed(() => today.getTime() == propDate.getTime());
+
+const expired = computed(() => today.getTime() > propDate.getTime());
+
+const color = computed(() => {
+    if (expired.value) {
+        return 'red';
+    } else if (dueToday.value) {
+        return 'yellow';
+    } else {
+        return 'gray';
+    }
+});
 </script>
 
 <style scoped></style>
