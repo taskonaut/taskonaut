@@ -1,17 +1,20 @@
 <template>
     <v-navigation-drawer
+        class="pl-4"
+        width="300"
         :model-value="props.modelValue"
+        :border="0"
         @update:model-value="(value) => emits('update:modelValue', value)"
     >
         <template v-slot:prepend>
             <v-list-item
+                class="pt-5 pb-2"
                 twoLine
                 :prepend-avatar="photoURL"
                 :title="displayName || 'Anonymous'"
                 :subtitle="displayName ? 'Logged in' : 'Not logged in'"
             ></v-list-item>
         </template>
-        <v-divider></v-divider>
         <SidebarMainSection />
         <SidebarGroupSection />
     </v-navigation-drawer>
