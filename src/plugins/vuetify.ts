@@ -10,7 +10,14 @@ import * as directives from 'vuetify/directives';
 const customDarkTheme: ThemeDefinition = {
     dark: true,
     colors: {
-        primary: '#ff5c5c',
+        primary: '#D74F4F',
+    },
+};
+
+const customLightTheme: ThemeDefinition = {
+    dark: false,
+    colors: {
+        primary: '#D74F4F',
     },
 };
 
@@ -21,6 +28,7 @@ export default createVuetify({
         defaultTheme: 'customDarkTheme',
         themes: {
             customDarkTheme,
+            customLightTheme,
         },
     },
 });
