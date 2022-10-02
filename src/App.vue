@@ -1,7 +1,10 @@
 <template>
     <v-app>
-        <AppSidebar v-model="drawer" />
-        <v-app-bar color="accent" :floating="true" density="compact">
+        <v-app-bar
+            :color="theme.global.current.value.dark ? 'accent' : 'primary'"
+            :floating="true"
+            density="compact"
+        >
             <v-app-bar-nav-icon
                 variant="text"
                 @click="toggleDrawer()"
@@ -28,6 +31,7 @@
                 @click="userStore.login"
             ></v-btn>
         </v-app-bar>
+        <AppSidebar v-model="drawer" />
         <v-main :scrollable="true"
             ><v-container :fluid="true" class="pa-0" :class="lgAndUp && 'w-75'"
                 ><router-view :key="useRoute().fullPath"
@@ -71,7 +75,7 @@ function toggleDrawer() {
 
 function toggleTheme() {
     theme.global.name.value = theme.global.current.value.dark
-        ? 'light'
+        ? 'customLightTheme'
         : 'customDarkTheme';
 }
 
