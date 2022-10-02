@@ -12,7 +12,6 @@
             <v-toolbar-title>
                 <span id="routeName">{{ getRouteName() }}</span>
             </v-toolbar-title>
-            <v-spacer></v-spacer>
             <v-btn
                 @click="showDialog = true"
                 variant="text"
