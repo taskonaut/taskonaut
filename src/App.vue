@@ -14,6 +14,11 @@
             </v-toolbar-title>
             <v-spacer></v-spacer>
             <v-btn
+                @click="showDialog = true"
+                variant="text"
+                icon="mdi-plus"
+            ></v-btn>
+            <v-btn
                 @click="toggleTheme"
                 variant="text"
                 icon="mdi-theme-light-dark"
@@ -37,6 +42,7 @@
                 ><router-view :key="useRoute().fullPath"
             /></v-container>
         </v-main>
+        <TaskDialog v-if="showDialog" v-model="showDialog" />
     </v-app>
 </template>
 
@@ -48,9 +54,12 @@ import { useAppStore } from './stores/appStore';
 import { computed } from 'vue';
 import { useDisplay, useTheme } from 'vuetify';
 import AppSidebar from '@/components/AppSidebar/AppSidebar.vue';
+import TaskDialog from '@/components/dialogs/TaskDialog.vue';
 import router from './router';
 
 const { lgAndUp } = useDisplay();
+
+const showDialog = ref(false);
 
 const drawer = ref(true);
 
