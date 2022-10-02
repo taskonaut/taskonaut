@@ -1,14 +1,12 @@
 <template>
     <v-list-item
+        :rounded="true"
+        :title="task.header"
         :subtitle="task!.body || undefined"
         :value="task!.uuid"
         :active="false"
-        :height="60"
         :class="task.complete && 'complete'"
     >
-        <span :class="task.complete && 'complete-text'">{{
-            task!.header
-        }}</span>
         <template v-slot:prepend>
             <v-list-item-action>
                 <v-icon
@@ -26,12 +24,14 @@
         <template v-slot:append>
             <DateChip :date="task!.dueDate" class="hide-on-hover" />
             <v-btn
+                size="small"
                 icon="mdi-dots-horizontal"
                 variant="text"
                 @click="showDialog = true"
                 class="show-on-hover"
             />
             <v-btn
+                size="small"
                 icon="mdi-delete"
                 variant="text"
                 @click="deleteTask(task!.uuid)"
@@ -91,10 +91,6 @@ function deleteTask(taskId: string) {
 
 .v-list-item:hover .hide-on-hover {
     display: none;
-}
-
-.complete-text {
-    text-decoration: line-through;
 }
 
 .complete {
