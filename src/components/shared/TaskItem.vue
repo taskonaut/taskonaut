@@ -38,10 +38,8 @@
                 class="show-on-hover"
             />
         </template>
+        <TaskDialog v-if="showDialog" :task="task" v-model="showDialog" />
     </v-list-item>
-    <div v-if="showDialog">
-        <TaskDialog :task="task" v-model="showDialog" />
-    </div>
 </template>
 
 <script setup lang="ts">

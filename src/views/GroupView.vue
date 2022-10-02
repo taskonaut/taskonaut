@@ -3,9 +3,7 @@
         <v-list-subheader title="ONGOING" />
         <draggable item-key="uuid" v-model="tasks" handle=".handle">
             <template #item="{ element }">
-                <div v-if="!element.complete">
-                    <TaskItem :task="element" />
-                </div>
+                <TaskItem v-if="!element.complete" :task="element" />
             </template>
         </draggable>
         <AddListItem />
