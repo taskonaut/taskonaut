@@ -1,26 +1,24 @@
 <template>
-    <v-card rounded="lg">
-        <v-list select-strategy="leaf">
-            <v-list-subheader title="ONGOING" />
-            <draggable item-key="uuid" v-model="tasks" handle=".handle">
-                <template #item="{ element }">
-                    <div v-if="!element.complete">
-                        <TaskItem :task="element" />
-                    </div>
-                </template>
-            </draggable>
-            <AddListItem />
-            <v-divider v-if="doneTasks.length" />
-            <v-list-subheader v-if="doneTasks.length" title="COMPLETE" />
-            <div class="completed">
-                <TaskItem
-                    v-for="task in doneTasks"
-                    :key="task?.uuid"
-                    :task="task"
-                />
-            </div>
-        </v-list>
-    </v-card>
+    <v-list select-strategy="leaf" bg-color="background">
+        <v-list-subheader title="ONGOING" />
+        <draggable item-key="uuid" v-model="tasks" handle=".handle">
+            <template #item="{ element }">
+                <div v-if="!element.complete">
+                    <TaskItem :task="element" />
+                </div>
+            </template>
+        </draggable>
+        <AddListItem />
+        <v-divider v-if="doneTasks.length" />
+        <v-list-subheader v-if="doneTasks.length" title="COMPLETE" />
+        <div class="completed">
+            <TaskItem
+                v-for="task in doneTasks"
+                :key="task?.uuid"
+                :task="task"
+            />
+        </div>
+    </v-list>
 </template>
 
 <script setup lang="ts">

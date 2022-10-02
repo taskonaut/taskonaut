@@ -1,7 +1,7 @@
 <template>
     <v-app>
         <AppSidebar v-model="drawer" />
-        <v-app-bar color="primary" :floating="true" density="compact">
+        <v-app-bar color="accent" :floating="true" density="compact">
             <v-app-bar-nav-icon
                 variant="text"
                 @click="toggleDrawer()"
@@ -29,7 +29,7 @@
             ></v-btn>
         </v-app-bar>
         <v-main :scrollable="true"
-            ><v-container
+            ><v-container :fluid="true" class="pa-0" :class="lgAndUp && 'w-75'"
                 ><router-view :key="useRoute().fullPath"
             /></v-container>
         </v-main>
@@ -42,9 +42,11 @@ import { onMounted, ref } from 'vue';
 import { useUserStore } from './stores/userStore';
 import { useAppStore } from './stores/appStore';
 import { computed } from 'vue';
-import { useTheme } from 'vuetify';
+import { useDisplay, useTheme } from 'vuetify';
 import AppSidebar from '@/components/AppSidebar/AppSidebar.vue';
 import router from './router';
+
+const { lgAndUp } = useDisplay();
 
 const drawer = ref(true);
 
@@ -70,7 +72,7 @@ function toggleDrawer() {
 function toggleTheme() {
     theme.global.name.value = theme.global.current.value.dark
         ? 'light'
-        : 'dark';
+        : 'customDarkTheme';
 }
 
 function getRouteName(): string {

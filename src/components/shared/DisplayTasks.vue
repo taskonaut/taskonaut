@@ -1,17 +1,15 @@
 <template>
-    <v-card rounded="lg">
-        <TaskList :tasks="ongoingTasks" :subheader="'ONGOING'">
-            <AddListItem />
-        </TaskList>
-        <v-divider v-if="completeTasks.length" />
-        <div class="completed">
-            <TaskList
-                v-if="completeTasks.length"
-                :tasks="completeTasks"
-                :subheader="'COMPLETED'"
-            />
-        </div>
-    </v-card>
+    <TaskList :tasks="ongoingTasks" :subheader="'ONGOING'">
+        <AddListItem />
+    </TaskList>
+    <v-divider v-if="completeTasks.length" />
+    <div class="completed">
+        <TaskList
+            v-if="completeTasks.length"
+            :tasks="completeTasks"
+            :subheader="'COMPLETED'"
+        />
+    </div>
 </template>
 <script setup lang="ts">
 import type { Task } from '@/model';
