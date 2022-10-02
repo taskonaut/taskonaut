@@ -11,6 +11,7 @@ const customDarkTheme: ThemeDefinition = {
     dark: true,
     colors: {
         primary: '#D74F4F',
+        background: '#1A1A1A',
     },
 };
 
