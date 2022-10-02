@@ -64,9 +64,8 @@ const drawer = ref(true);
 
 const appStore = useAppStore();
 const userStore = useUserStore();
-const loggedIn = computed(() => !!userStore.uid);
+const loggedIn = computed(() => userStore.isLoggedIn);
 const theme = useTheme();
-appStore.setup();
 
 onMounted(() => {
     // Populate if groupOrder is empty (with group ids prior feature)

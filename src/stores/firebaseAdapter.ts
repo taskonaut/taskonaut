@@ -1,8 +1,9 @@
+import { db } from '@/firebaseConfig';
 import {
     collection,
     deleteDoc,
     doc,
-    getFirestore,
+    getDocs,
     setDoc,
     updateDoc,
     type DocumentData,
@@ -14,7 +15,7 @@ export class FirebaseAdapter {
     db: Firestore;
 
     constructor(userId: string) {
-        this.db = getFirestore();
+        this.db = db;
         this.userId = userId;
     }
 
@@ -48,5 +49,11 @@ export class FirebaseAdapter {
 
     collectionRef(collectionName: string) {
         return collection(this.db, collectionName, this.userId, 'items');
+    }
+
+    async getDocs(collectionName: string) {
+        return (await getDocs(this.collectionRef(collectionName))).docs.map(
+            (item) => item.data()
+        );
     }
 }

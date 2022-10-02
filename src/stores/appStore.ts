@@ -3,7 +3,6 @@ import router from '@/router';
 import { defineStore } from 'pinia';
 import { v4 as uuidv4 } from 'uuid';
 import { FirebaseAdapter } from './firebaseAdapter';
-import { useUserStore } from './userStore';
 
 export interface AppStore {
     tasks: Task[];
@@ -12,6 +11,9 @@ export interface AppStore {
 }
 
 let firebaseAdapter: FirebaseAdapter;
+const tasksCollection = 'tasks';
+const groupsCollection = 'groups';
+const groupOrderCollection = 'groupOrder';
 
 export const useAppStore = defineStore({
     id: 'appStore',
@@ -65,24 +67,20 @@ export const useAppStore = defineStore({
         },
     },
     actions: {
-        setup() {
-            useUserStore()
-                .currentUser()
-                .then((user) => {
-                    if (user) {
-                        const tasksCollection = 'tasks';
-                        const groupsCollection = 'groups';
-                        firebaseAdapter = new FirebaseAdapter(user.uid);
-                        this.sync(
-                            tasksCollection,
-                            firebaseAdapter.collectionRef(tasksCollection)
-                        );
-                        this.sync(
-                            groupsCollection,
-                            firebaseAdapter.collectionRef(groupsCollection)
-                        );
-                    }
-                });
+        async syncFirebase(userId: string) {
+            firebaseAdapter = new FirebaseAdapter(userId);
+
+            this.tasks = (await firebaseAdapter.getDocs(
+                tasksCollection
+            )) as Task[];
+
+            this.groups = (await firebaseAdapter.getDocs(
+                groupsCollection
+            )) as Group[];
+
+            this.groupOrder = (await firebaseAdapter.getDocs(
+                groupOrderCollection
+            )) as unknown as string[];
         },
         createTask(
             header: string,
@@ -294,8 +292,5 @@ export const useAppStore = defineStore({
             }
         },
     },
-    persist: {
-        storage: localStorage,
-        paths: ['tasks', 'groups'],
-    },
+    persist: true,
 });

@@ -38,7 +38,7 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-    await useUserStore().currentUser();
+    await useUserStore().getAuthState();
     next();
 });
 
