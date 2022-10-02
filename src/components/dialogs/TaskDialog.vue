@@ -55,6 +55,8 @@
                         @keydown="textareaHandler($event)"
                     ></v-textarea>
                     <v-select
+                        :clearable="true"
+                        no-data-text="No groups available :("
                         v-model="formData.groupId"
                         :items="taskGroups"
                         item-title="name"
