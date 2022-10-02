@@ -22,7 +22,11 @@
             </v-list-item-action>
         </template>
         <template v-slot:append>
-            <DateChip :date="task!.dueDate" class="hide-on-hover" />
+            <DateChip
+                v-if="task.dueDate"
+                :date="task!.dueDate"
+                class="hide-on-hover"
+            />
             <v-btn
                 size="small"
                 icon="mdi-dots-horizontal"
