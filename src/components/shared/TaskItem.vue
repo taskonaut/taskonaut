@@ -1,14 +1,19 @@
 <template>
     <v-list-item
-        :title="task!.header"
         :subtitle="task!.body || undefined"
         :value="task!.uuid"
-        :active="task!.complete"
+        :active="false"
+        :height="60"
+        :class="task.complete && 'complete'"
     >
+        <span :class="task.complete && 'complete-text'">{{
+            task!.header
+        }}</span>
         <template v-slot:prepend>
             <v-list-item-action>
                 <v-icon
-                    class="show-on-hover handle"
+                    class="hidden-opacity handle"
+                    :class="!task.complete && 'shown-opacity'"
                     :end="true"
                     icon="mdi-dots-vertical"
                 />
@@ -19,7 +24,7 @@
             </v-list-item-action>
         </template>
         <template v-slot:append>
-            <DateChip :date="task!.dueDate" />
+            <DateChip :date="task!.dueDate" class="hide-on-hover" />
             <v-btn
                 icon="mdi-dots-horizontal"
                 variant="text"
@@ -33,10 +38,8 @@
                 class="show-on-hover"
             />
         </template>
+        <TaskDialog v-if="showDialog" :task="task" v-model="showDialog" />
     </v-list-item>
-    <div v-if="showDialog">
-        <TaskDialog :task="task" v-model="showDialog" />
-    </div>
 </template>
 
 <script setup lang="ts">
@@ -66,11 +69,35 @@ function deleteTask(taskId: string) {
 </script>
 
 <style scoped>
+.hidden-opacity {
+    opacity: 0%;
+}
+
+.v-list-item:hover .shown-opacity {
+    opacity: 100%;
+}
+
 .show-on-hover {
-    opacity: 0;
+    display: none;
 }
 
 .v-list-item:hover .show-on-hover {
-    opacity: 100;
+    display: flex;
+}
+
+.hide-on-hover {
+    display: flex;
+}
+
+.v-list-item:hover .hide-on-hover {
+    display: none;
+}
+
+.complete-text {
+    text-decoration: line-through;
+}
+
+.complete {
+    opacity: 40%;
 }
 </style>

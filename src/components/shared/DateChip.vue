@@ -27,9 +27,9 @@ const color = computed(() => {
     if (expired.value) {
         return 'red';
     } else if (dueToday.value) {
-        return 'yellow';
+        return 'warning';
     } else {
-        return 'gray';
+        return 'accent';
     }
 });
 </script>

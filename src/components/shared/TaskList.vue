@@ -1,5 +1,5 @@
 <template>
-    <v-list select-strategy="leaf">
+    <v-list select-strategy="leaf" bg-color="background">
         <v-list-subheader v-if="props.subheader">
             {{ props.subheader }}
         </v-list-subheader>

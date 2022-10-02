@@ -15,9 +15,7 @@
         </v-row>
         <draggable item-key="uuid" v-model="groups">
             <template #item="{ element }">
-                <div>
-                    <GroupItem :key="element.uuid" :group="element" />
-                </div>
+                <GroupItem :key="element.uuid" :group="element"></GroupItem>
             </template>
         </draggable>
     </v-list>

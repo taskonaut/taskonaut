@@ -16,8 +16,12 @@
             />
             <TaskCounter :count="taskCount" />
         </template>
+        <GroupDialog
+            v-if="showDialog"
+            :group="props.group"
+            v-model="showDialog"
+        />
     </v-list-item>
-    <GroupDialog :group="props.group" v-model="showDialog" />
 </template>
 
 <script setup lang="ts">

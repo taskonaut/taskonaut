@@ -1,7 +1,10 @@
 <template>
     <v-app>
-        <AppSidebar v-model="drawer" />
-        <v-app-bar color="primary" :floating="true" density="compact">
+        <v-app-bar
+            :color="theme.global.current.value.dark ? 'accent' : 'primary'"
+            :floating="true"
+            density="compact"
+        >
             <v-app-bar-nav-icon
                 variant="text"
                 @click="toggleDrawer()"
@@ -10,6 +13,11 @@
                 <span id="routeName">{{ getRouteName() }}</span>
             </v-toolbar-title>
             <v-spacer></v-spacer>
+            <v-btn
+                @click="showDialog = true"
+                variant="text"
+                icon="mdi-plus"
+            ></v-btn>
             <v-btn
                 @click="toggleTheme"
                 variant="text"
@@ -28,11 +36,13 @@
                 @click="userStore.login"
             ></v-btn>
         </v-app-bar>
+        <AppSidebar v-model="drawer" />
         <v-main :scrollable="true"
-            ><v-container
+            ><v-container :fluid="true" class="pa-0" :class="lgAndUp && 'w-75'"
                 ><router-view :key="useRoute().fullPath"
             /></v-container>
         </v-main>
+        <TaskDialog v-if="showDialog" v-model="showDialog" />
     </v-app>
 </template>
 
@@ -42,9 +52,14 @@ import { onMounted, ref } from 'vue';
 import { useUserStore } from './stores/userStore';
 import { useAppStore } from './stores/appStore';
 import { computed } from 'vue';
-import { useTheme } from 'vuetify';
+import { useDisplay, useTheme } from 'vuetify';
 import AppSidebar from '@/components/AppSidebar/AppSidebar.vue';
+import TaskDialog from '@/components/dialogs/TaskDialog.vue';
 import router from './router';
+
+const { lgAndUp } = useDisplay();
+
+const showDialog = ref(false);
 
 const drawer = ref(true);
 
@@ -69,8 +84,8 @@ function toggleDrawer() {
 
 function toggleTheme() {
     theme.global.name.value = theme.global.current.value.dark
-        ? 'light'
-        : 'dark';
+        ? 'customLightTheme'
+        : 'customDarkTheme';
 }
 
 function getRouteName(): string {

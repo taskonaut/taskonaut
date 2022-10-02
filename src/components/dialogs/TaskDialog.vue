@@ -100,7 +100,6 @@ const emits = defineEmits<{
 }>();
 
 const { mobile } = useDisplay();
-
 const appStore = useAppStore();
 
 const form = ref();
