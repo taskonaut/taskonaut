@@ -17,7 +17,6 @@
     "@vuepic/vue-datepicker": "^3.4.8",
     "firebase": "^9.10.0",
     "pinia": "^2.0.21",
-    "pinia-plugin-firestore-sync": "^1.2.0",
     "pinia-plugin-persistedstate": "^2.2.0",
     "roboto-fontface": "*",
     "uuid": "^9.0.0",

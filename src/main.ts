@@ -1,5 +1,4 @@
 import { createPinia } from 'pinia';
-import { PiniaFirestoreSync } from 'pinia-plugin-firestore-sync';
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';
 import { createApp } from 'vue';
 import App from './App.vue';
@@ -14,7 +13,6 @@ import './firebaseConfig';
 
 const pinia = createPinia();
 pinia.use(piniaPluginPersistedstate);
-pinia.use(PiniaFirestoreSync);
 const app = createApp(App);
 app.component('Datepicker', Datepicker);
 
