@@ -60,7 +60,7 @@ export const useUserStore = defineStore({
                         this.photoURL = user?.photoURL || null;
                         this.uid = user?.uid || null;
                         this.displayName = user?.displayName || null;
-                        useAppStore().syncFirebase(user?.uid);
+                        useAppStore().syncFirebase(user!.uid);
                         resolve(user as User);
                     },
                     (e) => {
