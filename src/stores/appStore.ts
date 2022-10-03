@@ -298,6 +298,13 @@ export const useAppStore = defineStore({
                 );
             }
         },
+        setGroupOrder(groupIds: string[]) {
+            this.groupOrder = groupIds;
+            firebaseAdapter.setStringArrayAsDoc(
+                Object.assign({}, this.groupOrder),
+                groupsCollection
+            );
+        },
     },
     persist: true,
 });

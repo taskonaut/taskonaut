@@ -37,7 +37,7 @@ const groups = computed({
         store.groupOrder.map((id) =>
             store.groups.find((group) => group.uuid == id)
         ),
-    set: (groups) => (store.groupOrder = groups.map((group) => group!.uuid)),
+    set: (groups) => store.setGroupOrder(groups.map((group) => group!.uuid)),
 });
 </script>
 
