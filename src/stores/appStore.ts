@@ -1,5 +1,6 @@
 import type { Group, Task } from '@/model';
 import router from '@/router';
+import { doc, getDoc } from '@firebase/firestore';
 import { defineStore } from 'pinia';
 import { v4 as uuidv4 } from 'uuid';
 import { FirebaseAdapter } from './firebaseAdapter';
@@ -13,7 +14,6 @@ export interface AppStore {
 let firebaseAdapter: FirebaseAdapter;
 const tasksCollection = 'tasks';
 const groupsCollection = 'groups';
-const groupOrderCollection = 'groupOrder';
 
 export const useAppStore = defineStore({
     id: 'appStore',
@@ -78,9 +78,12 @@ export const useAppStore = defineStore({
                 groupsCollection
             )) as Group[];
 
-            this.groupOrder = (await firebaseAdapter.getDocs(
-                groupOrderCollection
-            )) as unknown as string[];
+            const groupOrder = await getDoc(
+                doc(firebaseAdapter.db, groupsCollection, userId)
+            );
+            if (groupOrder.exists()) {
+                this.groupOrder = Object.values(groupOrder.data());
+            }
         },
         createTask(
             header: string,
@@ -253,6 +256,10 @@ export const useAppStore = defineStore({
             router.push({ name: 'group', params: { id: group.uuid } });
             if (firebaseAdapter) {
                 firebaseAdapter.setDoc(group, 'groups');
+                firebaseAdapter.setStringArrayAsDoc(
+                    Object.assign({}, this.groupOrder),
+                    groupsCollection
+                );
             }
         },
         updateGroup(groupId: string, name: string, description: string) {

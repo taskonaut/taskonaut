@@ -26,6 +26,13 @@ export class FirebaseAdapter {
         );
     }
 
+    setStringArrayAsDoc(document: DocumentData, collectionName: string) {
+        return setDoc(
+            doc(this.db, collectionName, this.userId),
+            Object.assign({}, document)
+        );
+    }
+
     async updateDoc(
         documentId: string,
         document: Partial<DocumentData>,
