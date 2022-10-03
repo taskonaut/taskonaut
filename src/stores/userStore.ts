@@ -39,7 +39,7 @@ export const useUserStore = defineStore({
                     useAppStore().$reset();
                     router.push('/');
                     useAppStore().syncFirebase(user.uid);
-                    useAppStore().unwatchLocalStorage();
+                    useAppStore().disableLocalStorageSync();
                 } else {
                     throw new Error('user is not defined');
                 }
@@ -52,7 +52,7 @@ export const useUserStore = defineStore({
                 await signOut(auth);
                 this.$reset();
                 useAppStore().$reset();
-                useAppStore().unwatchLocalStorage();
+                useAppStore().disableLocalStorageSync();
                 router.push('/');
             } catch (error) {
                 throw new Error((error as Error).message);

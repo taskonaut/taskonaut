@@ -15,7 +15,7 @@ export interface AppStore {
 let firebaseAdapter: FirebaseAdapter;
 const tasksCollection = 'tasks';
 const groupsCollection = 'groups';
-let localStorageWatch: WatchStopHandle;
+let unwatchLocalStorage: WatchStopHandle;
 
 export const useAppStore = defineStore({
     id: 'appStore',
@@ -97,7 +97,7 @@ export const useAppStore = defineStore({
                 this.groupOrder = groupOrder;
                 this.groups = groups;
             }
-            localStorageWatch = watch(
+            unwatchLocalStorage = watch(
                 this.$state,
                 (state) => {
                     localStorage.setItem(this.$id, JSON.stringify(state));
@@ -105,9 +105,9 @@ export const useAppStore = defineStore({
                 { deep: true }
             );
         },
-        unwatchLocalStorage() {
+        disableLocalStorageSync() {
             localStorage.clear();
-            localStorageWatch();
+            unwatchLocalStorage();
         },
         createTask(
             header: string,
