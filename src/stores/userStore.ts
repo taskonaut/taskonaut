@@ -32,12 +32,16 @@ export const useUserStore = defineStore({
                 const provider = new GoogleAuthProvider();
                 const { user } = await signInWithPopup(auth, provider);
 
-                this.photoURL = user?.photoURL;
-                this.uid = user?.uid;
-                this.displayName = user?.displayName;
-                useAppStore().$reset();
-                router.push('/');
-                useAppStore().syncFirebase(user.uid);
+                if (user) {
+                    this.photoURL = user.photoURL;
+                    this.uid = user.uid;
+                    this.displayName = user.displayName;
+                    useAppStore().$reset();
+                    router.push('/');
+                    useAppStore().syncFirebase(user.uid);
+                } else {
+                    throw new Error('user is not defined');
+                }
             } catch (error) {
                 throw new Error((error as Error).message);
             }
@@ -57,14 +61,18 @@ export const useUserStore = defineStore({
                 const unsubscribe = onAuthStateChanged(
                     auth,
                     (user) => {
-                        this.photoURL = user?.photoURL || null;
-                        this.uid = user?.uid || null;
-                        this.displayName = user?.displayName || null;
-                        useAppStore().syncFirebase(user!.uid);
-                        resolve(user as User);
+                        if (user) {
+                            this.photoURL = user.photoURL;
+                            this.uid = user.uid;
+                            this.displayName = user.displayName;
+                            useAppStore().syncFirebase(user.uid);
+                            resolve(user as User);
+                        } else {
+                            reject();
+                        }
                     },
-                    (e) => {
-                        reject(e);
+                    (error) => {
+                        reject(error);
                     }
                 );
                 unsubscribe();
