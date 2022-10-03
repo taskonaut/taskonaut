@@ -1,6 +1,7 @@
 <template>
     <div>
         <v-list-item
+            class="py-3"
             title="Add New Task"
             value="add"
             :active="false"
@@ -8,7 +9,8 @@
         >
             <template v-slot:prepend>
                 <v-list-item-action>
-                    <v-icon variant="tonal" icon="mdi-plus" size="small" />
+                    <div style="width: 32px" id="spacer"></div>
+                    <v-btn variant="plain" icon="mdi-plus" size="small" />
                 </v-list-item-action>
             </template>
         </v-list-item>
