@@ -286,7 +286,7 @@ export const useAppStore = defineStore({
             }
             router.push({ name: 'inbox' });
         },
-        setGroupOrder(groupId: string, order: string[]) {
+        setTaskOrder(groupId: string, order: string[]) {
             this.groups.map((group) => {
                 if (group.uuid == groupId) group.taskOrder = order;
             });

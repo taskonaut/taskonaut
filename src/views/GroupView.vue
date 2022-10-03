@@ -35,7 +35,7 @@ const taskOrder = computed(() => store.getGroupOrder(groupId.value));
 const tasks = computed({
     get: () => taskOrder?.value?.map((id) => store.getTaskById(id)),
     set: (tasks) =>
-        store.setGroupOrder(
+        store.setTaskOrder(
             groupId.value,
             tasks.map((task) => task!.uuid)
         ),
