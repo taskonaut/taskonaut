@@ -23,6 +23,7 @@ export default defineConfig({
                 short_name: 'Taskominator',
                 theme_color: '#212121',
                 background_color: '#1a1a1a',
+                id: 'taskominator',
                 icons: [
                     {
                         src: 'assets/icons/icon-72x72.png',
@@ -71,6 +72,44 @@ export default defineConfig({
                         sizes: '512x512',
                         type: 'image/png',
                         purpose: 'maskable any',
+                    },
+                ],
+                shortcuts: [
+                    {
+                        name: 'Tasks for today',
+                        short_name: 'Today',
+                        description: 'Tasks that are planned for today',
+                        url: '/today',
+                        icons: [
+                            {
+                                src: 'assets/icons/icon-192x192.png',
+                                sizes: '192x192',
+                            },
+                        ],
+                    },
+                    {
+                        name: 'Upcoming tasks',
+                        short_name: 'Upcoming',
+                        description: 'Upcoming tasks for the next 7 days',
+                        url: '/upcoming',
+                        icons: [
+                            {
+                                src: 'assets/icons/icon-192x192.png',
+                                sizes: '192x192',
+                            },
+                        ],
+                    },
+                    {
+                        name: 'Expired tasks',
+                        short_name: 'expired',
+                        description: 'Expired tasks',
+                        url: '/expired',
+                        icons: [
+                            {
+                                src: 'assets/icons/icon-192x192.png',
+                                sizes: '192x192',
+                            },
+                        ],
                     },
                 ],
             },
