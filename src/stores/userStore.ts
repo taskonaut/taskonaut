@@ -11,7 +11,7 @@ import { defineStore } from 'pinia';
 import { useAppStore } from './appStore';
 
 interface UserStore {
-    uid: string | null;
+    uid: string | undefined;
     photoURL: string | null;
     displayName: string | null;
 }
@@ -19,7 +19,7 @@ interface UserStore {
 export const useUserStore = defineStore({
     id: 'userStore',
     state: (): UserStore => ({
-        uid: null,
+        uid: undefined,
         photoURL: null,
         displayName: null,
     }),
@@ -73,7 +73,7 @@ export const useUserStore = defineStore({
                             useAppStore().syncLocalStorage();
                             resolve({
                                 photoURL: null,
-                                uid: null,
+                                uid: undefined,
                                 displayName: null,
                             } as unknown as User);
                         }

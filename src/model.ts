@@ -1,5 +1,6 @@
 export interface Task {
     uuid: string;
+    createdBy: string;
     groupId: undefined | string;
     header: string;
     body: undefined | string;
@@ -11,8 +12,10 @@ export interface Task {
 
 export interface Group {
     uuid: string;
+    createdBy: string;
     name: string;
     description: string;
     taskOrder: string[];
     dateCreated: number;
+    sharedWith: string[];
 }

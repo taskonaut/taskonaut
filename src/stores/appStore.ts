@@ -5,6 +5,7 @@ import { defineStore } from 'pinia';
 import { v4 as uuidv4 } from 'uuid';
 import { watch, type WatchStopHandle } from 'vue';
 import { FirebaseAdapter } from './firebaseAdapter';
+import { useUserStore } from './userStore';
 
 export interface AppStore {
     tasks: Task[];
@@ -124,6 +125,7 @@ export const useAppStore = defineStore({
                 complete: false,
                 dateCompleted: undefined,
                 dueDate: dueDate || undefined,
+                createdBy: useUserStore().uid || 'localUser',
             };
             this.tasks.push(task);
             if (task.groupId) {
@@ -279,7 +281,10 @@ export const useAppStore = defineStore({
                 taskOrder: [],
                 dateCreated: new Date().getTime(),
                 description,
+                sharedWith: [],
+                createdBy: useUserStore().uid || 'localUser',
             };
+
             this.groups.push(group);
             this.groupOrder.push(group.uuid);
             router.push({ name: 'group', params: { id: group.uuid } });
