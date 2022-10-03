@@ -22,6 +22,7 @@ export default defineConfig({
                 display: 'standalone',
                 short_name: 'Taskominator',
                 theme_color: '#212121',
+                background_color: '#1a1a1a',
                 icons: [
                     {
                         src: 'assets/icons/icon-72x72.png',
