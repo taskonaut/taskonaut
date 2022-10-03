@@ -3,6 +3,7 @@ import router from '@/router';
 import { doc, getDoc } from '@firebase/firestore';
 import { defineStore } from 'pinia';
 import { v4 as uuidv4 } from 'uuid';
+import { watch, type WatchStopHandle } from 'vue';
 import { FirebaseAdapter } from './firebaseAdapter';
 
 export interface AppStore {
@@ -14,6 +15,7 @@ export interface AppStore {
 let firebaseAdapter: FirebaseAdapter;
 const tasksCollection = 'tasks';
 const groupsCollection = 'groups';
+let localStorageWatch: WatchStopHandle;
 
 export const useAppStore = defineStore({
     id: 'appStore',
@@ -84,6 +86,28 @@ export const useAppStore = defineStore({
             if (groupOrder.exists()) {
                 this.groupOrder = Object.values(groupOrder.data());
             }
+        },
+        syncLocalStorage() {
+            const fromLocalStorage = localStorage.getItem(this.$id);
+            if (fromLocalStorage) {
+                const { tasks, groups, groupOrder } = JSON.parse(
+                    fromLocalStorage
+                ) as AppStore;
+                this.tasks = tasks;
+                this.groupOrder = groupOrder;
+                this.groups = groups;
+            }
+            localStorageWatch = watch(
+                this.$state,
+                (state) => {
+                    localStorage.setItem(this.$id, JSON.stringify(state));
+                },
+                { deep: true }
+            );
+        },
+        unwatchLocalStorage() {
+            localStorage.clear();
+            localStorageWatch();
         },
         createTask(
             header: string,
@@ -165,6 +189,10 @@ export const useAppStore = defineStore({
             this.tasks.map((task) => {
                 if (task.uuid == taskId) {
                     task.complete = !task.complete;
+                    task.dateCompleted = task.complete
+                        ? new Date().getTime()
+                        : undefined;
+
                     if (groupId) {
                         if (task.complete) {
                             this.removeFromGroupOrder(groupId, taskId);
@@ -177,6 +205,7 @@ export const useAppStore = defineStore({
                             taskId,
                             {
                                 complete: task.complete,
+                                dateCompleted: task.dateCompleted,
                             },
                             'tasks'
                         );
@@ -306,5 +335,4 @@ export const useAppStore = defineStore({
             );
         },
     },
-    persist: true,
 });
