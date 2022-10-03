@@ -36,14 +36,19 @@
             ></v-btn>
         </v-app-bar>
         <AppSidebar v-model="drawer" />
-        <v-main :scrollable="true"
-            ><v-container :fluid="true" class="pa-0" :class="lgAndUp && 'w-75'">
-                <v-progress-linear
-                    v-if="useUserStore().isLoading"
-                    indeterminate
-                    color="yellow darken-2"
-                ></v-progress-linear
-                ><router-view :key="useRoute().fullPath"
+        <v-main :scrollable="true">
+            <v-progress-linear
+                v-if="useUserStore().isLoading"
+                indeterminate
+                color="yellow darken-2"
+            ></v-progress-linear
+            ><v-container
+                v-else
+                :fluid="true"
+                class="pa-0"
+                :class="lgAndUp && 'w-75'"
+            >
+                <router-view :key="useRoute().fullPath"
             /></v-container>
         </v-main>
         <TaskDialog v-if="showDialog" v-model="showDialog" />
