@@ -87,6 +87,7 @@ export const useAppStore = defineStore({
             if (groupOrder.exists()) {
                 this.groupOrder = Object.values(groupOrder.data());
             }
+            useUserStore().setLoading(false);
         },
         syncLocalStorage() {
             const fromLocalStorage = localStorage.getItem(this.$id);

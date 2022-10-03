@@ -14,6 +14,7 @@ interface UserStore {
     uid: string | undefined;
     photoURL: string | null;
     displayName: string | null;
+    loading: boolean;
 }
 
 export const useUserStore = defineStore({
@@ -22,13 +23,16 @@ export const useUserStore = defineStore({
         uid: undefined,
         photoURL: null,
         displayName: null,
+        loading: false,
     }),
     getters: {
-        isLoggedIn: (state) => state.uid !== null,
+        isLoggedIn: (state) => state.uid,
+        isLoading: (state) => state.loading,
     },
     actions: {
         async login() {
             try {
+                this.loading = true;
                 const provider = new GoogleAuthProvider();
                 const { user } = await signInWithPopup(auth, provider);
 
@@ -60,6 +64,7 @@ export const useUserStore = defineStore({
         },
         async getAuthState() {
             return new Promise<User>((resolve, reject) => {
+                this.loading = true;
                 const unsubscribe = onAuthStateChanged(
                     auth,
                     (user) => {
@@ -76,6 +81,7 @@ export const useUserStore = defineStore({
                                 uid: undefined,
                                 displayName: null,
                             } as unknown as User);
+                            this.loading = false;
                         }
                     },
                     (error) => {
@@ -84,6 +90,9 @@ export const useUserStore = defineStore({
                 );
                 unsubscribe();
             });
+        },
+        setLoading(value: boolean) {
+            this.loading = value;
         },
     },
 });

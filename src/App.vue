@@ -37,7 +37,12 @@
         </v-app-bar>
         <AppSidebar v-model="drawer" />
         <v-main :scrollable="true"
-            ><v-container :fluid="true" class="pa-0" :class="lgAndUp && 'w-75'"
+            ><v-container :fluid="true" class="pa-0" :class="lgAndUp && 'w-75'">
+                <v-progress-linear
+                    v-if="useUserStore().isLoading"
+                    indeterminate
+                    color="yellow darken-2"
+                ></v-progress-linear
                 ><router-view :key="useRoute().fullPath"
             /></v-container>
         </v-main>
