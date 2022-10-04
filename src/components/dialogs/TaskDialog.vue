@@ -9,7 +9,7 @@
     >
         <v-form ref="form" v-model="formData.valid" :submit="formSubmit">
             <v-card :height="mobile ? '100vh' : 'auto'">
-                <v-toolbar dark color="primary">
+                <v-toolbar dark color="primary" density="compact">
                     <v-btn icon dark @click="closeDialog()">
                         <v-icon>mdi-close</v-icon>
                     </v-btn>
@@ -36,7 +36,8 @@
                 </v-toolbar>
                 <v-card-text>
                     <v-text-field
-                        autofocus
+                        density="compact"
+                        variant="outlined"
                         v-model="formData.name"
                         label="Task Name"
                         :rules="formData.rules"
@@ -48,6 +49,8 @@
                     ></v-text-field>
 
                     <v-textarea
+                        density="compact"
+                        variant="outlined"
                         auto-grow
                         label="Description (optional)"
                         v-model="formData.body"
@@ -55,6 +58,8 @@
                         @keydown="textareaHandler($event)"
                     ></v-textarea>
                     <v-select
+                        density="compact"
+                        variant="outlined"
                         :clearable="true"
                         no-data-text="No groups available :("
                         v-model="formData.groupId"
@@ -78,7 +83,13 @@
                 </v-card-text>
                 <v-card-actions v-if="props.task?.uuid">
                     <v-spacer></v-spacer>
-                    <v-btn color="warning" @click="deleteTask">Delete</v-btn>
+                    <v-btn
+                        class="mr-2 mb-2"
+                        color="warning"
+                        @click="deleteTask"
+                    >
+                        Delete
+                    </v-btn>
                 </v-card-actions>
             </v-card>
         </v-form>
