@@ -57,7 +57,7 @@
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
 import { useUserStore } from './stores/userStore';
 import { useAppStore } from './stores/appStore';
 import { computed } from 'vue';
@@ -76,15 +76,6 @@ const appStore = useAppStore();
 const userStore = useUserStore();
 const loggedIn = computed(() => userStore.isLoggedIn);
 const theme = useTheme();
-
-onMounted(() => {
-    // Populate if groupOrder is empty (with group ids prior feature)
-    if (!appStore.groupOrder.length) {
-        appStore.groups.forEach((group) =>
-            appStore.groupOrder.push(group.uuid)
-        );
-    }
-});
 
 function toggleDrawer() {
     drawer.value = !drawer.value;
