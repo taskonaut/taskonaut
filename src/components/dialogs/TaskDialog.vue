@@ -7,7 +7,12 @@
         :fullscreen="mobile"
         transition="dialog-bottom-transition"
     >
-        <v-form ref="form" v-model="formData.valid" :submit="formSubmit">
+        <v-form
+            ref="form"
+            v-model="formData.valid"
+            :submit="formSubmit"
+            autocomplete="off"
+        >
             <v-card :height="mobile ? '100vh' : 'auto'">
                 <v-toolbar dark color="primary" density="compact">
                     <v-btn icon dark @click="closeDialog()">
