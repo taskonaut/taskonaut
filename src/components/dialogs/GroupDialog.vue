@@ -9,12 +9,12 @@
     >
         <v-form ref="form" v-model="formData.valid" :submit="formSubmit">
             <v-card :height="mobile ? '100vh' : 'auto'">
-                <v-toolbar dark color="primary">
+                <v-toolbar dark color="primary" density="compact">
                     <v-btn icon dark @click="closeDialog()">
                         <v-icon>mdi-close</v-icon>
                     </v-btn>
                     <v-toolbar-title v-if="!props.group">
-                        Add New Group
+                        Add Group
                     </v-toolbar-title>
                     <v-toolbar-title v-if="props.group">
                         Edit Group
@@ -37,6 +37,8 @@
                 <v-card-text>
                     <v-text-field
                         autofocus
+                        density="compact"
+                        variant="outlined"
                         v-model="formData.name"
                         label="Group Name"
                         :rules="formData.rules"
@@ -46,6 +48,8 @@
                     ></v-text-field>
                     <v-textarea
                         auto-grow
+                        density="compact"
+                        variant="outlined"
                         label="Description (optional)"
                         v-model="formData.description"
                         rows="3"

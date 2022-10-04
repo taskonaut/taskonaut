@@ -19,7 +19,7 @@
                         <v-icon>mdi-close</v-icon>
                     </v-btn>
                     <v-toolbar-title v-if="!props.task">
-                        Add New Task
+                        Add Task
                     </v-toolbar-title>
                     <v-toolbar-title v-if="props.task">
                         Edit Task
@@ -41,6 +41,7 @@
                 </v-toolbar>
                 <v-card-text>
                     <v-text-field
+                        autofocus
                         density="compact"
                         variant="outlined"
                         v-model="formData.name"
