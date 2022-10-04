@@ -315,12 +315,21 @@ export const useAppStore = defineStore({
             });
         },
         deleteGroup(groupId: string) {
-            this.groups = this.groups.filter((group) => group.uuid != groupId);
-            this.tasks = this.tasks.filter((task) => task.groupId != groupId);
             this.groupOrder = this.groupOrder.filter((id) => id != groupId);
+            this.groups = this.groups.filter((group) => group.uuid != groupId);
             if (firebaseAdapter) {
                 firebaseAdapter.deleteDoc(groupId, 'groups');
+                firebaseAdapter.setStringArrayAsDoc(
+                    Object.assign({}, this.groupOrder),
+                    groupsCollection
+                );
+                this.tasks
+                    .filter((task) => task.groupId === groupId)
+                    .forEach((task) =>
+                        firebaseAdapter.deleteDoc(task.uuid, tasksCollection)
+                    );
             }
+            this.tasks = this.tasks.filter((task) => task.groupId != groupId);
             router.push({ name: 'inbox' });
         },
         setTaskOrder(groupId: string, order: string[]) {
