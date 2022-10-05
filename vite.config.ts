@@ -15,7 +15,7 @@ export default defineConfig({
             workbox: {
                 globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
             },
-            registerType: 'autoUpdate',
+            registerType: 'prompt',
             manifest: {
                 name: 'Taskominator Dev',
                 description: 'The most awesome todo application',
