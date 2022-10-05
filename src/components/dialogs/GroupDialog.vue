@@ -58,6 +58,7 @@
                 </v-card-text>
                 <v-card-actions v-if="props.group">
                     <v-spacer></v-spacer>
+                    <v-btn color="accent" @click="resetGroup">Reset</v-btn>
                     <v-btn color="warning" @click="deleteGroup">Delete</v-btn>
                 </v-card-actions>
             </v-card>
@@ -124,6 +125,11 @@ function formSubmit() {
 function deleteGroup() {
     appStore.deleteGroup(props.group?.uuid as string);
     router.push({ name: 'inbox' });
+    closeDialog();
+}
+
+function resetGroup() {
+    appStore.resetGroup(props.group?.uuid as string);
     closeDialog();
 }
 </script>

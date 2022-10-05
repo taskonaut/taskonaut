@@ -332,6 +332,23 @@ export const useAppStore = defineStore({
             this.tasks = this.tasks.filter((task) => task.groupId != groupId);
             router.push({ name: 'inbox' });
         },
+        resetGroup(groupId: string) {
+            this.tasks.map((task) => {
+                if (task.groupId == groupId) {
+                    task.complete = false;
+                    if (firebaseAdapter) {
+                        firebaseAdapter.updateDoc(
+                            task.uuid,
+                            {
+                                complete: false,
+                                dateCompleted: undefined,
+                            },
+                            'tasks'
+                        );
+                    }
+                }
+            });
+        },
         setTaskOrder(groupId: string, order: string[]) {
             this.groups.map((group) => {
                 if (group.uuid == groupId) group.taskOrder = order;
