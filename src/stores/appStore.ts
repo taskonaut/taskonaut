@@ -273,6 +273,14 @@ export const useAppStore = defineStore({
                     group.taskOrder = group.taskOrder.filter(
                         (ti) => ti != taskId
                     );
+                    if (firebaseAdapter)
+                        firebaseAdapter.updateDoc(
+                            groupId,
+                            {
+                                taskOrder: group.taskOrder,
+                            },
+                            'groups'
+                        );
                 }
             });
         },
