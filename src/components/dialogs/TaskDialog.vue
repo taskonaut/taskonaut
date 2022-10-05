@@ -92,7 +92,7 @@
                     <v-btn
                         class="mr-2 mb-2"
                         color="warning"
-                        @click="deleteTask"
+                        @click="confirmDialog = true"
                     >
                         Delete
                     </v-btn>
@@ -100,6 +100,11 @@
             </v-card>
         </v-form>
     </v-dialog>
+    <ConfirmDialog
+        v-model="confirmDialog"
+        :message="'Are you sure you want to delete this task?'"
+        @dialog:confirm="deleteTask()"
+    />
 </template>
 
 <script setup lang="ts">
@@ -108,6 +113,7 @@ import router from '@/router';
 import { useAppStore } from '@/stores/appStore';
 import { reactive, ref, computed } from 'vue';
 import { useDisplay } from 'vuetify';
+import ConfirmDialog from './ConfirmDialog.vue';
 
 const props = defineProps<{
     task?: Task;
@@ -121,6 +127,7 @@ const emits = defineEmits<{
 const { mobile } = useDisplay();
 const appStore = useAppStore();
 
+const confirmDialog = ref(false);
 const form = ref();
 const nameInput = ref();
 const selectedGroup =

@@ -37,31 +37,39 @@
                     size="small"
                     icon="mdi-dots-horizontal"
                     variant="text"
-                    @click="showDialog = true"
+                    @click="editDialog = true"
                     class="show-on-hover"
                 />
                 <v-btn
                     size="small"
                     icon="mdi-delete"
                     variant="text"
-                    @click="deleteTask(task!.uuid)"
+                    @click="confirmDialog = true"
                     class="show-on-hover"
                 />
             </template>
-            <TaskDialog v-if="showDialog" :task="task" v-model="showDialog" />
+            <TaskDialog v-if="editDialog" :task="task" v-model="editDialog" />
+            <ConfirmDialog
+                v-if="confirmDialog"
+                v-model="confirmDialog"
+                :message="'Are you sure you want to delete this task?'"
+                @dialog:confirm="deleteTask(task!.uuid)"
+            />
         </v-list-item>
     </div>
 </template>
 
 <script setup lang="ts">
 import TaskDialog from '@/components/dialogs/TaskDialog.vue';
+import ConfirmDialog from '../dialogs/ConfirmDialog.vue';
 import DateChip from '@/components/shared/DateChip.vue';
 import type { Task } from '@/model';
 import { useAppStore } from '@/stores/appStore';
 import { computed } from 'vue';
 import { ref } from 'vue';
 
-const showDialog = ref(false);
+const editDialog = ref(false);
+const confirmDialog = ref(false);
 
 const props = defineProps<{
     task: Task;
