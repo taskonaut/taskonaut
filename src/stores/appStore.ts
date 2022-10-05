@@ -336,13 +336,14 @@ export const useAppStore = defineStore({
             this.tasks.map((task) => {
                 if (task.groupId == groupId && task.complete) {
                     task.complete = false;
+                    task.dateCompleted = undefined;
                     this.addToGroupOrder(groupId, task.uuid);
                     if (firebaseAdapter) {
                         firebaseAdapter.updateDoc(
                             task.uuid,
                             {
-                                complete: false,
-                                dateCompleted: undefined,
+                                complete: task.complete,
+                                dateCompleted: task.dateCompleted,
                             },
                             'tasks'
                         );
