@@ -219,25 +219,9 @@ export const useAppStore = defineStore({
             });
         },
         deleteTask(taskId: string) {
-            const groupId = this.tasks.find(
-                (task) => task.uuid == taskId
-            )?.groupId;
-            if (groupId) {
-                this.groups.map((group) => {
-                    if (group.uuid == groupId) {
-                        group.taskOrder = group.taskOrder.filter(
-                            (ti) => ti != taskId
-                        );
-                    }
-                    if (firebaseAdapter)
-                        firebaseAdapter.updateDoc(
-                            groupId,
-                            {
-                                taskOrder: group.taskOrder,
-                            },
-                            'groups'
-                        );
-                });
+            const task = this.getTaskById(taskId);
+            if (task!.groupId) {
+                this.deleteFromTaskOrder(task!.groupId, taskId);
             }
             this.tasks = this.tasks.filter((task) => taskId !== task.uuid);
 
