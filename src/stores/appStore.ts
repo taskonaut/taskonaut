@@ -334,7 +334,7 @@ export const useAppStore = defineStore({
         },
         resetGroup(groupId: string) {
             this.tasks.map((task) => {
-                if (task.groupId == groupId) {
+                if (task.groupId == groupId && task.complete) {
                     task.complete = false;
                     this.addToGroupOrder(groupId, task.uuid);
                     if (firebaseAdapter) {
