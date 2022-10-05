@@ -33,6 +33,8 @@ export const useAppStore = defineStore({
             state.groups.find((group) => group.uuid == groupId),
         getGroupTasks: (state) => (groupId: string) =>
             state.tasks.filter((task) => task.groupId == groupId),
+        getTaskOrderById: (state) => (groupId: string) =>
+            state.groups.find((group) => group.uuid == groupId)?.taskOrder,
         getInboxTasks: (state) => () =>
             state.tasks.filter((task) => !task.groupId),
         getTodayTasks: (state) => () => {
@@ -113,6 +115,7 @@ export const useAppStore = defineStore({
             localStorage.clear();
             unwatchLocalStorage();
         },
+        // Task Actions
         createTask(
             header: string,
             body?: string,
@@ -132,19 +135,16 @@ export const useAppStore = defineStore({
             };
             this.tasks.push(task);
             if (task.groupId) {
-                this.groups.map((group) => {
-                    if (group.uuid == task.groupId) {
-                        group.taskOrder.push(task.uuid);
-                        if (firebaseAdapter) {
-                            firebaseAdapter.updateDoc(
-                                task.groupId,
-                                { taskOrder: group.taskOrder },
-                                'groups'
-                            );
-                        }
-                    }
-                    return group;
-                });
+                this.addToTaskOrder(task.groupId, task.uuid);
+                if (firebaseAdapter) {
+                    firebaseAdapter.updateDoc(
+                        task.groupId,
+                        {
+                            taskOrder: this.getTaskOrderById(task.groupId),
+                        },
+                        'groups'
+                    );
+                }
             }
 
             if (firebaseAdapter) {
@@ -168,12 +168,12 @@ export const useAppStore = defineStore({
                         // Check if task had a group before and remove it from that group order
                         if (task.groupId) {
                             //console.log('task had a group', task.groupId);
-                            this.removeFromGroupOrder(task.groupId, task.uuid);
+                            this.deleteFromTaskOrder(task.groupId, task.uuid);
                         }
                         // Check if task have a new group and add it to group order
                         if (groupId && !task.complete) {
                             //console.log('task has a new group', groupId);
-                            this.addToGroupOrder(groupId, task.uuid);
+                            this.addToTaskOrder(groupId, task.uuid);
                         }
                         // Setting new value
                         task.groupId = groupId || '';
@@ -200,9 +200,9 @@ export const useAppStore = defineStore({
 
                     if (groupId) {
                         if (task.complete) {
-                            this.removeFromGroupOrder(groupId, taskId);
+                            this.deleteFromTaskOrder(groupId, taskId);
                         } else {
-                            this.addToGroupOrder(groupId, taskId);
+                            this.addToTaskOrder(groupId, taskId);
                         }
                     }
                     if (firebaseAdapter) {
@@ -245,13 +245,11 @@ export const useAppStore = defineStore({
                 firebaseAdapter.deleteDoc(taskId, 'tasks');
             }
         },
-
         getTaskGroupId(taskId: string): string {
             return this.tasks.find((task) => task.uuid == taskId)
                 ?.groupId as string;
         },
-
-        addToGroupOrder(groupId: string, taskId: string) {
+        addToTaskOrder(groupId: string, taskId: string) {
             this.groups.map((group) => {
                 if (group.uuid == groupId) {
                     group.taskOrder.push(taskId);
@@ -266,8 +264,7 @@ export const useAppStore = defineStore({
                 }
             });
         },
-
-        removeFromGroupOrder(groupId: string, taskId: string) {
+        deleteFromTaskOrder(groupId: string, taskId: string) {
             this.groups.map((group) => {
                 if (group.uuid == groupId) {
                     group.taskOrder = group.taskOrder.filter(
@@ -284,7 +281,7 @@ export const useAppStore = defineStore({
                 }
             });
         },
-
+        // Group Actions
         createGroup(name: string, description: string) {
             const group = {
                 uuid: uuidv4(),
@@ -345,7 +342,7 @@ export const useAppStore = defineStore({
                 if (task.groupId == groupId && task.complete) {
                     task.complete = false;
                     task.dateCompleted = undefined;
-                    this.addToGroupOrder(groupId, task.uuid);
+                    this.addToTaskOrder(groupId, task.uuid);
                     if (firebaseAdapter) {
                         firebaseAdapter.updateDoc(
                             task.uuid,
