@@ -102,6 +102,7 @@
     </v-dialog>
     <ConfirmDialog
         v-model="confirmDialog"
+        :title="'Delete Task?'"
         :message="'Are you sure you want to delete this task?'"
         @dialog:confirm="deleteTask()"
     />
