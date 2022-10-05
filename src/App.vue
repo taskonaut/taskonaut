@@ -53,6 +53,7 @@
         </v-main>
         <TaskDialog v-if="showDialog" v-model="showDialog" />
     </v-app>
+    <ReloadPrompt />
 </template>
 
 <script setup lang="ts">
@@ -64,6 +65,7 @@ import { computed } from 'vue';
 import { useDisplay, useTheme } from 'vuetify';
 import AppSidebar from '@/components/AppSidebar/AppSidebar.vue';
 import TaskDialog from '@/components/dialogs/TaskDialog.vue';
+import ReloadPrompt from '@/components/ReloadPrompt.vue';
 import router from './router';
 
 const { lgAndUp } = useDisplay();
