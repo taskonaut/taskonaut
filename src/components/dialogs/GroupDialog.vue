@@ -59,11 +59,19 @@
                 <v-card-actions v-if="props.group">
                     <v-spacer></v-spacer>
                     <v-btn color="accent" @click="resetGroup">Reset</v-btn>
-                    <v-btn color="warning" @click="deleteGroup">Delete</v-btn>
+                    <v-btn color="warning" @click="deleteConfirmDialog = true"
+                        >Delete</v-btn
+                    >
                 </v-card-actions>
             </v-card>
         </v-form>
     </v-dialog>
+    <ConfirmDialog
+        v-model="deleteConfirmDialog"
+        :title="'Delete Group?'"
+        :message="'Are you sure you want to delete this group?'"
+        @dialog:confirm="deleteGroup"
+    />
 </template>
 
 <script setup lang="ts">
@@ -72,6 +80,7 @@ import router from '@/router';
 import { useAppStore } from '@/stores/appStore';
 import { reactive, ref } from 'vue';
 import { useDisplay } from 'vuetify';
+import ConfirmDialog from './ConfirmDialog.vue';
 
 const props = defineProps<{
     group?: Group;
@@ -81,6 +90,8 @@ const props = defineProps<{
 const emits = defineEmits<{
     (e: 'update:modelValue', state: boolean): void;
 }>();
+
+const deleteConfirmDialog = ref(false);
 
 const { mobile } = useDisplay();
 
