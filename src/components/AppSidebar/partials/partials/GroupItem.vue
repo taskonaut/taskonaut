@@ -1,11 +1,13 @@
 <template>
     <v-list-item
-        prependIcon="mdi-circle-medium"
         :title="props.group.name"
         :value="props.group.name"
         :active="props.group.uuid == router.currentRoute.value.params.id"
         @click="switchGroupRoute(props.group.uuid)"
     >
+        <template v-slot:prepend>
+            <v-icon class="group-drag" icon="mdi-drag" />
+        </template>
         <template v-slot:append>
             <v-btn
                 icon="mdi-dots-horizontal"

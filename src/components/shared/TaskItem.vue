@@ -19,11 +19,16 @@
             <template v-slot:prepend>
                 <v-list-item-action>
                     <v-icon
-                        class="hidden-opacity handle"
-                        :class="!task.complete && 'shown-opacity'"
+                        v-if="props.isDraggable"
+                        class="handle"
+                        :class="{
+                            'shown-opacity': !task.complete,
+                            'hidden-opacity': !mobile,
+                        }"
                         :end="true"
-                        icon="mdi-dots-vertical"
+                        icon="mdi-drag"
                     />
+                    <div v-else style="width: 32px" id="spacer"></div>
                     <v-checkbox-btn
                         @change="toggleTask(task!.uuid)"
                         :model-value="task!.complete"
@@ -68,16 +73,20 @@ import type { Task } from '@/model';
 import { useAppStore } from '@/stores/appStore';
 import { computed } from 'vue';
 import { ref } from 'vue';
+import { useDisplay } from 'vuetify/lib/framework.mjs';
 
 const editDialog = ref(false);
 const confirmDialog = ref(false);
 
 const props = defineProps<{
     task: Task;
+    isDraggable?: boolean;
 }>();
 
 const appStore = useAppStore();
 const task = computed(() => appStore.getTaskById(props.task.uuid));
+
+const mobile = useDisplay().xs;
 
 function countLines(): 'one' | 'two' | 'three' {
     const numberNames = ['one', 'two', 'three'];

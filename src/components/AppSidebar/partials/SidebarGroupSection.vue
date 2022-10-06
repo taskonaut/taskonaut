@@ -13,7 +13,7 @@
                 @click="openDialog = true"
             />
         </v-row>
-        <draggable item-key="uuid" v-model="groups">
+        <draggable item-key="uuid" v-model="groups" handle=".group-drag">
             <template #item="{ element }">
                 <GroupItem :key="element.uuid" :group="element"></GroupItem>
             </template>
