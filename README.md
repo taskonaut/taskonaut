@@ -1,18 +1,27 @@
 # Taskominator
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/taskominator/taskominator/main/public/assets/icons/icon-128x128.png" style="border-radius:30px" alt="Taskominator icon" title="Application icon" />
+</p>
+
+<img alt="GitHub Workflow Build and E2E Status" src="https://img.shields.io/github/workflow/status/taskominator/taskominator/Execute%20e2e%20tests?style=for-the-badge" />
+
 An application that will help you organize your daily life and arrange all the tasks in the shelves.
 
 # Features
 
-- Adding Tasks and Stuff...🤔
+- Adding tasks 🎉
+- Task organization by groups
+- Intelligent distribution of tasks by folder depending on the specified deadline
+- Change the order of tasks using Drag&Drop
+- Authorization with google oauth
+- Synchronization of tasks between devices
+- Installable PWA app for desktop and mobile devices
 
 # Screenshots
 
 - [ ] create first screenshots
 
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
 
 ## Project Setup
 
@@ -24,29 +33,4 @@ npm install
 
 ```sh
 npm run dev
-```
-
-### Type-Check, Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Run Unit Tests with [Vitest](https://vitest.dev/)
-
-```sh
-npm run test:unit
-```
-
-### Run End-to-End Tests with [Cypress](https://www.cypress.io/)
-
-```sh
-npm run build
-npm run test:e2e # or `npm run test:e2e:ci` for headless testing
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
 ```
