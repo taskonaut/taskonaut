@@ -1,6 +1,6 @@
 import type { Group, Task } from '@/model';
 import router from '@/router';
-import { doc, getDoc } from '@firebase/firestore';
+import { doc, getDoc, onSnapshot } from '@firebase/firestore';
 import { defineStore } from 'pinia';
 import { v4 as uuidv4 } from 'uuid';
 import { watch, type WatchStopHandle } from 'vue';
@@ -80,23 +80,38 @@ export const useAppStore = defineStore({
     },
     actions: {
         async syncFirebase(userId: string) {
-            firebaseAdapter = new FirebaseAdapter(userId);
-
-            this.tasks = (await firebaseAdapter.getDocs(
-                tasksCollection
-            )) as Task[];
-
-            this.groups = (await firebaseAdapter.getDocs(
-                groupsCollection
-            )) as Group[];
-
-            const groupOrder = await getDoc(
-                doc(firebaseAdapter.db, groupsCollection, userId)
-            );
-            if (groupOrder.exists()) {
-                this.groupOrder = Object.values(groupOrder.data());
+            if (!firebaseAdapter) {
+                firebaseAdapter = new FirebaseAdapter(userId);
+                onSnapshot(
+                    firebaseAdapter.collectionRef(tasksCollection),
+                    (querySnapshot) => {
+                        const result: Task[] = [];
+                        querySnapshot.forEach((doc) =>
+                            result.push(doc.data() as Task)
+                        );
+                        this.tasks = result;
+                        useUserStore().setLoading(false);
+                    }
+                );
+                onSnapshot(
+                    firebaseAdapter.collectionRef(groupsCollection),
+                    (querySnapshot) => {
+                        const result: Group[] = [];
+                        querySnapshot.forEach((doc) =>
+                            result.push(doc.data() as Group)
+                        );
+                        this.groups = result;
+                    }
+                );
+                onSnapshot(
+                    doc(firebaseAdapter.db, groupsCollection, userId),
+                    (querySnapshot) => {
+                        this.groupOrder = querySnapshot?.data()
+                            ? Object.values(querySnapshot.data() as {})
+                            : [];
+                    }
+                );
             }
-            useUserStore().setLoading(false);
         },
         syncLocalStorage() {
             const fromLocalStorage = localStorage.getItem(this.$id);
@@ -108,6 +123,9 @@ export const useAppStore = defineStore({
                 this.groupOrder = groupOrder;
                 this.groups = groups;
             }
+            this.watchLocalStorage();
+        },
+        watchLocalStorage() {
             unwatchLocalStorage = watch(
                 this.$state,
                 (state) => {

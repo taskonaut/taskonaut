@@ -1,4 +1,3 @@
-import { useUserStore } from '@/stores/userStore';
 import ExpiredView from '@/views/ExpiredView.vue';
 import GroupView from '@/views/GroupView.vue';
 import InboxView from '@/views/InboxView.vue';
@@ -35,11 +34,6 @@ const router = createRouter({
             component: GroupView,
         },
     ],
-});
-
-router.beforeEach(async (to, from, next) => {
-    await useUserStore().getAuthState();
-    next();
 });
 
 export default router;
