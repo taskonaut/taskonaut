@@ -1,6 +1,6 @@
 import type { Group, Task } from '@/model';
 import router from '@/router';
-import { doc, getDoc, onSnapshot } from '@firebase/firestore';
+import { doc, onSnapshot } from '@firebase/firestore';
 import { defineStore } from 'pinia';
 import { v4 as uuidv4 } from 'uuid';
 import { watch, type WatchStopHandle } from 'vue';
@@ -325,18 +325,20 @@ export const useAppStore = defineStore({
         resetGroup(groupId: string) {
             const tasks = this.getGroupTasks(groupId);
             tasks.forEach((task) => {
-                task.complete = false;
-                task.dateCompleted = undefined;
-                this.addToTaskOrder(groupId, task.uuid);
-                if (firebaseAdapter) {
-                    firebaseAdapter.updateDoc(
-                        task.uuid,
-                        {
-                            complete: task.complete,
-                            dateCompleted: task.dateCompleted,
-                        },
-                        'tasks'
-                    );
+                if (task.complete) {
+                    task.complete = false;
+                    task.dateCompleted = undefined;
+                    this.addToTaskOrder(groupId, task.uuid);
+                    if (firebaseAdapter) {
+                        firebaseAdapter.updateDoc(
+                            task.uuid,
+                            {
+                                complete: task.complete,
+                                dateCompleted: task.dateCompleted,
+                            },
+                            'tasks'
+                        );
+                    }
                 }
             });
         },
