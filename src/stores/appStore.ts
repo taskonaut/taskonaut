@@ -13,10 +13,14 @@ export interface AppStore {
     groupOrder: string[];
 }
 
-let firebaseAdapter: FirebaseAdapter;
+let firebaseAdapter: FirebaseAdapter | undefined;
 const tasksCollection = 'tasks';
 const groupsCollection = 'groups';
 let unwatchLocalStorage: WatchStopHandle;
+
+export const destroyFirebaseAdapter = () => {
+    if (firebaseAdapter) firebaseAdapter = undefined;
+};
 
 export const useAppStore = defineStore({
     id: 'appStore',
@@ -114,7 +118,7 @@ export const useAppStore = defineStore({
         },
         disableLocalStorageSync() {
             localStorage.clear();
-            unwatchLocalStorage();
+            if (unwatchLocalStorage) unwatchLocalStorage();
         },
         // Task Actions
         createTask(
@@ -294,7 +298,7 @@ export const useAppStore = defineStore({
                 this.tasks
                     .filter((task) => task.groupId === groupId)
                     .forEach((task) =>
-                        firebaseAdapter.deleteDoc(task.uuid, tasksCollection)
+                        firebaseAdapter!.deleteDoc(task.uuid, tasksCollection)
                     );
             }
             this.tasks = this.tasks.filter((task) => task.groupId != groupId);
