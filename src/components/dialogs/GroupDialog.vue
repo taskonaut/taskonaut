@@ -44,7 +44,7 @@
                         :rules="formData.rules"
                         required
                         ref="nameInput"
-                        @keydown.enter="closeDialog()"
+                        @keydown.enter="formSubmit()"
                     ></v-text-field>
                     <v-textarea
                         auto-grow
@@ -120,6 +120,7 @@ function closeDialog() {
 }
 
 function formSubmit() {
+    console.log('submit');
     if (props.group) {
         appStore.updateGroup(
             props.group.uuid,
