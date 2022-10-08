@@ -23,6 +23,11 @@
                 icon="mdi-theme-light-dark"
             ></v-btn>
             <v-btn
+                @click="router.push({ name: 'settings' })"
+                variant="text"
+                icon="mdi-cog"
+            ></v-btn>
+            <v-btn
                 v-if="loggedIn"
                 variant="text"
                 icon="mdi-logout"

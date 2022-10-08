@@ -1,3 +1,4 @@
+import ConfigView from '@/views/ConfigView.vue';
 import ExpiredView from '@/views/ExpiredView.vue';
 import GroupView from '@/views/GroupView.vue';
 import InboxView from '@/views/InboxView.vue';
@@ -12,6 +13,11 @@ const router = createRouter({
             path: '/',
             name: 'inbox',
             component: InboxView,
+        },
+        {
+            path: '/settings',
+            name: 'settings',
+            component: ConfigView,
         },
         {
             path: '/today',
