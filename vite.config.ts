@@ -13,7 +13,7 @@ export default defineConfig({
         vueJsx(),
         VitePWA({
             workbox: {
-                globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+                globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
             },
             registerType: 'prompt',
             manifest: {
