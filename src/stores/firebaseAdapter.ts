@@ -36,12 +36,13 @@ export class FirebaseAdapter {
     async updateDoc(
         documentId: string,
         document: Partial<DocumentData>,
-        collectionName: string
+        collectionName: string,
+        userId?: string
     ) {
         const documentRef = doc(
             this.db,
             collectionName,
-            this.userId,
+            userId ?? this.userId,
             'items',
             documentId
         );
