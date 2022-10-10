@@ -36,7 +36,7 @@ import { ref, computed } from 'vue';
 const store = useAppStore();
 const openDialog = ref(false);
 
-const groups = computed(() => store.sharedGroups);
+const groups = computed(() => store.getSharedGroups);
 </script>
 
 <style scoped>

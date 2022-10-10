@@ -46,6 +46,7 @@ export const useAppStore = defineStore({
                 (task) => task.uuid == taskId
             ),
         getGroups: (state) => state.groups,
+        getSharedGroups: (state) => state.sharedGroups,
         getGroupById: (state) => (groupId: string) =>
             [...state.groups, ...state.sharedGroups].find(
                 (group) => group.uuid == groupId
@@ -280,7 +281,8 @@ export const useAppStore = defineStore({
                             complete: task.complete,
                             dateCompleted: task.dateCompleted,
                         },
-                        'tasks'
+                        'tasks',
+                        task.createdBy
                     );
                 }
             }
@@ -293,7 +295,7 @@ export const useAppStore = defineStore({
             this.tasks = this.tasks.filter((task) => taskId !== task.uuid);
 
             if (firebaseAdapter) {
-                firebaseAdapter.deleteDoc(taskId, 'tasks');
+                firebaseAdapter.deleteDoc(taskId, 'tasks', task!.createdBy);
             }
         },
         addToTaskOrder(groupId: string, taskId: string) {

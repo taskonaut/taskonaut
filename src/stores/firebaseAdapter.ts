@@ -53,9 +53,19 @@ export class FirebaseAdapter {
         return await updateDoc(documentRef, document);
     }
 
-    async deleteDoc(documentId: string, collectionName: string) {
+    async deleteDoc(
+        documentId: string,
+        collectionName: string,
+        userId?: string
+    ) {
         return deleteDoc(
-            doc(this.db, collectionName, this.userId, 'items', documentId)
+            doc(
+                this.db,
+                collectionName,
+                userId ?? this.userId,
+                'items',
+                documentId
+            )
         );
     }
 
