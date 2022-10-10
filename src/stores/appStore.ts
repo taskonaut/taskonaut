@@ -327,14 +327,16 @@ export const useAppStore = defineStore({
             }
         },
         // Group Actions
-        createGroup(name: string, description: string) {
+        createGroup(name: string, description: string, sharedWith: string) {
             const group = {
                 uuid: uuidv4(),
                 name,
                 taskOrder: [],
                 dateCreated: new Date().getTime(),
                 description,
-                sharedWith: [],
+                sharedWith: sharedWith
+                    ? sharedWith.replace(' ', '').split(',')
+                    : [],
                 createdBy: useUserStore().uid || 'localUser',
             };
 
@@ -349,11 +351,19 @@ export const useAppStore = defineStore({
                 );
             }
         },
-        updateGroup(groupId: string, name: string, description: string) {
+        updateGroup(
+            groupId: string,
+            name: string,
+            description: string,
+            sharedWith: string
+        ) {
             const group = this.getGroupById(groupId);
             if (group) {
                 group.name = name;
                 group.description = description;
+                group.sharedWith = sharedWith
+                    ? sharedWith.replace(' ', '').split(',')
+                    : [];
                 if (firebaseAdapter) {
                     firebaseAdapter.updateDoc(
                         groupId,

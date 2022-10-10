@@ -55,6 +55,16 @@
                         rows="3"
                         @keydown="textareaHandler($event)"
                     ></v-textarea>
+                    <v-text-field
+                        autofocus
+                        density="compact"
+                        variant="outlined"
+                        v-model="formData.sharedWith"
+                        label="Share with emails (optional)"
+                        required
+                        ref="sharedWithInput"
+                        @keydown.enter="formSubmit()"
+                    ></v-text-field>
                 </v-card-text>
                 <v-card-actions v-if="props.group">
                     <v-spacer></v-spacer>
@@ -99,11 +109,13 @@ const appStore = useAppStore();
 
 const form = ref();
 const nameInput = ref();
+const sharedWithInput = ref();
 const formData = reactive({
     valid: false,
     rules: [(v: any) => !!v || 'Name is required'],
     name: props.group?.name || '',
     description: props.group?.description || '',
+    sharedWith: props.group?.sharedWith.join(',') || '',
 });
 
 function textareaHandler(event: KeyboardEvent) {
@@ -120,15 +132,19 @@ function closeDialog() {
 }
 
 function formSubmit() {
-    console.log('submit');
     if (props.group) {
         appStore.updateGroup(
             props.group.uuid,
             formData.name,
-            formData.description
+            formData.description,
+            formData.sharedWith
         );
     } else {
-        appStore.createGroup(formData.name, formData.description);
+        appStore.createGroup(
+            formData.name,
+            formData.description,
+            formData.sharedWith
+        );
         form.value.reset();
     }
     closeDialog();
