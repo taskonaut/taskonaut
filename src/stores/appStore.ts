@@ -99,7 +99,7 @@ export const useAppStore = defineStore({
         },
     },
     actions: {
-        async syncFirebase(userId: string) {
+        async syncFirebase(userId: string, userEmail: string) {
             if (!firebaseAdapter) {
                 firebaseAdapter = new FirebaseAdapter(userId);
                 onSnapshot(
@@ -147,7 +147,7 @@ export const useAppStore = defineStore({
                             shareRequest.from,
                             'items'
                         ),
-                        where('sharedWith', 'array-contains', userId),
+                        where('sharedWith', 'array-contains', userEmail),
                         where('uuid', '==', shareRequest.groupId)
                     );
 
@@ -328,15 +328,16 @@ export const useAppStore = defineStore({
         },
         // Group Actions
         createGroup(name: string, description: string, sharedWith: string) {
+            const sharedArray = sharedWith
+                ? sharedWith.replace(' ', '').split(',')
+                : [];
             const group = {
                 uuid: uuidv4(),
                 name,
                 taskOrder: [],
                 dateCreated: new Date().getTime(),
                 description,
-                sharedWith: sharedWith
-                    ? sharedWith.replace(' ', '').split(',')
-                    : [],
+                sharedWith: sharedArray,
                 createdBy: useUserStore().uid || 'localUser',
             };
 
@@ -349,9 +350,19 @@ export const useAppStore = defineStore({
                     Object.assign({}, this.groupOrder),
                     groupsCollection
                 );
+
+                if (sharedWith) {
+                    sharedArray.forEach((email) =>
+                        firebaseAdapter!.createShareRequest(
+                            useUserStore().uid,
+                            email,
+                            group.uuid
+                        )
+                    );
+                }
             }
         },
-        updateGroup(
+        async updateGroup(
             groupId: string,
             name: string,
             description: string,
@@ -359,17 +370,46 @@ export const useAppStore = defineStore({
         ) {
             const group = this.getGroupById(groupId);
             if (group) {
-                group.name = name;
-                group.description = description;
-                group.sharedWith = sharedWith
+                const sharedArray = sharedWith
                     ? sharedWith.replace(' ', '').split(',')
                     : [];
+                let shareRequestOperation;
+                if (sharedArray.length > 0) {
+                    shareRequestOperation = 'UPDATE';
+                } else if (
+                    sharedArray.length === 0 &&
+                    group.sharedWith.length > 0
+                ) {
+                    shareRequestOperation = 'DELETE';
+                }
+
+                group.name = name;
+                group.description = description;
+                group.sharedWith = sharedArray;
                 if (firebaseAdapter) {
                     firebaseAdapter.updateDoc(
                         groupId,
-                        { name, description },
+                        { name, description, sharedWith: sharedArray },
                         'groups'
                     );
+
+                    if (shareRequestOperation === 'UPDATE') {
+                        await firebaseAdapter?.deleteAllShareRequests(
+                            useUserStore().uid
+                        );
+
+                        sharedArray.forEach((email) =>
+                            firebaseAdapter!.createShareRequest(
+                                useUserStore().uid,
+                                email,
+                                group.uuid
+                            )
+                        );
+                    } else if (shareRequestOperation === 'DELETE') {
+                        await firebaseAdapter?.deleteAllShareRequests(
+                            useUserStore().uid
+                        );
+                    }
                 }
             }
         },

@@ -4,11 +4,15 @@ import {
     deleteDoc,
     doc,
     getDocs,
+    query,
     setDoc,
     updateDoc,
+    where,
     type DocumentData,
     type Firestore,
 } from '@firebase/firestore';
+
+const SHARE_REQUESTS_COLLECTION = 'share-requests';
 
 export class FirebaseAdapter {
     userId: string;
@@ -52,6 +56,32 @@ export class FirebaseAdapter {
     async deleteDoc(documentId: string, collectionName: string) {
         return deleteDoc(
             doc(this.db, collectionName, this.userId, 'items', documentId)
+        );
+    }
+
+    async deleteAllShareRequests(userId: string | undefined) {
+        const q = query(
+            collection(this.db, SHARE_REQUESTS_COLLECTION),
+            where('from', '==', userId)
+        );
+        const docsToDelete = await getDocs(q);
+        docsToDelete.forEach((doc) => {
+            deleteDoc(doc.ref);
+        });
+    }
+
+    async createShareRequest(
+        userId: string | undefined,
+        email: string,
+        groupId: string
+    ) {
+        return setDoc(
+            doc(this.db, SHARE_REQUESTS_COLLECTION, email + '_' + groupId),
+            {
+                from: userId,
+                groupId: groupId,
+                to: email,
+            }
         );
     }
 
