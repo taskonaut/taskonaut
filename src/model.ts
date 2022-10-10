@@ -19,3 +19,9 @@ export interface Group {
     dateCreated: number;
     sharedWith: string[];
 }
+
+export interface ShareRequest {
+    from: string;
+    groupId: string;
+    to: string;
+}
