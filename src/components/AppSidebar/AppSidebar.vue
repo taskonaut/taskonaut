@@ -17,6 +17,7 @@
         </template>
         <SidebarMainSection />
         <SidebarGroupSection />
+        <SidebarSharedGroupSection />
     </v-navigation-drawer>
 </template>
 
@@ -25,6 +26,7 @@ import { computed } from 'vue';
 import { useUserStore } from '@/stores/userStore';
 import SidebarMainSection from './partials/SidebarMainSection.vue';
 import SidebarGroupSection from './partials/SidebarGroupSection.vue';
+import SidebarSharedGroupSection from './partials/SidebarSharedGroupSection.vue';
 
 const props = defineProps<{
     modelValue: boolean;
