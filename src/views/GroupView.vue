@@ -3,11 +3,7 @@
         <v-list-subheader title="ONGOING" />
         <draggable item-key="uuid" v-model="tasks" handle=".handle">
             <template #item="{ element }">
-                <TaskItem
-                    v-if="!element.complete"
-                    :task="element"
-                    :isDraggable="true"
-                />
+                <TaskItem :task="element!" :isDraggable="true" />
             </template>
         </draggable>
         <AddListItem />
@@ -46,7 +42,7 @@ const tasks = computed({
 });
 
 const doneTasks = computed(() =>
-    store.getGroupTasks(groupId.value).filter((task) => task.complete)
+    store.getGroupTasks(groupId.value).filter((task) => task && task?.complete)
 );
 </script>
 

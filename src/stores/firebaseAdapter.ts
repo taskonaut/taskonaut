@@ -4,13 +4,12 @@ import {
     deleteDoc,
     doc,
     getDocs,
-    query,
     setDoc,
     updateDoc,
-    where,
     type DocumentData,
     type Firestore,
 } from '@firebase/firestore';
+import { useUserStore } from './userStore';
 
 const SHARE_REQUESTS_COLLECTION = 'share-requests';
 
@@ -23,9 +22,19 @@ export class FirebaseAdapter {
         this.userId = userId;
     }
 
-    async setDoc(document: DocumentData, collectionName: string) {
+    async setDoc(
+        document: DocumentData,
+        collectionName: string,
+        userId?: string
+    ) {
         return setDoc(
-            doc(this.db, collectionName, this.userId, 'items', document.uuid),
+            doc(
+                this.db,
+                collectionName,
+                userId ?? this.userId,
+                'items',
+                document.uuid
+            ),
             document
         );
     }
@@ -69,15 +78,10 @@ export class FirebaseAdapter {
         );
     }
 
-    async deleteAllShareRequests(userId: string | undefined) {
-        const q = query(
-            collection(this.db, SHARE_REQUESTS_COLLECTION),
-            where('from', '==', userId)
+    async deleteShareRequest(email: string, groupId: string) {
+        return deleteDoc(
+            doc(this.db, SHARE_REQUESTS_COLLECTION, email, 'items', groupId)
         );
-        const docsToDelete = await getDocs(q);
-        docsToDelete.forEach((doc) => {
-            deleteDoc(doc.ref);
-        });
     }
 
     async createShareRequest(
@@ -85,12 +89,13 @@ export class FirebaseAdapter {
         email: string,
         groupId: string
     ) {
+        await setDoc(doc(this.db, SHARE_REQUESTS_COLLECTION, email), {
+            displayName: useUserStore().displayName,
+        });
         return setDoc(
-            doc(this.db, SHARE_REQUESTS_COLLECTION, email + '_' + groupId),
+            doc(this.db, SHARE_REQUESTS_COLLECTION, email, 'items', groupId),
             {
-                from: userId,
-                groupId: groupId,
-                to: email,
+                ownerId: userId,
             }
         );
     }

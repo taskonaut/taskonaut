@@ -140,7 +140,7 @@ const formData = reactive({
     rules: [(v: any) => !!v || 'Name is required'],
     name: props.task?.header || '',
     body: props.task?.body || '',
-    groupId: props.task?.groupId || selectedGroup,
+    groupId: (props.task?.groupId || selectedGroup) as any,
     dueDate: props.task?.dueDate || undefined,
 });
 
