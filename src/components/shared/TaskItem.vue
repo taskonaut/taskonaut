@@ -1,10 +1,10 @@
 <template>
-    <div>
+    <div v-if="task">
         <v-list-item
             :lines="countLines()"
             :rounded="true"
-            :title="task.header"
-            :value="task!.uuid"
+            :title="task?.header"
+            :value="task?.uuid"
             :active="false"
             :class="task.complete && 'complete'"
         >
@@ -84,15 +84,15 @@ const props = defineProps<{
 }>();
 
 const appStore = useAppStore();
-const task = computed(() => appStore.getTaskById(props.task.uuid));
+const task = computed(() => appStore.getTaskById(props?.task?.uuid));
 
 const mobile = useDisplay().xs;
 
 function countLines(): 'one' | 'two' | 'three' {
     const numberNames = ['one', 'two', 'three'];
     let count = 0;
-    if (props.task.dueDate) count++;
-    if (props.task.body) count++;
+    if (props.task && props.task.dueDate) count++;
+    if (props.task && props.task.body) count++;
 
     return numberNames[count] as 'one' | 'two' | 'three';
 }

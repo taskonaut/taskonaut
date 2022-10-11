@@ -1,6 +1,13 @@
 import type { Group, Task } from '@/model';
 import router from '@/router';
-import { doc, onSnapshot } from '@firebase/firestore';
+import {
+    collection,
+    doc,
+    getDocs,
+    onSnapshot,
+    query,
+    where,
+} from '@firebase/firestore';
 import { defineStore } from 'pinia';
 import { v4 as uuidv4 } from 'uuid';
 import { watch, type WatchStopHandle } from 'vue';
@@ -11,6 +18,8 @@ export interface AppStore {
     tasks: Task[];
     groups: Group[];
     groupOrder: string[];
+    sharedGroups: Group[];
+    sharedTasks: Task[];
 }
 
 let firebaseAdapter: FirebaseAdapter | undefined;
@@ -28,17 +37,28 @@ export const useAppStore = defineStore({
         tasks: [],
         groups: [],
         groupOrder: [],
+        sharedGroups: [],
+        sharedTasks: [],
     }),
     getters: {
         getTaskById: (state) => (taskId: string) =>
-            state.tasks.find((task) => task.uuid == taskId),
+            [...state.tasks, ...state.sharedTasks].find(
+                (task) => task.uuid == taskId
+            ),
         getGroups: (state) => state.groups,
+        getSharedGroups: (state) => state.sharedGroups,
         getGroupById: (state) => (groupId: string) =>
-            state.groups.find((group) => group.uuid == groupId),
+            [...state.groups, ...state.sharedGroups].find(
+                (group) => group.uuid == groupId
+            ),
         getGroupTasks: (state) => (groupId: string) =>
-            state.tasks.filter((task) => task.groupId == groupId),
+            [...state.tasks, ...state.sharedTasks].filter(
+                (task) => task.groupId == groupId
+            ),
         getTaskOrderById: (state) => (groupId: string) =>
-            state.groups.find((group) => group.uuid == groupId)?.taskOrder,
+            [...state.groups, ...state.sharedGroups].find(
+                (group) => group.uuid == groupId
+            )?.taskOrder,
         getInboxTasks: (state) => () =>
             state.tasks.filter((task) => !task.groupId),
         getTodayTasks: (state) => () => {
@@ -48,8 +68,9 @@ export const useAppStore = defineStore({
             );
         },
         getGroupOrder: (state) => (groupId: string) =>
-            state.groups.find((group) => group.uuid == groupId)
-                ?.taskOrder as string[],
+            [...state.groups, ...state.sharedGroups].find(
+                (group) => group.uuid == groupId
+            )?.taskOrder as string[],
         // View Getters
         getUpcomingTasks: (state) => () => {
             const today = new Date();
@@ -79,7 +100,7 @@ export const useAppStore = defineStore({
         },
     },
     actions: {
-        async syncFirebase(userId: string) {
+        async syncFirebase(userId: string, userEmail: string) {
             if (!firebaseAdapter) {
                 firebaseAdapter = new FirebaseAdapter(userId);
                 onSnapshot(
@@ -111,6 +132,57 @@ export const useAppStore = defineStore({
                             : [];
                     }
                 );
+
+                const sharedGroupsSnapshot = await getDocs(
+                    collection(
+                        firebaseAdapter.db,
+                        'share-requests',
+                        userEmail,
+                        'items'
+                    )
+                );
+                sharedGroupsSnapshot.forEach((doc) => {
+                    const shareRequest = doc.data();
+
+                    const sharedGroupsQuery = query(
+                        collection(
+                            firebaseAdapter?.db!,
+                            'groups',
+                            shareRequest.ownerId,
+                            'items'
+                        ),
+                        where('sharedWith', 'array-contains', userEmail),
+                        where('uuid', '==', doc.id)
+                    );
+
+                    onSnapshot(sharedGroupsQuery, (snapshot) => {
+                        snapshot.forEach((group) => {
+                            this.sharedGroups = this.sharedGroups.filter(
+                                (item) => item.uuid !== group.data().uuid
+                            );
+                            this.sharedGroups.push(group.data() as Group);
+                        });
+                    });
+
+                    const sharedTasksQuery = query(
+                        collection(
+                            firebaseAdapter?.db!,
+                            'tasks',
+                            shareRequest.ownerId,
+                            'items'
+                        ),
+                        where('groupId', '==', doc.id)
+                    );
+
+                    onSnapshot(sharedTasksQuery, (snapshot) => {
+                        snapshot.forEach((task) => {
+                            this.sharedTasks = this.sharedTasks.filter(
+                                (item) => item.uuid !== task.data().uuid
+                            );
+                            this.sharedTasks.push(task.data() as Task);
+                        });
+                    });
+                });
             }
         },
         syncLocalStorage() {
@@ -145,6 +217,10 @@ export const useAppStore = defineStore({
             groupId?: undefined | string,
             dueDate?: undefined | number
         ) {
+            let group;
+            if (groupId) {
+                group = this.getGroupById(groupId);
+            }
             const task = {
                 uuid: uuidv4(),
                 groupId: groupId || '',
@@ -159,18 +235,9 @@ export const useAppStore = defineStore({
             this.tasks.push(task);
             if (task.groupId) {
                 this.addToTaskOrder(task.groupId, task.uuid);
-                if (firebaseAdapter) {
-                    firebaseAdapter.updateDoc(
-                        task.groupId,
-                        {
-                            taskOrder: this.getTaskOrderById(task.groupId),
-                        },
-                        'groups'
-                    );
-                }
             }
             if (firebaseAdapter) {
-                firebaseAdapter.setDoc(task, 'tasks');
+                firebaseAdapter.setDoc(task, 'tasks', group?.createdBy);
             }
         },
         updateTask(
@@ -180,6 +247,10 @@ export const useAppStore = defineStore({
             groupId: string | undefined,
             dueDate?: number | undefined
         ) {
+            let group;
+            if (groupId) {
+                group = this.getGroupById(groupId);
+            }
             const task = this.getTaskById(taskId);
             if (task) {
                 task.header = header;
@@ -199,13 +270,17 @@ export const useAppStore = defineStore({
                 firebaseAdapter.updateDoc(
                     taskId,
                     { header, body, groupId, dueDate },
-                    'tasks'
+                    'tasks',
+                    group?.createdBy
                 );
             }
         },
         toggleTask(taskId: string) {
+            let group;
             const task = this.getTaskById(taskId);
             if (task) {
+                if (task.groupId) group = this.getGroupById(task.groupId);
+
                 task.complete = !task.complete;
                 task.dateCompleted = task.complete
                     ? new Date().getTime()
@@ -223,20 +298,28 @@ export const useAppStore = defineStore({
                             complete: task.complete,
                             dateCompleted: task.dateCompleted,
                         },
-                        'tasks'
+                        'tasks',
+                        group?.createdBy
                     );
                 }
             }
         },
         deleteTask(taskId: string) {
             const task = this.getTaskById(taskId);
+            let group: Group | undefined;
+            if (task?.groupId) {
+                group = this.getGroupById(task?.groupId);
+            }
             if (task!.groupId) {
                 this.deleteFromTaskOrder(task!.groupId, taskId);
             }
             this.tasks = this.tasks.filter((task) => taskId !== task.uuid);
+            this.sharedTasks = this.sharedTasks.filter(
+                (task) => taskId !== task.uuid
+            );
 
             if (firebaseAdapter) {
-                firebaseAdapter.deleteDoc(taskId, 'tasks');
+                firebaseAdapter.deleteDoc(taskId, 'tasks', group!.createdBy);
             }
         },
         addToTaskOrder(groupId: string, taskId: string) {
@@ -249,7 +332,8 @@ export const useAppStore = defineStore({
                         {
                             taskOrder: group.taskOrder,
                         },
-                        'groups'
+                        'groups',
+                        group.createdBy
                     );
             }
         },
@@ -263,19 +347,23 @@ export const useAppStore = defineStore({
                         {
                             taskOrder: group.taskOrder,
                         },
-                        'groups'
+                        'groups',
+                        group.createdBy
                     );
             }
         },
         // Group Actions
-        createGroup(name: string, description: string) {
+        createGroup(name: string, description: string, sharedWith: string) {
+            const sharedArray = sharedWith
+                ? sharedWith.replace(' ', '').split(',')
+                : [];
             const group = {
                 uuid: uuidv4(),
                 name,
                 taskOrder: [],
                 dateCreated: new Date().getTime(),
                 description,
-                sharedWith: [],
+                sharedWith: sharedArray,
                 createdBy: useUserStore().uid || 'localUser',
             };
 
@@ -288,19 +376,64 @@ export const useAppStore = defineStore({
                     Object.assign({}, this.groupOrder),
                     groupsCollection
                 );
+
+                if (sharedWith) {
+                    sharedArray.forEach((email) =>
+                        firebaseAdapter!.createShareRequest(
+                            useUserStore().uid,
+                            email,
+                            group.uuid
+                        )
+                    );
+                }
             }
         },
-        updateGroup(groupId: string, name: string, description: string) {
+        async updateGroup(
+            groupId: string,
+            name: string,
+            description: string,
+            sharedWith: string
+        ) {
             const group = this.getGroupById(groupId);
             if (group) {
+                const sharedArray = sharedWith
+                    ? sharedWith.replace(' ', '').split(',')
+                    : [];
+                let shareRequestOperation;
+                if (sharedArray.length > 0) {
+                    shareRequestOperation = 'UPDATE';
+                } else if (
+                    sharedArray.length === 0 &&
+                    group.sharedWith.length > 0
+                ) {
+                    shareRequestOperation = 'DELETE';
+                    await firebaseAdapter?.deleteShareRequest(
+                        group.sharedWith[0],
+                        groupId
+                    );
+                }
+
                 group.name = name;
                 group.description = description;
+                group.sharedWith = sharedArray;
                 if (firebaseAdapter) {
                     firebaseAdapter.updateDoc(
                         groupId,
-                        { name, description },
+                        { name, description, sharedWith: sharedArray },
                         'groups'
                     );
+
+                    if (shareRequestOperation === 'UPDATE') {
+                        await firebaseAdapter.deleteShareRequest(
+                            group.sharedWith[0],
+                            groupId
+                        );
+                        await firebaseAdapter.createShareRequest(
+                            useUserStore().uid,
+                            sharedArray[0],
+                            group.uuid
+                        );
+                    }
                 }
             }
         },
@@ -344,12 +477,14 @@ export const useAppStore = defineStore({
         },
         // Used for Draggable.Next
         setTaskOrder(groupId: string, order: string[]) {
+            const group = this.getGroupById(groupId);
             this.getGroupById(groupId)!.taskOrder = order;
             if (firebaseAdapter) {
                 firebaseAdapter.updateDoc(
                     groupId,
                     { taskOrder: order },
-                    'groups'
+                    'groups',
+                    group?.createdBy
                 );
             }
         },
