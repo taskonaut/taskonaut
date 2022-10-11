@@ -39,12 +39,15 @@ const props = defineProps<{
 }>();
 
 const showDialog = ref(false);
-const taskCount = computed(
-    () =>
-        useAppStore()
+const taskCount = computed(() => {
+    if (props.group) {
+        return useAppStore()
             .getGroupTasks(props.group.uuid)
-            .filter((task) => !task.complete).length
-);
+            .filter((task) => !task.complete).length;
+    } else {
+        return 0;
+    }
+});
 
 function switchGroupRoute(listId: string) {
     router.push({ name: 'group', params: { id: listId } });
