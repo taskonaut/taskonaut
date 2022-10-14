@@ -56,6 +56,7 @@
                         @keydown="textareaHandler($event)"
                     ></v-textarea>
                     <v-text-field
+                        v-if="isLoggedIn"
                         autofocus
                         density="compact"
                         variant="outlined"
@@ -88,6 +89,8 @@
 import type { Group } from '@/model';
 import router from '@/router';
 import { useAppStore } from '@/stores/appStore';
+import { useUserStore } from '@/stores/userStore';
+import { computed } from '@vue/reactivity';
 import { reactive, ref } from 'vue';
 import { useDisplay } from 'vuetify';
 import ConfirmDialog from './ConfirmDialog.vue';
@@ -106,6 +109,9 @@ const deleteConfirmDialog = ref(false);
 const { mobile } = useDisplay();
 
 const appStore = useAppStore();
+const userStore = useUserStore();
+
+const isLoggedIn = computed(() => userStore.isLoggedIn);
 
 const form = ref();
 const nameInput = ref();
