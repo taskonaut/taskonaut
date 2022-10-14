@@ -1,6 +1,6 @@
 <template>
     <TaskList :tasks="ongoingTasks" :subheader="'ONGOING'">
-        <AddListItem />
+        <AddListItem v-if="!props.hideAddButton" />
     </TaskList>
     <v-divider v-if="completeTasks.length" />
     <div class="completed">
@@ -19,6 +19,7 @@ import AddListItem from './AddListItem.vue';
 
 const props = defineProps<{
     tasks: Task[];
+    hideAddButton?: boolean;
 }>();
 
 const ongoingTasks = computed(() =>
