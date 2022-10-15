@@ -30,7 +30,7 @@
                     />
                     <div v-else style="width: 32px" id="spacer"></div>
                     <v-checkbox-btn
-                        @change="toggleTask(task!.uuid)"
+                        @change="toggleTask()"
                         :model-value="task!.complete"
                         true-icon="mdi-checkbox-marked-circle-outline"
                         false-icon="mdi-checkbox-blank-circle-outline"
@@ -97,8 +97,8 @@ function countLines(): 'one' | 'two' | 'three' {
     return numberNames[count] as 'one' | 'two' | 'three';
 }
 
-function toggleTask(taskId: string) {
-    appStore.toggleTask(taskId);
+function toggleTask() {
+    appStore.updateTask({ ...task.value, complete: !task?.value?.complete });
 }
 
 function deleteTask(taskId: string) {

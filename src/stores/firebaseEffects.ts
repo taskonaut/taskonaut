@@ -14,6 +14,7 @@ import {
 } from './actions';
 import { useAppStore } from './appStore';
 import type { FirebaseAdapter } from './firebaseAdapter';
+import { useUserStore } from './userStore';
 
 export const registerFirestoreEffects = (adapter: FirebaseAdapter) => {
     useAppStore().$onAction(
@@ -87,16 +88,50 @@ export const registerFirestoreEffects = (adapter: FirebaseAdapter) => {
                         );
                         break;
                     case CREATE_GROUP:
+                        result = result as Group;
+                        adapter.setDoc(result, 'groups');
+
+                        if ((result as Group).sharedWith) {
+                            (result as Group).sharedWith.forEach((email) =>
+                                adapter!.createShareRequest(
+                                    useUserStore().uid,
+                                    email,
+                                    (result as Group).uuid!
+                                )
+                            );
+                        }
                         break;
                     case UPDATE_GROUP:
+                        // TODO
                         break;
                     case RESET_GROUP:
+                        store.getGroupTasks(args[0]).forEach((task) => {
+                            adapter.updateDoc(
+                                task.uuid,
+                                {
+                                    complete: task.complete,
+                                    dateCompleted: task.dateCompleted,
+                                },
+                                'tasks'
+                            );
+                        });
                         break;
                     case DELETE_GROUP:
+                        adapter.deleteDoc(args[0], 'groups');
                         break;
                     case SET_TASK_ORDER:
+                        adapter.updateDoc(
+                            args[0],
+                            { taskOrder: args[1] },
+                            'groups',
+                            store.getGroupById(args[0])?.createdBy
+                        );
                         break;
                     case SET_GROUP_ORDER:
+                        adapter.setStringArrayAsDoc(
+                            Object.assign({}, store.groupOrder),
+                            'groups'
+                        );
                         break;
                     default:
                         break;

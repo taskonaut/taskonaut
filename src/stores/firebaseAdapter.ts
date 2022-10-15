@@ -1,4 +1,4 @@
-import { db } from '@/firebaseConfig';
+import { db, FirebaseCollections } from '@/firebaseConfig';
 import {
     collection,
     deleteDoc,
@@ -9,17 +9,17 @@ import {
     type DocumentData,
     type Firestore,
 } from '@firebase/firestore';
+import { registerFirestoreEffects } from './firebaseEffects';
 import { useUserStore } from './userStore';
 
-const SHARE_REQUESTS_COLLECTION = 'share-requests';
-
 export class FirebaseAdapter {
-    userId: string;
     db: Firestore;
+    userId: string;
 
     constructor(userId: string) {
         this.db = db;
         this.userId = userId;
+        registerFirestoreEffects(this);
     }
 
     async setDoc(
@@ -80,7 +80,13 @@ export class FirebaseAdapter {
 
     async deleteShareRequest(email: string, groupId: string) {
         return deleteDoc(
-            doc(this.db, SHARE_REQUESTS_COLLECTION, email, 'items', groupId)
+            doc(
+                this.db,
+                FirebaseCollections.ShareRequests,
+                email,
+                'items',
+                groupId
+            )
         );
     }
 
@@ -89,11 +95,17 @@ export class FirebaseAdapter {
         email: string,
         groupId: string
     ) {
-        await setDoc(doc(this.db, SHARE_REQUESTS_COLLECTION, email), {
+        await setDoc(doc(this.db, FirebaseCollections.ShareRequests, email), {
             displayName: useUserStore().displayName,
         });
         return setDoc(
-            doc(this.db, SHARE_REQUESTS_COLLECTION, email, 'items', groupId),
+            doc(
+                this.db,
+                FirebaseCollections.ShareRequests,
+                email,
+                'items',
+                groupId
+            ),
             {
                 ownerId: userId,
             }

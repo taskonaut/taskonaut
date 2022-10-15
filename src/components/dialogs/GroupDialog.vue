@@ -61,7 +61,7 @@
                         density="compact"
                         variant="outlined"
                         v-model="formData.sharedWith"
-                        label="Share with emails (optional)"
+                        label="Share by email (optional)"
                         required
                         ref="sharedWithInput"
                         @keydown.enter="formSubmit()"
@@ -90,8 +90,7 @@ import type { Group } from '@/model';
 import router from '@/router';
 import { useAppStore } from '@/stores/appStore';
 import { useUserStore } from '@/stores/userStore';
-import { computed } from '@vue/reactivity';
-import { reactive, ref } from 'vue';
+import { computed, reactive, ref } from 'vue';
 import { useDisplay } from 'vuetify';
 import ConfirmDialog from './ConfirmDialog.vue';
 

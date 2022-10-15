@@ -44,13 +44,14 @@
                         autofocus
                         density="compact"
                         variant="outlined"
-                        v-model="formData.name"
+                        v-model="formData.header"
                         label="Task Name"
                         :rules="formData.rules"
                         required
-                        ref="nameInput"
+                        ref="headerInput"
                         @keydown.enter="
-                            if (!formData.name && !formData.body) closeDialog();
+                            if (!formData.header && !formData.body)
+                                closeDialog();
                         "
                     ></v-text-field>
 
@@ -130,7 +131,7 @@ const appStore = useAppStore();
 
 const confirmDialog = ref(false);
 const form = ref();
-const nameInput = ref();
+const headerInput = ref();
 const selectedGroup =
     router.currentRoute.value.name === 'group'
         ? (router.currentRoute?.value?.params?.id as string)
@@ -138,7 +139,7 @@ const selectedGroup =
 const formData = reactive({
     valid: false,
     rules: [(v: any) => !!v || 'Name is required'],
-    name: props.task?.header || '',
+    header: props.task?.header || '',
     body: props.task?.body || '',
     groupId: (props.task?.groupId || selectedGroup) as any,
     dueDate: props.task?.dueDate || undefined,
@@ -148,24 +149,13 @@ const taskGroups = computed(() => appStore.getGroups);
 
 function formSubmit() {
     if (props.task) {
-        appStore.updateTask(
-            props.task.uuid,
-            formData.name,
-            formData.body,
-            formData.groupId,
-            formData.dueDate
-        );
+        appStore.updateTask({ uuid: props.task.uuid, ...formData });
         closeDialog();
     } else {
-        appStore.createTask(
-            formData.name,
-            formData.body,
-            formData.groupId,
-            formData.dueDate
-        );
+        appStore.createTask(formData);
         form.value.reset();
         formData.groupId = selectedGroup || undefined;
-        nameInput.value.focus();
+        headerInput.value.focus();
     }
 }
 
@@ -177,7 +167,7 @@ function textareaHandler(event: KeyboardEvent) {
         formData.body += '\n';
     } else if (!event.ctrlKey && event.key === 'Enter') {
         event.preventDefault();
-        if (formData.name) formSubmit();
+        if (formData.header) formSubmit();
     }
 }
 
