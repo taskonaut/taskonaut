@@ -16,7 +16,8 @@ export default defineConfig({
             workbox: {
                 runtimeCaching: [
                     {
-                        urlPattern: /^https:\/\/taskominator\.vercel\.app\/.*/i,
+                        urlPattern:
+                            /^https:\/\/taskominator\.vercel\.app\/assets\/.*/i,
                         handler: 'CacheFirst',
                         options: {
                             cacheName: 'taskominator-fonts-cache',
