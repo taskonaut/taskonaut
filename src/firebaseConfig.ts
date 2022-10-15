@@ -11,6 +11,12 @@ export const firebaseConfig = {
     appId: '1:537013467227:web:99513c35a81b8d8d85a77e',
 };
 
+export enum FirebaseCollections {
+    Tasks = 'tasks',
+    Groups = 'groups',
+    ShareRequests = 'share-requests',
+}
+
 const app = initializeApp(firebaseConfig);
 
 initializeFirestore(app, { ignoreUndefinedProperties: true });
