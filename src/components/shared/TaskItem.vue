@@ -62,6 +62,7 @@
                 @dialog:confirm="deleteTask(task!.uuid)"
             />
         </v-list-item>
+        <v-divider></v-divider>
     </div>
 </template>
 
@@ -108,8 +109,6 @@ function deleteTask(taskId: string) {
 
 <style scoped>
 .v-list-item {
-    border-bottom: 1px #333333 solid;
-    border-radius: 0;
     padding-bottom: 10px;
 }
 .hidden-opacity {
