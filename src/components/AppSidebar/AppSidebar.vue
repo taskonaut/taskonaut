@@ -13,7 +13,15 @@
                 :prepend-avatar="photoURL"
                 :title="displayName || 'Anonymous'"
                 :subtitle="displayName ? 'Logged in' : 'Not logged in'"
-            ></v-list-item>
+            >
+                <template v-slot:append>
+                    <v-btn
+                        variant="text"
+                        icon="mdi-cog"
+                        @click="router.push({ name: 'settings' })"
+                    ></v-btn>
+                </template>
+            </v-list-item>
         </template>
         <SidebarMainSection />
         <SidebarGroupSection />
@@ -27,6 +35,7 @@ import { useUserStore } from '@/stores/userStore';
 import SidebarMainSection from './partials/SidebarMainSection.vue';
 import SidebarGroupSection from './partials/SidebarGroupSection.vue';
 import SidebarSharedGroupSection from './partials/SidebarSharedGroupSection.vue';
+import router from '../../router';
 
 const props = defineProps<{
     modelValue: boolean;

@@ -13,31 +13,10 @@
                 <span id="routeName">{{ getRouteName() }}</span>
             </v-toolbar-title>
             <v-btn
+                v-if="$router.currentRoute.value.name !== 'settings'"
                 @click="showDialog = true"
                 variant="text"
                 icon="mdi-plus"
-            ></v-btn>
-            <v-btn
-                @click="toggleTheme"
-                variant="text"
-                icon="mdi-theme-light-dark"
-            ></v-btn>
-            <v-btn
-                @click="router.push({ name: 'settings' })"
-                variant="text"
-                icon="mdi-cog"
-            ></v-btn>
-            <v-btn
-                v-if="loggedIn"
-                variant="text"
-                icon="mdi-logout"
-                @click="userStore.logout"
-            ></v-btn>
-            <v-btn
-                v-else
-                variant="text"
-                icon="mdi-login"
-                @click="userStore.login"
             ></v-btn>
         </v-app-bar>
         <AppSidebar v-model="drawer" />
@@ -66,7 +45,6 @@ import { useRoute } from 'vue-router';
 import { onMounted, ref } from 'vue';
 import { useUserStore } from './stores/userStore';
 import { useAppStore } from './stores/appStore';
-import { computed } from 'vue';
 import { useDisplay, useTheme } from 'vuetify';
 import AppSidebar from '@/components/AppSidebar/AppSidebar.vue';
 import TaskDialog from '@/components/dialogs/TaskDialog.vue';
@@ -74,14 +52,9 @@ import ReloadPrompt from '@/components/ReloadPrompt.vue';
 import router from './router';
 
 const { lgAndUp } = useDisplay();
-
 const showDialog = ref(false);
-
 const drawer = ref(true);
-
 const appStore = useAppStore();
-const userStore = useUserStore();
-const loggedIn = computed(() => userStore.isLoggedIn);
 const theme = useTheme();
 
 onMounted(async () => {
@@ -90,12 +63,6 @@ onMounted(async () => {
 
 function toggleDrawer() {
     drawer.value = !drawer.value;
-}
-
-function toggleTheme() {
-    theme.global.name.value = theme.global.current.value.dark
-        ? 'customLightTheme'
-        : 'customDarkTheme';
 }
 
 function getRouteName(): string {
