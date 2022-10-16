@@ -9,7 +9,7 @@
     >
         <v-form
             ref="form"
-            v-model="formData.valid"
+            v-model="isFormValid"
             :submit="formSubmit"
             autocomplete="off"
         >
@@ -27,14 +27,19 @@
                     <v-spacer></v-spacer>
                     <v-toolbar-items>
                         <v-btn
-                            :disabled="!formData.valid"
+                            :disabled="!isFormValid"
                             type="submit"
                             v-if="!props.task"
                             text
                             dark
                             >Add</v-btn
                         >
-                        <v-btn type="submit" v-if="props.task" text dark
+                        <v-btn
+                            type="submit"
+                            v-if="props.task"
+                            :disabled="!isFormValid"
+                            text
+                            dark
                             >Save</v-btn
                         >
                     </v-toolbar-items>
@@ -46,7 +51,7 @@
                         variant="outlined"
                         v-model="formData.header"
                         label="Task Name"
-                        :rules="formData.rules"
+                        :rules="formRules"
                         required
                         ref="headerInput"
                         @keydown.enter="
@@ -141,9 +146,10 @@ const dueDate = props.task
     : router.currentRoute.value.name === 'today'
     ? new Date().getTime()
     : undefined;
+
+const formRules = [(v: any) => !!v || 'Name is required'];
+const isFormValid = ref(false);
 const formData = reactive({
-    valid: false,
-    rules: [(v: any) => !!v || 'Name is required'],
     header: props.task?.header || '',
     body: props.task?.body || '',
     groupId: (props.task?.groupId || selectedGroup) as any,
