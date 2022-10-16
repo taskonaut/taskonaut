@@ -258,10 +258,12 @@ export const useAppStore = defineStore({
                     if (updatedTask.groupId && !task.complete) {
                         this.addToTaskOrder(updatedTask.groupId, task.uuid);
                     }
+                    task.groupId = updatedTask.groupId;
+                }
+                if (task.groupId) {
                     updatedTask.complete
                         ? this.deleteFromTaskOrder(task.groupId!, task.uuid)
                         : this.addToTaskOrder(updatedTask.groupId!, task.uuid);
-                    task.groupId = updatedTask.groupId;
                 }
             }
             return updatedTask;
