@@ -136,13 +136,18 @@ const selectedGroup =
     router.currentRoute.value.name === 'group'
         ? (router.currentRoute?.value?.params?.id as string)
         : undefined;
+const dueDate = props.task
+    ? props.task?.dueDate || undefined
+    : router.currentRoute.value.name === 'today'
+    ? new Date().getTime()
+    : undefined;
 const formData = reactive({
     valid: false,
     rules: [(v: any) => !!v || 'Name is required'],
     header: props.task?.header || '',
     body: props.task?.body || '',
     groupId: (props.task?.groupId || selectedGroup) as any,
-    dueDate: props.task?.dueDate || undefined,
+    dueDate,
 });
 
 const taskGroups = computed(() => appStore.getGroups);
