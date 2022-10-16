@@ -1,11 +1,12 @@
 <template>
-    <v-list
-        select-strategy="leaf"
-        bg-color="background"
-        v-if="tasks && tasks.length > 0"
-    >
+    <v-list select-strategy="leaf" bg-color="background">
         <v-list-subheader title="ONGOING" />
-        <draggable item-key="uuid" v-model="tasks" handle=".handle">
+        <draggable
+            item-key="uuid"
+            v-model="tasks"
+            handle=".handle"
+            v-if="tasks && tasks.length > 0"
+        >
             <template #item="{ element }">
                 <TaskItem :task="element!" :isDraggable="true" />
             </template>
