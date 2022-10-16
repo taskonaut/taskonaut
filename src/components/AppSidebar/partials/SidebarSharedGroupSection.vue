@@ -10,13 +10,6 @@
                 class="d-flex align-content-center subtitle"
                 title="Shared projects"
             />
-            <v-btn
-                :rounded="true"
-                size="x-small"
-                icon="mdi-plus"
-                variant="flat"
-                @click="openDialog = true"
-            />
         </v-row>
         <GroupItem
             v-for="element in groups"
