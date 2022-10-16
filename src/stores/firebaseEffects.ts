@@ -1,3 +1,4 @@
+import { FirebaseCollections } from '@/firebaseConfig';
 import type { Group, Task } from '@/model';
 import {
     ADD_TO_TASK_ORDER,
@@ -37,11 +38,11 @@ export const registerFirestoreEffects = (adapter: FirebaseAdapter) => {
                         if (result.groupId) {
                             adapter.setDoc(
                                 result,
-                                'tasks',
+                                FirebaseCollections.Tasks,
                                 store.getGroupById(result.groupId)?.createdBy
                             );
                         } else {
-                            adapter.setDoc(result, 'tasks');
+                            adapter.setDoc(result, FirebaseCollections.Tasks);
                         }
                         break;
                     case UPDATE_TASK:
@@ -54,7 +55,7 @@ export const registerFirestoreEffects = (adapter: FirebaseAdapter) => {
                         adapter.updateDoc(
                             result.uuid!,
                             result,
-                            'tasks',
+                            FirebaseCollections.Tasks,
                             group?.createdBy
                         );
                         break;
@@ -65,7 +66,11 @@ export const registerFirestoreEffects = (adapter: FirebaseAdapter) => {
                         } else {
                             group = undefined;
                         }
-                        adapter.deleteDoc(args[0], 'tasks', group?.createdBy);
+                        adapter.deleteDoc(
+                            args[0],
+                            FirebaseCollections.Tasks,
+                            group?.createdBy
+                        );
                         break;
                     case ADD_TO_TASK_ORDER:
                         adapter.updateDoc(
@@ -73,7 +78,7 @@ export const registerFirestoreEffects = (adapter: FirebaseAdapter) => {
                             {
                                 taskOrder: (result as Group).taskOrder,
                             },
-                            'groups',
+                            FirebaseCollections.Groups,
                             (result as Group).createdBy
                         );
                         break;
@@ -83,13 +88,13 @@ export const registerFirestoreEffects = (adapter: FirebaseAdapter) => {
                             {
                                 taskOrder: (result as Group).taskOrder,
                             },
-                            'groups',
+                            FirebaseCollections.Groups,
                             (result as Group).createdBy
                         );
                         break;
                     case CREATE_GROUP:
                         result = result as Group;
-                        adapter.setDoc(result, 'groups');
+                        adapter.setDoc(result, FirebaseCollections.Groups);
 
                         if ((result as Group).sharedWith) {
                             (result as Group).sharedWith.forEach((email) =>
@@ -112,25 +117,25 @@ export const registerFirestoreEffects = (adapter: FirebaseAdapter) => {
                                     complete: task.complete,
                                     dateCompleted: task.dateCompleted,
                                 },
-                                'tasks'
+                                FirebaseCollections.Tasks
                             );
                         });
                         break;
                     case DELETE_GROUP:
-                        adapter.deleteDoc(args[0], 'groups');
+                        adapter.deleteDoc(args[0], FirebaseCollections.Groups);
                         break;
                     case SET_TASK_ORDER:
                         adapter.updateDoc(
                             args[0],
                             { taskOrder: args[1] },
-                            'groups',
+                            FirebaseCollections.Groups,
                             store.getGroupById(args[0])?.createdBy
                         );
                         break;
                     case SET_GROUP_ORDER:
                         adapter.setStringArrayAsDoc(
                             Object.assign({}, store.groupOrder),
-                            'groups'
+                            FirebaseCollections.Groups
                         );
                         break;
                     default:
