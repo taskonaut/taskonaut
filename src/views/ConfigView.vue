@@ -74,7 +74,7 @@
             <template v-slot:append>
                 <v-list-item-action
                     ><v-btn
-                        @click="resetData"
+                        @click="confirmDialog = true"
                         variant="text"
                         color="error"
                         append-icon="mdi-delete-forever"
@@ -143,14 +143,27 @@
             </template>
         </v-list-item>
     </v-list>
+    <ConfirmDialog
+        v-model="confirmDialog"
+        :title="'Reset App?'"
+        :message="'Are you sure you want to reset? All data will be lost!'"
+        @dialog:confirm="resetData"
+    />
 </template>
 <script setup lang="ts">
+import ConfirmDialog from '@/components/dialogs/ConfirmDialog.vue';
+import { useAppStore } from '@/stores/appStore';
 import { useUserStore } from '@/stores/userStore';
+import { getCurrentInstance, ref } from 'vue';
 import { useTheme } from 'vuetify/lib/framework.mjs';
 
+const instance = getCurrentInstance();
 const userStore = useUserStore();
+const appStore = useAppStore();
 const loggedIn = userStore.isLoggedIn;
 const theme = useTheme();
+
+const confirmDialog = ref(false);
 
 function exportData() {
     // TODO: implement me
@@ -161,7 +174,8 @@ function importData() {
 }
 
 function resetData() {
-    // TODO: implement me
+    appStore.$reset();
+    instance?.proxy?.$forceUpdate();
 }
 
 function saveTheme() {
