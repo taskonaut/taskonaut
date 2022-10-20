@@ -91,6 +91,7 @@
                         placeholder="Due Date"
                         dark
                         autoApply
+                        @update:modelValue="form.validate()"
                     />
                 </v-card-text>
                 <v-card-actions v-if="props.task?.uuid">
