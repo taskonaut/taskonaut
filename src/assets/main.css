@@ -1,3 +1,7 @@
 html {
     overflow-y: auto !important;
 }
+
+.sm-btn-icon {
+    color: #666;
+}
