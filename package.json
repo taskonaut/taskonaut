@@ -16,6 +16,7 @@
   "dependencies": {
     "@mdi/font": "5.9.55",
     "@vuepic/vue-datepicker": "^3.4.8",
+    "bottom-navigation-vue": "^3.0.0",
     "firebase": "^9.10.0",
     "pinia": "^2.0.21",
     "roboto-fontface": "*",
