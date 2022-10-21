@@ -16,9 +16,14 @@
                 <v-toolbar-title v-if="props.task"> Edit Task </v-toolbar-title>
             </v-toolbar>
             <v-card-text>
-                <v-form ref="form" v-model="isFormValid" :submit="formSubmit">
+                <v-form
+                    ref="form"
+                    v-model="isFormValid"
+                    :submit="formSubmit"
+                    autocomplete="off"
+                >
                     <v-text-field
-                        autocomplete="off"
+                        type="search"
                         :autofocus="props.task ? false : true"
                         density="compact"
                         variant="outlined"
