@@ -7,7 +7,7 @@
     "test:e2e": "start-server-and-test preview http://localhost:4173/ 'cypress open --e2e'",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "build-only": "vite build",
-    "dev": "vite",
+    "dev": "vite --host",
     "preview": "vite preview --port 4173",
     "test:e2e:ci": "start-server-and-test preview http://localhost:4173/ 'cypress run --e2e'",
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
