@@ -244,13 +244,20 @@ export const useAppStore = defineStore({
         [UPDATE_TASK](updatedTask: Partial<Task>) {
             const task = this.getTaskById(updatedTask.uuid!);
             if (task) {
-                task.header = updatedTask.header!;
-                task.body = updatedTask.body;
-                task.dueDate = updatedTask.dueDate || undefined;
-                task.complete = updatedTask.complete!;
-                task.dateCompleted = updatedTask.dateCompleted =
-                    updatedTask.complete ? new Date().getTime() : undefined;
-
+                if (updatedTask.header) task.header = updatedTask.header;
+                if (updatedTask.body) task.body = updatedTask.body;
+                if (updatedTask.dueDate) task.dueDate = updatedTask.dueDate;
+                if (updatedTask.complete != (null || undefined)) {
+                    task.complete = updatedTask.complete;
+                    task.complete
+                        ? (task.dateCompleted = new Date().getTime())
+                        : (task.dateCompleted = undefined);
+                    if (task.groupId) {
+                        task.complete
+                            ? this.deleteFromTaskOrder(task.groupId, task.uuid)
+                            : this.addToTaskOrder(task.groupId, task.uuid);
+                    }
+                }
                 if (task.groupId != updatedTask.groupId) {
                     if (task.groupId) {
                         this.deleteFromTaskOrder(task.groupId, task.uuid);
@@ -259,11 +266,6 @@ export const useAppStore = defineStore({
                         this.addToTaskOrder(updatedTask.groupId, task.uuid);
                     }
                     task.groupId = updatedTask.groupId;
-                }
-                if (task.groupId) {
-                    updatedTask.complete
-                        ? this.deleteFromTaskOrder(task.groupId!, task.uuid)
-                        : this.addToTaskOrder(updatedTask.groupId!, task.uuid);
                 }
             }
             return updatedTask;
