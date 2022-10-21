@@ -11,7 +11,7 @@ afterEach(() => {
 const createTask = (taskText: string) => {
     cy.contains('.v-list-item', 'Add New Task').click();
     cy.get('input').eq(0).type(taskText);
-    cy.get('.v-toolbar-items > .v-btn').click();
+    cy.get('[data-cy="add-task-button"]').click();
     cy.get('.mdi-close').click();
 };
 
@@ -50,7 +50,7 @@ describe('Test task creation/editing/deletion', () => {
             .trigger('mouseover');
         cy.get('.show-on-hover').eq(1).invoke('show').click();
         cy.contains('Delete Task?').should('exist');
-        cy.get('.v-card-actions > .v-btn').click();
+        cy.contains('OK').click();
         cy.get('.v-container > .v-list')
             .find('.v-list-item')
             .should('have.length', 1);
@@ -71,7 +71,7 @@ describe('Test task creation/editing/deletion', () => {
         cy.get('.show-on-hover').eq(0).invoke('show').click();
         cy.contains('Edit Task').should('exist');
         cy.get('input').eq(1).clear().type(updatedText);
-        cy.get('.v-toolbar-items > .v-btn').click();
+        cy.get('[data-cy="save-task-button"]').click();
         cy.get('.v-container > .v-list')
             .find('.v-list-item')
             .should('have.length', 2);

@@ -76,11 +76,16 @@
                 <v-spacer></v-spacer>
                 <v-btn
                     v-if="!props.task"
+                    data-cy="add-task-button"
                     :disabled="!isFormValid"
                     @click="form.submit()"
                     >Add</v-btn
                 >
-                <v-btn v-else :disabled="!isFormValid" @click="form.submit()"
+                <v-btn
+                    v-else
+                    data-cy="save-task-button"
+                    :disabled="!isFormValid"
+                    @click="form.submit()"
                     >Save</v-btn
                 >
                 <v-btn color="warning" @click="confirmDialog = true">
