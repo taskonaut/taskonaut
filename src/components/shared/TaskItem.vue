@@ -29,7 +29,7 @@
                         :end="true"
                         icon="mdi-drag"
                     />
-                    <div v-else style="width: 32px" id="spacer"></div>
+                    <!-- <div v-else style="width: 32px" id="spacer"></div> -->
                     <v-checkbox-btn
                         @change="toggleTask()"
                         :model-value="task!.complete"

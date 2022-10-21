@@ -1,8 +1,8 @@
 <template>
     <TaskList :tasks="ongoingTasks" :subheader="'ONGOING'">
-        <AddListItem v-if="!props.hideAddButton" />
+        <AddListItem v-if="!props.hideAddButton && !smAndDown" />
     </TaskList>
-    <v-divider v-if="completeTasks.length" />
+    <v-divider v-if="completeTasks.length && !smAndDown" />
     <div class="completed">
         <TaskList
             v-if="completeTasks.length"
@@ -16,6 +16,9 @@ import type { Task } from '@/model';
 import { computed } from 'vue';
 import TaskList from './TaskList.vue';
 import AddListItem from './AddListItem.vue';
+import { useDisplay } from 'vuetify';
+
+const { smAndDown } = useDisplay();
 
 const props = defineProps<{
     tasks: Task[];
