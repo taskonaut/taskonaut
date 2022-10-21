@@ -7,6 +7,7 @@
             :value="task?.uuid"
             :active="false"
             :class="task.complete && 'complete'"
+            @dblclick="editDialog = true"
         >
             <v-list-item-subtitle>
                 <div v-if="task.body">{{ task.body }}</div>
