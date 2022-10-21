@@ -46,7 +46,7 @@
                 </v-toolbar>
                 <v-card-text>
                     <v-text-field
-                        autofocus
+                        :autofocus="props.task ? false : true"
                         density="compact"
                         variant="outlined"
                         v-model="formData.header"
@@ -159,7 +159,7 @@ const formData = reactive({
 const taskGroups = computed(() => appStore.getGroups);
 
 onMounted(() => {
-    form.value.validate();
+    if (props.task) form.value.validate();
 });
 
 function formSubmit() {
