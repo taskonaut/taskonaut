@@ -14,25 +14,6 @@
                 </v-btn>
                 <v-toolbar-title v-if="!props.task"> Add Task </v-toolbar-title>
                 <v-toolbar-title v-if="props.task"> Edit Task </v-toolbar-title>
-                <v-spacer></v-spacer>
-                <v-toolbar-items>
-                    <v-btn
-                        :disabled="!isFormValid"
-                        type="submit"
-                        v-if="!props.task"
-                        text
-                        dark
-                        >Add</v-btn
-                    >
-                    <v-btn
-                        type="submit"
-                        v-if="props.task"
-                        :disabled="!isFormValid"
-                        text
-                        dark
-                        >Save</v-btn
-                    >
-                </v-toolbar-items>
             </v-toolbar>
             <v-card-text>
                 <v-form ref="form" v-model="isFormValid" :submit="formSubmit">
@@ -86,13 +67,18 @@
                     />
                 </v-form>
             </v-card-text>
-            <v-card-actions v-if="props.task?.uuid">
+            <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn
-                    class="mr-2 mb-2"
-                    color="warning"
-                    @click="confirmDialog = true"
+                    v-if="!props.task"
+                    :disabled="!isFormValid"
+                    @click="form.submit()"
+                    >Add</v-btn
                 >
+                <v-btn v-else :disabled="!isFormValid" @click="form.submit()"
+                    >Save</v-btn
+                >
+                <v-btn color="warning" @click="confirmDialog = true">
                     Delete
                 </v-btn>
             </v-card-actions>
