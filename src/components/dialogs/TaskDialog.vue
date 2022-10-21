@@ -91,7 +91,6 @@
                         placeholder="Due Date"
                         dark
                         autoApply
-                        @update:modelValue="form.validate()"
                     />
                 </v-card-text>
                 <v-card-actions v-if="props.task?.uuid">
@@ -119,7 +118,7 @@
 import type { Task } from '@/model';
 import router from '@/router';
 import { useAppStore } from '@/stores/appStore';
-import { reactive, ref, computed } from 'vue';
+import { reactive, ref, computed, onMounted } from 'vue';
 import { useDisplay } from 'vuetify';
 import ConfirmDialog from './ConfirmDialog.vue';
 
@@ -158,6 +157,10 @@ const formData = reactive({
 });
 
 const taskGroups = computed(() => appStore.getGroups);
+
+onMounted(() => {
+    form.value.validate();
+});
 
 function formSubmit() {
     if (props.task) {
