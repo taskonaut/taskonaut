@@ -11,11 +11,21 @@
         >
             <v-list-item-subtitle>
                 <div v-if="task.body">{{ task.body }}</div>
-                <DateChip
-                    v-if="task.dueDate"
-                    :date="task!.dueDate"
-                    class="mt-1"
-                />
+                <div class="metadata">
+                    <DateChip
+                        v-if="task.dueDate"
+                        :date="task!.dueDate"
+                        class="mt-1"
+                    />
+                    <GroupChip
+                        v-if="
+                            task.groupId &&
+                            router.currentRoute.value.params.id !== task.groupId
+                        "
+                        :groupId="task.groupId"
+                        class="mt-1"
+                    />
+                </div>
             </v-list-item-subtitle>
             <template v-slot:prepend>
                 <v-list-item-action>
@@ -75,6 +85,8 @@ import type { Task } from '@/model';
 import { useAppStore } from '@/stores/appStore';
 import { ref } from 'vue';
 import { useDisplay } from 'vuetify/lib/framework.mjs';
+import GroupChip from './GroupChip.vue';
+import router from '@/router';
 
 const editDialog = ref(false);
 const confirmDialog = ref(false);
@@ -135,5 +147,10 @@ function deleteTask(taskId: string) {
 
 .complete {
     opacity: 40%;
+}
+
+.metadata {
+    display: flex;
+    gap: 5px;
 }
 </style>
