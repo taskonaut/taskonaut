@@ -36,6 +36,7 @@
             </v-container>
         </v-main>
         <SwipeBottomNavigation
+            :class="'bot-nav-z-index'"
             v-if="smAndDown"
             swiper-color="orange"
             background-color="#212121"
@@ -120,6 +121,9 @@ function getRouteName(): string {
 </script>
 
 <style scoped>
+.bot-nav-z-index {
+    z-index: 1006;
+}
 .sm-btn-container-foreground {
     box-shadow: 0px 2px 4px -1px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.2)),
         0px 4px 5px 0px
