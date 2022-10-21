@@ -73,7 +73,6 @@ import ConfirmDialog from '../dialogs/ConfirmDialog.vue';
 import DateChip from '@/components/shared/DateChip.vue';
 import type { Task } from '@/model';
 import { useAppStore } from '@/stores/appStore';
-import { computed } from 'vue';
 import { ref } from 'vue';
 import { useDisplay } from 'vuetify/lib/framework.mjs';
 
@@ -86,8 +85,6 @@ const props = defineProps<{
 }>();
 
 const appStore = useAppStore();
-const task = computed(() => appStore.getTaskById(props?.task?.uuid));
-
 const mobile = useDisplay().xs;
 
 function countLines(): 'one' | 'two' | 'three' {
@@ -100,7 +97,7 @@ function countLines(): 'one' | 'two' | 'three' {
 }
 
 function toggleTask() {
-    appStore.updateTask({ ...task.value, complete: !task?.value?.complete });
+    appStore.updateTask({ ...props.task, complete: !props.task?.complete });
 }
 
 function deleteTask(taskId: string) {
