@@ -35,19 +35,10 @@
                 <router-view :key="useRoute().fullPath" />
             </v-container>
         </v-main>
-        <SwipeBottomNavigation
-            :class="'bot-nav-z-index'"
+        <NavigationDrawer
             v-if="smAndDown"
-            swiper-color="orange"
-            background-color="#212121"
-            icon-color="orange"
-            :options="options"
-            v-model="selected"
-        >
-            <template #icon="{ props }">
-                <v-icon>{{ props.icon }}</v-icon>
-            </template>
-        </SwipeBottomNavigation>
+            @showAddDialog="showDialog = true"
+        ></NavigationDrawer>
         <TaskDialog v-if="showDialog" v-model="showDialog" />
     </v-app>
     <ReloadPrompt />
@@ -63,38 +54,13 @@ import AppSidebar from '@/components/AppSidebar/AppSidebar.vue';
 import TaskDialog from '@/components/dialogs/TaskDialog.vue';
 import ReloadPrompt from '@/components/ReloadPrompt.vue';
 import router from './router';
-import { SwipeBottomNavigation } from 'bottom-navigation-vue';
-import 'bottom-navigation-vue/dist/style.css';
+import NavigationDrawer from './NavigationDrawer.vue';
 
 const { lgAndUp, smAndDown } = useDisplay();
 const showDialog = ref(false);
 const drawer = ref(true);
 const appStore = useAppStore();
 const theme = useTheme();
-
-const selected = ref(1); // TODO: should depend on actual route
-const options = [
-    {
-        id: 1,
-        icon: 'mdi-inbox-arrow-down',
-        title: 'Inbox',
-        path: { name: 'inbox' },
-    },
-    {
-        id: 2,
-        icon: 'mdi-calendar-clock',
-        title: 'Today',
-        path: { name: 'today' },
-    },
-    {
-        id: 3,
-        icon: 'mdi-view-week',
-        title: 'Upcoming',
-        path: { name: 'upcoming' },
-    },
-    { id: 4, icon: 'mdi-clock', title: 'Expired', path: { name: 'expired' } },
-    { id: 5, icon: 'mdi-cog', title: 'Settings', path: { name: 'settings' } },
-];
 
 onMounted(async () => {
     await useUserStore().getAuthState();
@@ -121,16 +87,6 @@ function getRouteName(): string {
 </script>
 
 <style scoped>
-.bot-nav-z-index {
-    z-index: 1006;
-}
-.sm-btn-container-foreground {
-    box-shadow: 0px 2px 4px -1px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.2)),
-        0px 4px 5px 0px
-            var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.14)),
-        0px 1px 10px 0px
-            var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.12));
-}
 #routeName {
     text-transform: capitalize;
 }
