@@ -1,11 +1,9 @@
 <template>
-    <div>
-        <v-chip size="x-small" :color="color" label v-if="props.date">{{
-            `${new Date(props.date).getDate()} / ${
-                new Date(props.date).getMonth() + 1
-            }`
-        }}</v-chip>
-    </div>
+    <v-chip size="x-small" :color="color" label v-if="props.date">{{
+        `${new Date(props.date).getDate()} / ${
+            new Date(props.date).getMonth() + 1
+        }`
+    }}</v-chip>
 </template>
 
 <script setup lang="ts">
