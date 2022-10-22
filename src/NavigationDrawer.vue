@@ -91,4 +91,8 @@ function switchRoute(routeName: string) {
     flex-direction: column;
     align-items: center;
 }
+
+.v-btn {
+    transition: all 0.2s ease-in-out;
+}
 </style>
