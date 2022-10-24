@@ -8,6 +8,7 @@ export interface Task {
     dueDate: undefined | number;
     complete: boolean;
     dateCompleted: undefined | number;
+    subTasks?: Task[];
 }
 
 export interface Group {

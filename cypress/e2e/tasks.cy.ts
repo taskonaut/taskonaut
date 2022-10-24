@@ -48,7 +48,7 @@ describe('Test task creation/editing/deletion', () => {
             .find('.v-list-item')
             .eq(0)
             .trigger('mouseover');
-        cy.get('.show-on-hover').eq(1).invoke('show').click();
+        cy.get('.show-on-hover').eq(2).invoke('show').click();
         cy.contains('Delete Task?').should('exist');
         cy.contains('OK').click();
         cy.get('.v-container > .v-list')
@@ -68,7 +68,7 @@ describe('Test task creation/editing/deletion', () => {
             .find('.v-list-item')
             .eq(0)
             .trigger('mouseover');
-        cy.get('.show-on-hover').eq(0).invoke('show').click();
+        cy.get('.show-on-hover').eq(1).invoke('show').click();
         cy.contains('Edit Task').should('exist');
         cy.get('input').eq(1).clear().type(updatedText);
         cy.get('[data-cy="save-task-button"]').click();

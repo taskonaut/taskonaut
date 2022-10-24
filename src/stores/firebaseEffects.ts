@@ -1,23 +1,40 @@
 import { FirebaseCollections } from '@/firebaseConfig';
 import type { Group, Task } from '@/model';
 import {
+    ADD_SUB_TASK,
     ADD_TO_TASK_ORDER,
     CREATE_GROUP,
     CREATE_TASK,
     DELETE_FROM_TASK_ORDER,
     DELETE_GROUP,
+    DELETE_SUB_TASK,
     DELETE_TASK,
     RESET_GROUP,
     SET_GROUP_ORDER,
     SET_TASK_ORDER,
     UPDATE_GROUP,
+    UPDATE_SUB_TASK,
     UPDATE_TASK,
 } from './actions';
 import { useAppStore } from './appStore';
 import type { FirebaseAdapter } from './firebaseAdapter';
 import { useUserStore } from './userStore';
 
+let ADAPTER: FirebaseAdapter;
+
+export const updateTask = (taskId: string) => {
+    const task = useAppStore().getTaskById(taskId);
+    const group = useAppStore().getGroupById(task!.groupId!);
+    ADAPTER.updateDoc(
+        task?.uuid!,
+        task!,
+        FirebaseCollections.Tasks,
+        group?.createdBy
+    );
+};
+
 export const registerFirestoreEffects = (adapter: FirebaseAdapter) => {
+    ADAPTER = adapter;
     useAppStore().$onAction(
         ({
             name,
@@ -137,6 +154,11 @@ export const registerFirestoreEffects = (adapter: FirebaseAdapter) => {
                             Object.assign({}, store.groupOrder),
                             FirebaseCollections.Groups
                         );
+                        break;
+                    case ADD_SUB_TASK:
+                    case UPDATE_SUB_TASK:
+                    case DELETE_SUB_TASK:
+                        updateTask(result as string);
                         break;
                     default:
                         break;

@@ -397,5 +397,70 @@ export const useAppStore = defineStore({
         [SET_GROUP_ORDER](groupIds: string[]) {
             this.groupOrder = groupIds;
         },
+        addSubTask(parentTaskId: string, newTask: Task) {
+            this.tasks = [
+                ...this.tasks.map((task) => {
+                    if (task.uuid === parentTaskId) {
+                        return {
+                            ...task,
+                            subTasks: [
+                                ...(task?.subTasks ? task.subTasks : []),
+                                // TODO: extract task creation to own method
+                                {
+                                    uuid: uuidv4(),
+                                    header: newTask.header,
+                                    dateCreated: new Date().getTime(),
+                                    complete: false,
+                                    body: newTask.body,
+                                    createdBy: 'localUser',
+                                    groupId: undefined,
+                                    dueDate: undefined,
+                                    dateCompleted: undefined,
+                                },
+                            ],
+                        };
+                    }
+                    return task;
+                }),
+            ];
+            return parentTaskId;
+        },
+        deleteSubTask(taskId: string, parentTaskId: string) {
+            this.tasks = [
+                ...this.tasks.map((task) => {
+                    if (task.uuid === parentTaskId) {
+                        return {
+                            ...task,
+                            subTasks: [
+                                ...task.subTasks!.filter(
+                                    (st) => st.uuid !== taskId
+                                ),
+                            ],
+                        };
+                    }
+                    return task;
+                }),
+            ];
+            return parentTaskId;
+        },
+        updateSubTask(subTask: Task, parentTaskId: string) {
+            this.tasks = [
+                ...this.tasks.map((task) => {
+                    if (task.uuid === parentTaskId) {
+                        return {
+                            ...task,
+                            subTasks: task.subTasks!.map((st) => {
+                                if (st.uuid === subTask.uuid) {
+                                    return { ...st, ...subTask };
+                                }
+                                return st;
+                            }),
+                        };
+                    }
+                    return task;
+                }),
+            ];
+            return parentTaskId;
+        },
     },
 });
