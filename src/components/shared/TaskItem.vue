@@ -93,9 +93,9 @@
 
     <v-expansion-panels v-if="task.subTasks && task.subTasks.length > 0">
         <v-expansion-panel>
-            <v-expansion-panel-title
+            <v-expansion-panel-title class="subtasks-title"
                 ><v-icon size="x-small">mdi-file-tree</v-icon>
-                {{ task.subTasks.length }}
+                {{ task.subTasks.length }} subtasks
             </v-expansion-panel-title>
             <v-expansion-panel-text>
                 <TaskItem
@@ -111,14 +111,14 @@
 
 <script setup lang="ts">
 import TaskDialog from '@/components/dialogs/TaskDialog.vue';
-import ConfirmDialog from '../dialogs/ConfirmDialog.vue';
 import DateChip from '@/components/shared/DateChip.vue';
 import type { Task } from '@/model';
+import router from '@/router';
 import { useAppStore } from '@/stores/appStore';
 import { ref } from 'vue';
 import { useDisplay } from 'vuetify/lib/framework.mjs';
+import ConfirmDialog from '../dialogs/ConfirmDialog.vue';
 import GroupChip from './GroupChip.vue';
-import router from '@/router';
 
 const createDialog = ref(false);
 const editDialog = ref(false);
@@ -203,5 +203,11 @@ function deleteTask(taskId: string) {
 
 .v-expansion-panel {
     border-radius: 0;
+}
+
+.subtasks-title {
+    gap: 10px;
+    font-size: 0.9em;
+    color: #999;
 }
 </style>
