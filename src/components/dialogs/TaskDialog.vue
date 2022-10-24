@@ -48,6 +48,7 @@
                         @keydown="textareaHandler($event)"
                     ></v-textarea>
                     <v-select
+                        v-if="!props.taskId"
                         density="compact"
                         variant="outlined"
                         :clearable="true"
@@ -61,6 +62,7 @@
                         single-line
                     ></v-select>
                     <Datepicker
+                        v-if="!props.taskId"
                         v-model="formData.dueDate"
                         modelType="timestamp"
                         :enableTimePicker="false"
@@ -88,7 +90,11 @@
                     @click="form.submit()"
                     >Save</v-btn
                 >
-                <v-btn color="warning" @click="confirmDialog = true">
+                <v-btn
+                    color="warning"
+                    @click="confirmDialog = true"
+                    v-if="props.task"
+                >
                     Delete
                 </v-btn>
             </v-card-actions>
@@ -113,6 +119,7 @@ import ConfirmDialog from './ConfirmDialog.vue';
 const props = defineProps<{
     task?: Task;
     modelValue: boolean;
+    taskId?: string;
 }>();
 
 const emits = defineEmits<{
@@ -152,10 +159,22 @@ onMounted(() => {
 
 function formSubmit() {
     if (props.task) {
-        appStore.updateTask({ uuid: props.task.uuid, ...formData });
+        if (props.taskId) {
+            // TODO: merge updateTask and updateSubtask together
+            appStore.updateSubTask(
+                { ...formData, uuid: props.task!.uuid } as Task,
+                props.taskId
+            );
+        } else {
+            appStore.updateTask({ uuid: props.task.uuid, ...formData });
+        }
         closeDialog();
     } else {
-        appStore.createTask(formData);
+        if (props.taskId) {
+            appStore.addSubTask(props.taskId, formData as Task);
+        } else {
+            appStore.createTask(formData);
+        }
         form.value.reset();
         formData.groupId = selectedGroup || undefined;
         headerInput.value.focus();
@@ -175,7 +194,12 @@ function textareaHandler(event: KeyboardEvent) {
 }
 
 function deleteTask() {
-    appStore.deleteTask(props.task?.uuid as string);
+    // TODO: merge deleteTask and deleteSubtask together
+    if (props.taskId) {
+        appStore.deleteSubTask(props.task?.uuid as string, props.taskId);
+    } else {
+        appStore.deleteTask(props.task?.uuid as string);
+    }
 }
 </script>
 <style scoped>

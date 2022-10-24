@@ -2,6 +2,12 @@ html {
     overflow-y: auto !important;
 }
 
-.sm-btn-icon {
-    color: #666;
+.v-expansion-panel-text__wrapper {
+    padding: 0 !important;
+}
+
+.v-expansion-panel-title,
+.v-expansion-panel-title v-expansion-panel-title--active {
+    min-height: 32px !important;
+    padding: 0 24px !important;
 }

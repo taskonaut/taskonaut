@@ -13,3 +13,7 @@ export const UPDATE_GROUP = 'updateGroup';
 
 export const SET_GROUP_ORDER = 'setGroupOrder';
 export const SET_TASK_ORDER = 'setTaskOrder';
+
+export const ADD_SUB_TASK = 'addSubTask';
+export const UPDATE_SUB_TASK = 'updateSubTask';
+export const DELETE_SUB_TASK = 'deleteSubTask';
