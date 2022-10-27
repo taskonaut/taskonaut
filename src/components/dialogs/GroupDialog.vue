@@ -37,6 +37,7 @@
                 <v-card-text>
                     <v-text-field
                         autofocus
+                        type="search"
                         density="compact"
                         variant="outlined"
                         v-model="formData.name"
@@ -44,7 +45,11 @@
                         :rules="formData.rules"
                         required
                         ref="nameInput"
-                        @keydown.enter="formSubmit()"
+                        @keyup.enter.prevent="
+                            if (!formData.name && !formData.description)
+                                closeDialog();
+                            else formSubmit();
+                        "
                     ></v-text-field>
                     <v-textarea
                         auto-grow

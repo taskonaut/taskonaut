@@ -32,9 +32,10 @@
                         :rules="formRules"
                         required
                         ref="headerInput"
-                        @keydown.enter="
+                        @keyup.enter.prevent="
                             if (!formData.header && !formData.body)
                                 closeDialog();
+                            else formSubmit();
                         "
                     ></v-text-field>
 
