@@ -85,7 +85,7 @@
     <ConfirmDialog
         v-model="deleteConfirmDialog"
         :title="'Delete Group?'"
-        :message="`Are you sure you want to delete ${props.group?.name}`"
+        :message="`Are you sure you want to delete ${props.group?.name}? All related tasks will be lost!`"
         @dialog:confirm="deleteGroup"
     />
 </template>
