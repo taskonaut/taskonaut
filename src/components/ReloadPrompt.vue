@@ -16,7 +16,7 @@
                 color="pink"
                 variant="text"
                 @click="updateServiceWorker()"
-                >Relaod
+                >Reload
             </v-btn>
             <v-btn color="pink" variant="text" @click="close">Close</v-btn>
         </template>
