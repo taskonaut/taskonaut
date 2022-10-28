@@ -77,7 +77,9 @@
                         >Delete</v-btn
                     >
                     <v-spacer></v-spacer>
-                    <v-btn color="accent" @click="resetGroup">Reset</v-btn>
+                    <v-btn color="accent" @click="resetConfirmDialog = true"
+                        >Reset</v-btn
+                    >
                 </v-card-actions>
             </v-card>
         </v-form>
@@ -87,6 +89,12 @@
         :title="'Delete Group?'"
         :message="`Are you sure you want to delete ${props.group?.name}? All related tasks will be lost!`"
         @dialog:confirm="deleteGroup"
+    />
+    <ConfirmDialog
+        v-model="resetConfirmDialog"
+        :title="'Reset Group?'"
+        :message="`Are you sure you want to reset tasks in ${props.group?.name}? All task will be unchecked.`"
+        @dialog:confirm="resetGroup"
     />
 </template>
 
@@ -109,7 +117,7 @@ const emits = defineEmits<{
 }>();
 
 const deleteConfirmDialog = ref(false);
-
+const resetConfirmDialog = ref(false);
 const { mobile } = useDisplay();
 
 const appStore = useAppStore();
