@@ -73,11 +73,11 @@
                     ></v-text-field>
                 </v-card-text>
                 <v-card-actions v-if="props.group">
-                    <v-spacer></v-spacer>
-                    <v-btn color="accent" @click="resetGroup">Reset</v-btn>
                     <v-btn color="warning" @click="deleteConfirmDialog = true"
                         >Delete</v-btn
                     >
+                    <v-spacer></v-spacer>
+                    <v-btn color="accent" @click="resetGroup">Reset</v-btn>
                 </v-card-actions>
             </v-card>
         </v-form>

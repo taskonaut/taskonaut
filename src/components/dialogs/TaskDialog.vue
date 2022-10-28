@@ -76,7 +76,14 @@
                 </v-form>
             </v-card-text>
             <v-card-actions>
-                <v-spacer></v-spacer>
+                <v-btn
+                    color="warning"
+                    @click="confirmDialog = true"
+                    v-if="props.task"
+                >
+                    Delete
+                </v-btn>
+                <v-spacer />
                 <v-btn
                     v-if="!props.task"
                     data-cy="add-task-button"
@@ -91,13 +98,6 @@
                     @click="form.submit()"
                     >Save</v-btn
                 >
-                <v-btn
-                    color="warning"
-                    @click="confirmDialog = true"
-                    v-if="props.task"
-                >
-                    Delete
-                </v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
