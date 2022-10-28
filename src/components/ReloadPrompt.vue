@@ -1,3 +1,27 @@
+<template>
+    <v-snackbar
+        :model-value="offlineReady || needRefresh"
+        :close-on-content-click="true"
+        :timeout="-1"
+        z-index="2400"
+        location="bottom"
+    >
+        <span v-if="offlineReady"> App ready to work offline </span>
+        <span v-else>
+            New content available, click on reload button to update.
+        </span>
+        <template v-slot:actions>
+            <v-btn
+                v-if="needRefresh"
+                color="pink"
+                variant="text"
+                @click="updateServiceWorker()"
+                >Relaod
+            </v-btn>
+            <v-btn color="pink" variant="text" @click="close">Close</v-btn>
+        </template>
+    </v-snackbar>
+</template>
 <script setup lang="ts">
 import { useRegisterSW } from 'virtual:pwa-register/vue';
 const { offlineReady, needRefresh, updateServiceWorker } = useRegisterSW({
@@ -6,40 +30,20 @@ const { offlineReady, needRefresh, updateServiceWorker } = useRegisterSW({
         console.log(`Service Worker at: ${swUrl}`);
     },
 });
+
 const close = async () => {
     offlineReady.value = false;
     needRefresh.value = false;
 };
 </script>
-
-<template>
-    <div v-if="offlineReady || needRefresh" class="pwa-toast" role="alert">
-        <div class="message">
-            <span v-if="offlineReady"> App ready to work offline </span>
-            <span v-else>
-                New content available, click on reload button to update.
-            </span>
-        </div>
-        <button v-if="needRefresh" @click="updateServiceWorker()">
-            Reload
-        </button>
-        <button @click="close">Close</button>
-    </div>
-</template>
-
 <style>
-.pwa-toast {
+.position {
     position: fixed;
     right: 0;
     bottom: 0;
     margin: 16px;
     padding: 12px;
-    border: 1px solid #8885;
-    border-radius: 4px;
     z-index: 2400;
-    text-align: left;
-    box-shadow: 3px 4px 5px 0px #8885;
-    background-color: #000000;
 }
 .pwa-toast .message {
     margin-bottom: 8px;

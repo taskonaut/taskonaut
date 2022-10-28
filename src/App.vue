@@ -40,8 +40,8 @@
             @showAddDialog="showDialog = true"
         ></NavigationDrawer>
         <TaskDialog v-if="showDialog" v-model="showDialog" />
+        <ReloadPrompt />
     </v-app>
-    <ReloadPrompt />
 </template>
 
 <script setup lang="ts">
