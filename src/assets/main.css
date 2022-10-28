@@ -2,6 +2,15 @@ html {
     overflow-y: auto !important;
 }
 
+body {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+
+    -webkit-touch-callout: none;
+}
+
 .v-expansion-panel-text__wrapper {
     padding: 0 !important;
 }
