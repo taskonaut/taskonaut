@@ -91,7 +91,7 @@
             <template v-slot:append>
                 <v-list-item-action
                     ><v-btn
-                        @click="fixTasks"
+                        @click="confirmFix = true"
                         variant="text"
                         color="warning"
                         append-icon="mdi-tools"
@@ -170,7 +170,7 @@
         v-model="confirmFix"
         :title="'Fix Tasks?'"
         :message="'Attempt to fix taskOrder?'"
-        @dialog:confirm="fixTasksSnack = true"
+        @dialog:confirm="fixTasks"
     />
     <v-snackbar
         :color="fixTasksSnackColor"
