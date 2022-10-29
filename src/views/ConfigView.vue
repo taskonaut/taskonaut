@@ -74,11 +74,28 @@
             <template v-slot:append>
                 <v-list-item-action
                     ><v-btn
-                        @click="confirmDialog = true"
+                        @click="confirmReset = true"
                         variant="text"
                         color="error"
                         append-icon="mdi-delete-forever"
                         >RESET</v-btn
+                    >
+                </v-list-item-action>
+            </template>
+        </v-list-item>
+        <v-divider></v-divider>
+        <v-list-item title="Fix taskOrder">
+            <v-list-item-subtitle>
+                Returning lost tasks to their lists
+            </v-list-item-subtitle>
+            <template v-slot:append>
+                <v-list-item-action
+                    ><v-btn
+                        @click="fixTasks"
+                        variant="text"
+                        color="warning"
+                        append-icon="mdi-tools"
+                        >FIX</v-btn
                     >
                 </v-list-item-action>
             </template>
@@ -144,17 +161,31 @@
         </v-list-item>
     </v-list>
     <ConfirmDialog
-        v-model="confirmDialog"
+        v-model="confirmReset"
         :title="'Reset App?'"
         :message="'Are you sure you want to reset? All data will be lost!'"
         @dialog:confirm="resetData"
     />
+    <ConfirmDialog
+        v-model="confirmFix"
+        :title="'Fix Tasks?'"
+        :message="'Attempt to fix taskOrder?'"
+        @dialog:confirm="fixTasksSnack = true"
+    />
+    <v-snackbar
+        :color="fixTasksSnackColor"
+        v-model="fixTasksSnack"
+        :close-on-content-click="true"
+        @after-leave="brokenTasksCount = 0"
+    >
+        {{ fixTasksSnackMsg }}
+    </v-snackbar>
 </template>
 <script setup lang="ts">
 import ConfirmDialog from '@/components/dialogs/ConfirmDialog.vue';
 import { useAppStore } from '@/stores/appStore';
 import { useUserStore } from '@/stores/userStore';
-import { getCurrentInstance, ref } from 'vue';
+import { computed, getCurrentInstance, ref } from 'vue';
 import { useTheme } from 'vuetify/lib/framework.mjs';
 
 const instance = getCurrentInstance();
@@ -162,8 +193,22 @@ const userStore = useUserStore();
 const appStore = useAppStore();
 const loggedIn = userStore.isLoggedIn;
 const theme = useTheme();
-
-const confirmDialog = ref(false);
+// Confirm Dialogs States
+const confirmReset = ref(false);
+const confirmFix = ref(false);
+// Fix Tasks Snackbar
+const fixTasksSnack = ref(false);
+const fixTasksSnackColor = computed(() =>
+    brokenTasksCount.value > 0 ? 'warning' : 'success'
+);
+const fixTasksSnackMsg = computed(() =>
+    brokenTasksCount.value > 0
+        ? `Fixed ${brokenTasksCount.value} broken task${
+              brokenTasksCount.value > 1 ? 's!' : '!'
+          }`
+        : 'No broken tasks found.'
+);
+const brokenTasksCount = ref(0);
 
 function exportData() {
     // TODO: implement me
@@ -176,6 +221,11 @@ function importData() {
 function resetData() {
     appStore.$reset();
     instance?.proxy?.$forceUpdate();
+}
+
+function fixTasks() {
+    brokenTasksCount.value = appStore.fixTasks();
+    fixTasksSnack.value = true;
 }
 
 function saveTheme() {

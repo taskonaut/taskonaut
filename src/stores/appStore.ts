@@ -295,6 +295,19 @@ export const useAppStore = defineStore({
             }
             return group;
         },
+        fixTasks(): number {
+            let count = 0;
+            this.tasks.forEach((task) => {
+                if (task.groupId && !task.complete) {
+                    const group = this.getGroupById(task.groupId);
+                    if (group && !group.taskOrder.includes(task.uuid)) {
+                        count++;
+                        this[ADD_TO_TASK_ORDER](group.uuid, task.uuid);
+                    }
+                }
+            });
+            return count;
+        },
         // Group Actions
         [CREATE_GROUP](name: string, description: string, sharedWith: string) {
             const sharedArray = sharedWith
