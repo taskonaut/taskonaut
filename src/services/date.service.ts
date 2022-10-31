@@ -23,7 +23,7 @@ export function getWeekDay(diMs: number): string {
     const date = new Date(diMs);
     return weekday[date.getDay()];
 }
-export function getMonth(diMs: number): string {
+export function getMonth(diMs: number, short: boolean = false): string {
     const month = [
         'January',
         'February',
@@ -38,12 +38,26 @@ export function getMonth(diMs: number): string {
         'November',
         'December',
     ];
+    const monthShort = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+    ];
     const date = new Date(diMs);
-    return month[date.getMonth()];
+    return short ? monthShort[date.getMonth()] : month[date.getMonth()];
 }
 export function getShortDate(diMs: number): string {
     const date = new Date(diMs);
-    return `${date.getDate() + 1} / ${date.getMonth()}`;
+    return `${date.getDate() + 1} ${getMonth(diMs, true)}`;
 }
 
 export function isUpcomingDate(diMs: number, days: number): boolean {
