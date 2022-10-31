@@ -43,7 +43,7 @@ export function getMonth(diMs: number): string {
 }
 export function getShortDate(diMs: number): string {
     const date = new Date(diMs);
-    return `${date.getDay() + 1} / ${date.getMonth()}`;
+    return `${date.getDate() + 1} / ${date.getMonth()}`;
 }
 
 export function isUpcomingDate(diMs: number, days: number): boolean {
