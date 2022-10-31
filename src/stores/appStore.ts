@@ -95,7 +95,7 @@ export const useAppStore = defineStore({
         getExpiredTasks: (state) => () => {
             return state.tasks.filter((task) => {
                 if (task.dueDate) {
-                    return date.isPastDate(task.dueDate);
+                    return date.isPastDate(task.dueDate) && !task.complete;
                 }
             });
         },
