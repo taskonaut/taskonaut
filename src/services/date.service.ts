@@ -23,7 +23,24 @@ export function getWeekDay(diMs: number): string {
     const date = new Date(diMs);
     return weekday[date.getDay()];
 }
-
+export function getMonth(diMs: number): string {
+    const month = [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December',
+    ];
+    const date = new Date(diMs);
+    return month[date.getMonth()];
+}
 export function getShortDate(diMs: number): string {
     const date = new Date(diMs);
     return `${date.getDay() + 1} / ${date.getMonth()}`;
