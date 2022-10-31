@@ -1,6 +1,6 @@
 <template>
     <v-chip size="x-small" :color="color" label v-if="props.date">{{
-        `${date.getShortDate(props.date)}   ${date.getWeekDay(props.date)}`
+        chipDate
     }}</v-chip>
 </template>
 
@@ -12,6 +12,15 @@ const props = defineProps<{
     date: number;
 }>();
 
+const chipDate = computed(() =>
+    date.isToday(props.date)
+        ? 'Today'
+        : date.isUpcomingDate(props.date, 1)
+        ? 'Tomorrow'
+        : date.isUpcomingDate(props.date, 7)
+        ? date.getWeekDay(props.date)
+        : date.getShortDate(props.date)
+);
 const color = computed(() => {
     if (date.isPastDate(props.date)) {
         return 'red';
