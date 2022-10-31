@@ -116,6 +116,7 @@ import { useAppStore } from '@/stores/appStore';
 import { reactive, ref, computed, onMounted } from 'vue';
 import { useDisplay } from 'vuetify';
 import ConfirmDialog from './ConfirmDialog.vue';
+import * as date from '@/services/date.service';
 
 const props = defineProps<{
     task?: Task;
@@ -138,9 +139,11 @@ const selectedGroup =
         ? (router.currentRoute?.value?.params?.id as string)
         : undefined;
 const dueDate = props.task
-    ? props.task?.dueDate || undefined
+    ? props.task.dueDate
+        ? date.resetTime(props.task.dueDate)
+        : undefined
     : router.currentRoute.value.name === 'today'
-    ? new Date().getTime()
+    ? date.getToday()
     : undefined;
 
 const formRules = [(v: any) => !!v || 'Name is required'];

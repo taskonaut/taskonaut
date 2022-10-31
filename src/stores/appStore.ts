@@ -27,6 +27,7 @@ import {
 } from './actions';
 import { FirebaseAdapter } from './firebaseAdapter';
 import { useUserStore } from './userStore';
+import * as date from '@/services/date.service';
 
 export interface AppStore {
     tasks: Task[];
@@ -74,9 +75,8 @@ export const useAppStore = defineStore({
         getInboxTasks: (state) => () =>
             state.tasks.filter((task) => !task.groupId),
         getTodayTasks: (state) => () => {
-            const today = new Date().getUTCDate();
-            return state.tasks.filter(
-                (task) => new Date(task.dueDate as number).getUTCDate() == today
+            return state.tasks.filter((task) =>
+                task.dueDate ? date.isToday(task.dueDate) : false
             );
         },
         getGroupOrder: (state) => (groupId: string) =>
@@ -85,28 +85,17 @@ export const useAppStore = defineStore({
             )?.taskOrder as string[],
         // View Getters
         getUpcomingTasks: (state) => () => {
-            const today = new Date();
-            today.setUTCHours(0, 0, 0, 0);
-            const date = new Date();
-            date.setDate(date.getDate() + 7);
-            date.setUTCHours(0, 0, 0, 0);
-
             return state.tasks
                 .filter((task) => {
-                    const dueDate = new Date(task.dueDate as number);
-                    dueDate.setUTCHours(0, 0, 0, 0);
-                    return dueDate <= date && dueDate >= today;
+                    if (task.dueDate && date.isUpcomingDate(task.dueDate, 7))
+                        return true;
                 })
                 .sort((a, b) => a.dueDate! - b.dueDate!);
         },
         getExpiredTasks: (state) => () => {
-            const today = new Date();
-            today.setUTCHours(0, 0, 0, 0);
             return state.tasks.filter((task) => {
                 if (task.dueDate) {
-                    const date = new Date(task.dueDate as number);
-                    date.setUTCHours(0, 0, 0, 0);
-                    return date < today;
+                    return date.isPastDate(task.dueDate);
                 }
             });
         },
@@ -229,7 +218,7 @@ export const useAppStore = defineStore({
                 groupId: newTask.groupId || '',
                 header: newTask.header!,
                 body: newTask.body || undefined,
-                dateCreated: new Date().getTime(),
+                dateCreated: date.getToday(),
                 complete: false,
                 dateCompleted: undefined,
                 dueDate: newTask.dueDate || undefined,
@@ -250,7 +239,7 @@ export const useAppStore = defineStore({
                 if (updatedTask.complete != (null || undefined)) {
                     task.complete = updatedTask.complete;
                     task.complete
-                        ? (task.dateCompleted = new Date().getTime())
+                        ? (task.dateCompleted = date.getToday())
                         : (task.dateCompleted = undefined);
                     if (task.groupId) {
                         task.complete
