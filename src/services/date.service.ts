@@ -57,7 +57,7 @@ export function getMonth(diMs: number, short: boolean = false): string {
 }
 export function getShortDate(diMs: number): string {
     const date = new Date(diMs);
-    return `${date.getDate() + 1} ${getMonth(diMs, true)}`;
+    return `${date.getDate()} ${getMonth(diMs, true)}`;
 }
 
 export function isUpcomingDate(diMs: number, days: number): boolean {
