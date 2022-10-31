@@ -9,23 +9,13 @@ import { computed } from 'vue';
 import * as date from '@/services/date.service';
 
 const props = defineProps<{
-    date: undefined | number;
+    date: number;
 }>();
 
-const today = new Date();
-today.setUTCHours(0, 0, 0, 0);
-
-const propDate = new Date(props.date as number);
-propDate.setUTCHours(0, 0, 0, 0);
-
-const dueToday = computed(() => today.getTime() == propDate.getTime());
-
-const expired = computed(() => today.getTime() > propDate.getTime());
-
 const color = computed(() => {
-    if (expired.value) {
+    if (date.isPastDate(props.date)) {
         return 'red';
-    } else if (dueToday.value) {
+    } else if (date.isToday(props.date)) {
         return 'warning';
     } else {
         return 'accent';
