@@ -26,7 +26,7 @@ export function getWeekDay(diMs: number): string {
 
 export function getShortDate(diMs: number): string {
     const date = new Date(diMs);
-    return `${date.getMonth()} / ${date.getDay()}`;
+    return `${date.getDay()} / ${date.getMonth()}`;
 }
 
 export function isUpcomingDate(diMs: number, days: number): boolean {
