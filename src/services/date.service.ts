@@ -24,6 +24,11 @@ export function getWeekDay(diMs: number): string {
     return weekday[date.getDay()];
 }
 
+export function getShortDate(diMs: number): string {
+    const date = new Date(diMs);
+    return `${date.getMonth()} / ${date.getDay()}`;
+}
+
 export function isUpcomingDate(diMs: number, days: number): boolean {
     const today = new Date();
     today.setUTCHours(0, 0, 0, 0);

@@ -1,13 +1,12 @@
 <template>
     <v-chip size="x-small" :color="color" label v-if="props.date">{{
-        `${new Date(props.date).getDate()} / ${
-            new Date(props.date).getMonth() + 1
-        }`
+        `${date.getShortDate(props.date)}   ${date.getWeekDay(props.date)}`
     }}</v-chip>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import * as date from '@/services/date.service';
 
 const props = defineProps<{
     date: undefined | number;
