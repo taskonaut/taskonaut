@@ -58,7 +58,7 @@
             <template v-slot:append>
                 <v-list-item-action
                     ><v-btn
-                        @click="importData"
+                        @click="confirmImport = true"
                         variant="text"
                         append-icon="mdi-file-import"
                         >IMPORT</v-btn
@@ -172,6 +172,12 @@
         :message="'Attempt to fix taskOrder?'"
         @dialog:confirm="fixTasks"
     />
+    <ConfirmDialog
+        v-model="confirmImport"
+        :title="'Import Data?'"
+        :message="'Are you sure you want to import data? All current data will be lost after!'"
+        @dialog:confirm="importData"
+    />
     <v-snackbar
         :color="fixTasksSnackColor"
         v-model="fixTasksSnack"
@@ -187,6 +193,7 @@ import { useAppStore } from '@/stores/appStore';
 import { useUserStore } from '@/stores/userStore';
 import { computed, getCurrentInstance, ref } from 'vue';
 import { useTheme } from 'vuetify/lib/framework.mjs';
+import * as fs from '@/services/fs.service';
 
 const instance = getCurrentInstance();
 const userStore = useUserStore();
@@ -196,6 +203,7 @@ const theme = useTheme();
 // Confirm Dialogs States
 const confirmReset = ref(false);
 const confirmFix = ref(false);
+const confirmImport = ref(false);
 // Fix Tasks Snackbar
 const fixTasksSnack = ref(false);
 const fixTasksSnackColor = computed(() =>
@@ -211,11 +219,11 @@ const fixTasksSnackMsg = computed(() =>
 const brokenTasksCount = ref(0);
 
 function exportData() {
-    // TODO: implement me
+    fs.writeFile(JSON.stringify(useAppStore().$state, null, 2));
 }
 
-function importData() {
-    // TODO: implement me
+async function importData() {
+    useAppStore().$patch(JSON.parse(await fs.readFile()));
 }
 
 function resetData() {
