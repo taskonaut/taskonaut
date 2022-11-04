@@ -1,12 +1,12 @@
 export function getToday(): number {
     const today = new Date();
-    today.setUTCHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
     return today.getTime();
 }
 
 export function resetTime(diMs: number): number {
     const date = new Date(diMs);
-    date.setUTCHours(0, 0, 0, 0);
+    date.setHours(0, 0, 0, 0);
     return date.getTime();
 }
 
@@ -62,13 +62,13 @@ export function getShortDate(diMs: number): string {
 
 export function isUpcomingDate(diMs: number, days: number): boolean {
     const today = new Date();
-    today.setUTCHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
     const date = new Date();
     date.setDate(date.getDate() + days);
-    date.setUTCHours(0, 0, 0, 0);
+    date.setHours(0, 0, 0, 0);
 
     const dueDate = new Date(diMs);
-    dueDate.setUTCHours(0, 0, 0, 0);
+    dueDate.setHours(0, 0, 0, 0);
 
     return dueDate <= date && dueDate >= today;
 }
@@ -76,7 +76,9 @@ export function isUpcomingDate(diMs: number, days: number): boolean {
 export function isPastDate(diMs: number): boolean {
     return resetTime(diMs) < getToday();
 }
-
+export function daysPass(diMs: number): number {
+    return Math.ceil((getToday() - diMs) / (1000 * 3600 * 24));
+}
 export function isToday(diMs: number): boolean {
-    return resetTime(diMs) === getToday();
+    return resetTime(diMs) == getToday();
 }

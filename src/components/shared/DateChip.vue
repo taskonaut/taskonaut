@@ -14,7 +14,11 @@ const props = defineProps<{
 }>();
 
 const chipDate = computed(() =>
-    date.isToday(props.task.dueDate!)
+    date.isPastDate(props.task.dueDate!)
+        ? `${date.daysPass(props.task.dueDate!)} day${
+              date.daysPass(props.task.dueDate!) > 1 ? 's' : ''
+          } overdue`
+        : date.isToday(props.task.dueDate!)
         ? 'Today'
         : date.isUpcomingDate(props.task.dueDate!, 1)
         ? 'Tomorrow'
