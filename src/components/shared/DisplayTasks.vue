@@ -1,5 +1,9 @@
 <template>
-    <TaskList :tasks="ongoingTasks" :subheader="'ONGOING'">
+    <TaskList
+        :tasks="ongoingTasks"
+        :group-id="props.groupId"
+        :subheader="'ONGOING'"
+    >
         <AddListItem v-if="!props.hideAddButton && !smAndDown" />
     </TaskList>
     <v-divider v-if="completeTasks.length && !smAndDown" />
@@ -22,6 +26,7 @@ const { smAndDown } = useDisplay();
 
 const props = defineProps<{
     tasks: Task[];
+    groupId?: string;
     hideAddButton?: boolean;
 }>();
 
