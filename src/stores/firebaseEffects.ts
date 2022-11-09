@@ -15,8 +15,10 @@ import {
     UPDATE_GROUP,
     UPDATE_SUB_TASK,
     UPDATE_TASK,
+    SET_STATE,
+    RESET_STATE,
 } from './actions';
-import { useAppStore } from './appStore';
+import { useAppStore, type AppStore } from './appStore';
 import type { FirebaseAdapter } from './firebaseAdapter';
 import { useUserStore } from './userStore';
 
@@ -159,6 +161,59 @@ export const registerFirestoreEffects = (adapter: FirebaseAdapter) => {
                     case UPDATE_SUB_TASK:
                     case DELETE_SUB_TASK:
                         updateTask(result as string);
+                        break;
+                    case SET_STATE:
+                        adapter.setStringArrayAsDoc(
+                            Object.assign({}, store.groupOrder),
+                            FirebaseCollections.Groups
+                        );
+                        (args[0] as AppStore).tasks.forEach((task) => {
+                            if (task.groupId) {
+                                adapter.setDoc(
+                                    task,
+                                    FirebaseCollections.Tasks,
+                                    store.getGroupById(task.groupId)?.createdBy
+                                );
+                            } else {
+                                adapter.setDoc(task, FirebaseCollections.Tasks);
+                            }
+                        });
+                        (args[0] as AppStore).groups.forEach((result) => {
+                            result = result as Group;
+                            adapter.setDoc(result, FirebaseCollections.Groups);
+
+                            if ((result as Group).sharedWith) {
+                                (result as Group).sharedWith.forEach((email) =>
+                                    adapter!.createShareRequest(
+                                        useUserStore().uid,
+                                        email,
+                                        (result as Group).uuid!
+                                    )
+                                );
+                            }
+                        });
+                        break;
+                    case RESET_STATE:
+                        adapter.getDocs('tasks').then((data) =>
+                            data.forEach((task) => {
+                                adapter.deleteDoc(
+                                    task.uuid,
+                                    FirebaseCollections.Tasks
+                                );
+                            })
+                        );
+                        adapter.setStringArrayAsDoc(
+                            [],
+                            FirebaseCollections.Groups
+                        );
+                        adapter.getDocs('groups').then((data) =>
+                            data.forEach((task) => {
+                                adapter.deleteDoc(
+                                    task.uuid,
+                                    FirebaseCollections.Groups
+                                );
+                            })
+                        );
                         break;
                     default:
                         break;

@@ -17,3 +17,6 @@ export const SET_TASK_ORDER = 'setTaskOrder';
 export const ADD_SUB_TASK = 'addSubTask';
 export const UPDATE_SUB_TASK = 'updateSubTask';
 export const DELETE_SUB_TASK = 'deleteSubTask';
+
+export const SET_STATE = 'setState';
+export const RESET_STATE = 'resetState';

@@ -24,6 +24,8 @@ import {
     SET_TASK_ORDER,
     UPDATE_GROUP,
     UPDATE_TASK,
+    SET_STATE,
+    RESET_STATE,
 } from './actions';
 import { FirebaseAdapter } from './firebaseAdapter';
 import { useUserStore } from './userStore';
@@ -463,6 +465,12 @@ export const useAppStore = defineStore({
                 }),
             ];
             return parentTaskId;
+        },
+        [SET_STATE](state: Object) {
+            this.$patch(state);
+        },
+        [RESET_STATE]() {
+            this.$reset();
         },
     },
 });

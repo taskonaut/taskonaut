@@ -219,15 +219,14 @@ const fixTasksSnackMsg = computed(() =>
 const brokenTasksCount = ref(0);
 
 function exportData() {
-    fs.writeFile(JSON.stringify(useAppStore().$state, null, 2));
+    fs.writeFile(JSON.stringify(appStore.$state, null, 2));
 }
 
 async function importData() {
-    useAppStore().$patch(JSON.parse(await fs.readFile()));
+    appStore.setState(JSON.parse(await fs.readFile()));
 }
-
 function resetData() {
-    appStore.$reset();
+    appStore.resetState();
     instance?.proxy?.$forceUpdate();
 }
 
