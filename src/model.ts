@@ -7,7 +7,7 @@ export interface Task {
     dateCreated: number;
     dueDate: undefined | number;
     complete: boolean;
-    dateCompleted: undefined | number;
+    dateCompleted: undefined | null | number;
     subTasks?: Task[];
 }
 
