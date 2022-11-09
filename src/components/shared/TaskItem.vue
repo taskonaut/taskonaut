@@ -13,7 +13,11 @@
             <v-list-item-subtitle>
                 <div v-if="task.body">{{ task.body }}</div>
                 <div class="metadata">
-                    <DateChip v-if="task.dueDate" :task="task" class="mt-1" />
+                    <DateChip
+                        v-if="task.dueDate || task.dateCompleted"
+                        :task="task"
+                        class="mt-1"
+                    />
                     <GroupChip
                         v-if="
                             task.groupId &&

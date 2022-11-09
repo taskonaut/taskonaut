@@ -1,7 +1,5 @@
 <template>
-    <v-chip size="x-small" :color="color" label v-if="props.task.dueDate!">{{
-        chipDate
-    }}</v-chip>
+    <v-chip size="x-small" :color="color" label>{{ chipDate }}</v-chip>
 </template>
 
 <script setup lang="ts">
@@ -14,10 +12,12 @@ const props = defineProps<{
 }>();
 
 const chipDate = computed(() =>
-    date.isPastDate(props.task.dueDate!)
+    date.isPastDate(props.task.dueDate!) && !props.task.complete
         ? `${date.daysPass(props.task.dueDate!)} day${
               date.daysPass(props.task.dueDate!) > 1 ? 's' : ''
           } overdue`
+        : props.task.complete
+        ? `Complete ${date.daysPass(props.task.dateCompleted!)} days ago`
         : date.isToday(props.task.dueDate!)
         ? 'Today'
         : date.isUpcomingDate(props.task.dueDate!, 1)
