@@ -242,7 +242,7 @@ export const useAppStore = defineStore({
                     task.complete = updatedTask.complete;
                     task.complete
                         ? (task.dateCompleted = date.getToday())
-                        : (task.dateCompleted = undefined);
+                        : (task.dateCompleted = null);
                     if (task.groupId) {
                         task.complete
                             ? this.deleteFromTaskOrder(task.groupId, task.uuid)
@@ -389,7 +389,7 @@ export const useAppStore = defineStore({
             tasks.forEach((task) => {
                 if (task.complete) {
                     task.complete = false;
-                    task.dateCompleted = undefined;
+                    task.dateCompleted = null;
                     this.addToTaskOrder(groupId, task.uuid);
                 }
             });
