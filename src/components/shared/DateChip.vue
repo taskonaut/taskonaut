@@ -17,7 +17,9 @@ const chipDate = computed(() =>
               date.daysPass(props.task.dueDate!) > 1 ? 's' : ''
           } overdue`
         : props.task.complete
-        ? `Complete ${date.daysPass(props.task.dateCompleted!)} days ago`
+        ? date.daysPass(props.task.dateCompleted!) === 0
+            ? `Completed today`
+            : `Completed ${date.daysPass(props.task.dateCompleted!)} days ago`
         : date.isToday(props.task.dueDate!)
         ? 'Today'
         : date.isUpcomingDate(props.task.dueDate!, 1)
