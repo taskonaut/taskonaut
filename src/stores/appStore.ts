@@ -259,7 +259,7 @@ export const useAppStore = defineStore({
                     task.groupId = updatedTask.groupId;
                 }
             }
-            return updatedTask;
+            return task;
         },
         [DELETE_TASK](taskId: string) {
             const task = this.getTaskById(taskId);
