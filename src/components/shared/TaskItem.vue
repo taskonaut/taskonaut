@@ -33,10 +33,6 @@
                     <v-icon
                         v-if="props.isDraggable"
                         class="handle mr-2"
-                        :class="{
-                            'shown-opacity': !task.complete,
-                            'hidden-opacity': !mobile,
-                        }"
                         :end="true"
                         icon="mdi-drag"
                     />
@@ -118,7 +114,6 @@ import type { Task } from '@/model';
 import router from '@/router';
 import { useAppStore } from '@/stores/appStore';
 import { ref } from 'vue';
-import { useDisplay } from 'vuetify/lib/framework.mjs';
 import ConfirmDialog from '../dialogs/ConfirmDialog.vue';
 import GroupChip from './GroupChip.vue';
 
@@ -133,7 +128,6 @@ const props = defineProps<{
 }>();
 
 const appStore = useAppStore();
-const mobile = useDisplay().xs;
 
 function countLines(): 'one' | 'two' | 'three' {
     const numberNames = ['one', 'two', 'three'];
