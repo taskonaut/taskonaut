@@ -4,7 +4,7 @@
         width="300"
         :model-value="props.modelValue"
         :border="0"
-        @update:model-value="(value) => emits('update:modelValue', value)"
+        @update:model-value="(value: boolean) => emits('update:modelValue', value)"
     >
         <template v-slot:prepend>
             <v-list-item
