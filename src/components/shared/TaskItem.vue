@@ -32,7 +32,7 @@
                 <v-list-item-action>
                     <v-icon
                         v-if="props.isDraggable"
-                        class="handle"
+                        class="handle mr-2"
                         :class="{
                             'shown-opacity': !task.complete,
                             'hidden-opacity': !mobile,
