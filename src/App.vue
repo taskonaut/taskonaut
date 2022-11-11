@@ -54,7 +54,7 @@ import AppSidebar from '@/components/AppSidebar/AppSidebar.vue';
 import TaskDialog from '@/components/dialogs/TaskDialog.vue';
 import ReloadPrompt from '@/components/ReloadPrompt.vue';
 import router from './router';
-import NavigationDrawer from './NavigationDrawer.vue';
+import NavigationDrawer from '@/components/NavigationDrawer.vue';
 
 const { lgAndUp, smAndDown } = useDisplay();
 const showDialog = ref(false);
