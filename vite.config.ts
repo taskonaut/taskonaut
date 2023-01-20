@@ -1,10 +1,10 @@
-import { fileURLToPath, URL } from 'node:url';
 import vue from '@vitejs/plugin-vue';
 import vueJsx from '@vitejs/plugin-vue-jsx';
+import { fileURLToPath, URL } from 'node:url';
 import { defineConfig } from 'vite';
+import mkcert from 'vite-plugin-mkcert';
 import { VitePWA } from 'vite-plugin-pwa';
 import removeConsole from 'vite-plugin-remove-console';
-import mkcert from 'vite-plugin-mkcert';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -22,7 +22,7 @@ export default defineConfig({
                             /^https:\/\/taskominator\.vercel\.app\/assets\/.*/i,
                         handler: 'CacheFirst',
                         options: {
-                            cacheName: 'taskominator-fonts-cache',
+                            cacheName: 'taskonaut-fonts-cache',
                             expiration: {
                                 maxEntries: 10,
                                 maxAgeSeconds: 60 * 60 * 24 * 365, // <== 365 days
@@ -50,13 +50,13 @@ export default defineConfig({
             },
             registerType: 'prompt',
             manifest: {
-                name: 'Taskominator Dev',
+                name: 'taskonaut',
                 description: 'The most awesome todo application',
                 display: 'standalone',
-                short_name: 'Taskominator',
+                short_name: 'taskonaut',
                 theme_color: '#212121',
                 background_color: '#1a1a1a',
-                id: 'taskominator',
+                id: 'taskonaut',
                 icons: [
                     {
                         src: 'assets/icons/icon-72x72.png',

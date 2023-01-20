@@ -136,7 +136,7 @@
             </v-list-item-subtitle>
             <template v-slot:append>
                 <v-btn
-                    href="https://github.com/taskominator/taskominator"
+                    href="https://github.com/taskonaut/taskonaut"
                     target="_blank"
                     variant="text"
                     append-icon="mdi-github"
@@ -151,7 +151,7 @@
             </v-list-item-subtitle>
             <template v-slot:append>
                 <v-btn
-                    href="https://github.com/taskominator/taskominator/issues"
+                    href="https://github.com/taskonaut/taskonaut/issues"
                     target="_blank"
                     variant="text"
                     append-icon="mdi-bug"
