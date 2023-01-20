@@ -1,10 +1,10 @@
-# Taskominator
+# taskonaut
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/taskominator/taskominator/main/public/assets/icons/icon-128x128.png" style="border-radius:30px" alt="Taskominator icon" title="Application icon" />
+  <img src="https://raw.githubusercontent.com/taskonaut/taskonaut/main/public/assets/icons/icon-128x128.png" style="border-radius:30px" alt="taskonaut icon" title="Application icon" />
 </p>
 
-<img alt="GitHub Workflow Build and E2E Status" src="https://img.shields.io/github/workflow/status/taskominator/taskominator/Execute%20e2e%20tests?style=for-the-badge" />
+<img alt="GitHub Workflow Build and E2E Status" src="https://img.shields.io/github/workflow/status/taskonaut/taskonaut/Execute%20e2e%20tests?style=for-the-badge" />
 
 An application that will help you organize your daily life and arrange all the tasks in the shelves.
 
