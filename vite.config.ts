@@ -19,7 +19,7 @@ export default defineConfig({
                 runtimeCaching: [
                     {
                         urlPattern:
-                            /^https:\/\/taskominator\.vercel\.app\/assets\/.*/i,
+                            /^https:\/\/taskonaut\.vercel\.app\/assets\/.*/i,
                         handler: 'CacheFirst',
                         options: {
                             cacheName: 'taskonaut-fonts-cache',
