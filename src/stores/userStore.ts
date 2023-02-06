@@ -1,4 +1,4 @@
-import { auth } from '@/firebaseConfig';
+import { auth } from '@/includes/firebase';
 import router from '@/router';
 import {
     GoogleAuthProvider,

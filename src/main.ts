@@ -8,7 +8,7 @@ import router from './router';
 
 import Datepicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
-import './firebaseConfig';
+import './includes/firebase';
 
 const pinia = createPinia();
 const app = createApp(App);

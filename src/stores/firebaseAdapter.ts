@@ -1,4 +1,4 @@
-import { db, FirebaseCollections } from '@/firebaseConfig';
+import { db, FirebaseCollections } from '@/includes/firebase';
 import {
     collection,
     deleteDoc,

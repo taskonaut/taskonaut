@@ -1,4 +1,4 @@
-import { FirebaseCollections } from '@/firebaseConfig';
+import { FirebaseCollections } from '@/includes/firebase';
 import type { Group, Task } from '@/model';
 import router from '@/router';
 import {
