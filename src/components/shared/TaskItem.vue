@@ -20,10 +20,12 @@
                     />
                     <GroupChip
                         v-if="
-                            task.groupId &&
-                            router.currentRoute.value.params.id !== task.groupId
+                            !props.subtask &&
+                            task.parentId &&
+                            router.currentRoute.value.params.id !==
+                                task.parentId
                         "
-                        :groupId="task.groupId"
+                        :groupId="task.parentId"
                         class="mt-1"
                     />
                 </div>
@@ -46,7 +48,6 @@
             </template>
             <template v-slot:append>
                 <v-btn
-                    v-if="!props.parentTaskId"
                     size="small"
                     icon="mdi-plus"
                     variant="text"
@@ -70,15 +71,10 @@
             </template>
             <TaskDialog
                 v-if="createDialog"
-                :taskId="task.uuid"
+                :parent-id="task.uuid"
                 v-model="createDialog"
             />
-            <TaskDialog
-                v-if="editDialog"
-                :taskId="parentTaskId"
-                :task="task"
-                v-model="editDialog"
-            />
+            <TaskDialog v-if="editDialog" :task="task" v-model="editDialog" />
             <ConfirmDialog
                 v-if="confirmDialog"
                 v-model="confirmDialog"
@@ -88,18 +84,18 @@
             />
         </v-list-item>
 
-        <v-expansion-panels v-if="task.subTasks && task.subTasks.length > 0">
+        <v-expansion-panels v-if="subTasks && subTasks.length">
             <v-expansion-panel>
                 <v-expansion-panel-title class="subtasks-title"
                     ><v-icon size="x-small">mdi-file-tree</v-icon>
-                    {{ task.subTasks.length }} subtasks
+                    {{ subTasks.length }} subtasks
                 </v-expansion-panel-title>
                 <v-expansion-panel-text>
                     <TaskItem
-                        v-for="subTask in task.subTasks"
-                        :key="subTask.uuid"
-                        :task="subTask"
-                        :parentTaskId="task.uuid"
+                        v-for="task in subTasks"
+                        :subtask="true"
+                        :key="task.uuid"
+                        :task="task"
                     />
                 </v-expansion-panel-text>
             </v-expansion-panel>
@@ -116,18 +112,21 @@ import { useAppStore } from '@/stores/appStore';
 import { ref } from 'vue';
 import ConfirmDialog from '../dialogs/ConfirmDialog.vue';
 import GroupChip from './GroupChip.vue';
+import { computed } from 'vue';
 
 const createDialog = ref(false);
 const editDialog = ref(false);
 const confirmDialog = ref(false);
 
+const appStore = useAppStore();
+
 const props = defineProps<{
     task: Task;
+    subtask?: boolean;
     isDraggable?: boolean;
-    parentTaskId?: string;
 }>();
 
-const appStore = useAppStore();
+const subTasks = computed(() => appStore.getGroupTasks(props.task.uuid));
 
 function countLines(): 'one' | 'two' | 'three' {
     const numberNames = ['one', 'two', 'three'];
@@ -139,24 +138,12 @@ function countLines(): 'one' | 'two' | 'three' {
 }
 
 function toggleTask() {
-    // TODO: merge updateTask and updateSubtask together
-    if (props.parentTaskId) {
-        appStore.updateSubTask(
-            { ...props.task, complete: !props.task?.complete },
-            props.parentTaskId
-        );
-    } else {
-        appStore.updateTask({ ...props.task, complete: !props.task?.complete });
-    }
+    appStore.updateTask({ ...props.task, complete: !props.task?.complete });
 }
 
 function deleteTask(taskId: string) {
     // TODO: merge updateTask and updateSubtask together
-    if (props.parentTaskId) {
-        appStore.deleteSubTask(taskId, props.parentTaskId);
-    } else {
-        appStore.deleteTask(taskId);
-    }
+    appStore.deleteTask(taskId);
 }
 </script>
 
