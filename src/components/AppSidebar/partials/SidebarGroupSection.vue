@@ -27,18 +27,35 @@ import Draggable from 'vuedraggable';
 import GroupDialog from '@/components/dialogs/GroupDialog.vue';
 import GroupItem from './partials/GroupItem.vue';
 import { useAppStore } from '@/stores/appStore';
-import { ref, computed } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
+import type { Group } from '@/model';
 
 const store = useAppStore();
 const openDialog = ref(false);
+const order = ref<string[]>([]);
+
+onMounted(() => {
+    if (store.user) order.value = store.user.order;
+});
 
 const groups = computed({
-    get: () =>
-        store.groupOrder.map((id) =>
-            store.groups.find((group) => group.uuid == id)
-        ),
-    set: (groups) => store.setGroupOrder(groups.map((group) => group!.uuid)),
+    get() {
+        return sortArray(store.groups, order.value || []);
+    },
+    set(groups) {
+        order.value = groups!.map((item) => item.uuid);
+    },
 });
+
+watch(order, (newVal) => {
+    store.setGroupOrder(newVal!.map((item) => item));
+});
+
+function sortArray(array: Group[], sortArray: string[]): Group[] {
+    return [...array].sort(
+        (a, b) => sortArray.indexOf(a.uuid) - sortArray.indexOf(b.uuid)
+    );
+}
 </script>
 
 <style scoped></style>
