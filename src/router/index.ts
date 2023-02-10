@@ -1,3 +1,4 @@
+import LoginView from '@/views/LoginView.vue';
 import ConfigView from '@/views/ConfigView.vue';
 import ExpiredView from '@/views/ExpiredView.vue';
 import GroupView from '@/views/GroupView.vue';
@@ -9,6 +10,11 @@ import { createRouter, createWebHistory } from 'vue-router';
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
+        {
+            path: '/login',
+            name: 'login',
+            component: LoginView,
+        },
         {
             path: '/',
             name: 'inbox',

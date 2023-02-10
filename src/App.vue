@@ -1,5 +1,5 @@
 <template>
-    <v-app>
+    <v-app v-if="userStore.isLoggedIn && appStore.ready">
         <v-app-bar
             :color="theme.global.current.value.dark ? 'accent' : 'primary'"
             :floating="true"
@@ -42,11 +42,22 @@
         <TaskDialog v-if="showDialog" v-model="showDialog" />
         <ReloadPrompt />
     </v-app>
+    <v-app v-else>
+        <v-container class="d-flex flex-col justify-center pa-0 h-full">
+            <v-btn
+                v-if="!userStore.isLoggedIn"
+                @click="userStore.login"
+                append-icon="mdi-login"
+                >LOGIN WITH GOOGLE</v-btn
+            >
+            <div v-else>Loading...</div>
+        </v-container>
+    </v-app>
 </template>
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
-import { onMounted, ref } from 'vue';
+import { onBeforeMount, ref } from 'vue';
 import { useUserStore } from './stores/userStore';
 import { useAppStore } from './stores/appStore';
 import { useDisplay, useTheme } from 'vuetify';
@@ -61,8 +72,9 @@ const showDialog = ref(false);
 const drawer = ref(true);
 const appStore = useAppStore();
 const theme = useTheme();
+const userStore = useUserStore();
 
-onMounted(async () => {
+onBeforeMount(async () => {
     await useUserStore().getAuthState();
 });
 
