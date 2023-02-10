@@ -1,13 +1,13 @@
 <template>
     <v-dialog
         :max-width="!mobile ? '600' : '100vw'"
-        @update:model-value="emits('update:modelValue', $event)"
+        @update:model-value="closeDialog"
         :model-value="props.modelValue"
         :scrim="true"
         :fullscreen="mobile"
         transition="dialog-bottom-transition"
     >
-        <v-form ref="form" v-model="formData.valid" :submit="formSubmit">
+        <v-form ref="form" v-model="isFormValid" :submit="formSubmit">
             <v-card :height="mobile ? '100vh' : 'auto'">
                 <v-toolbar dark color="primary" density="compact">
                     <v-btn icon dark @click="closeDialog()">
@@ -22,7 +22,7 @@
                     <v-spacer></v-spacer>
                     <v-toolbar-items>
                         <v-btn
-                            :disabled="!formData.valid"
+                            :disabled="!isFormValid"
                             type="submit"
                             text
                             dark
@@ -42,7 +42,6 @@
                         variant="outlined"
                         v-model="formData.name"
                         label="Group Name"
-                        :rules="formData.rules"
                         required
                         ref="nameInput"
                         @keyup.enter.prevent="
@@ -128,12 +127,12 @@ const isLoggedIn = computed(() => userStore.isLoggedIn);
 const form = ref();
 const nameInput = ref();
 const sharedWithInput = ref();
+const isFormValid = ref(false);
 const formData = reactive({
-    valid: false,
-    rules: [(v: any) => !!v || 'Name is required'],
+    uuid: props.group?.uuid || null,
     name: props.group?.name || '',
     description: props.group?.description || '',
-    sharedWith: props.group?.sharedWith.join(',') || '',
+    sharedWith: props.group?.sharedWith || [],
 });
 
 function textareaHandler(event: KeyboardEvent) {
@@ -151,18 +150,9 @@ function closeDialog() {
 
 function formSubmit() {
     if (props.group) {
-        appStore.updateGroup(
-            props.group.uuid,
-            formData.name,
-            formData.description,
-            formData.sharedWith
-        );
+        appStore.updateGroup(formData as Partial<Group>);
     } else {
-        appStore.createGroup(
-            formData.name,
-            formData.description,
-            formData.sharedWith
-        );
+        appStore.createGroup(formData as Partial<Group>);
         form.value.reset();
     }
     closeDialog();
