@@ -84,22 +84,6 @@
             </template>
         </v-list-item>
         <v-divider></v-divider>
-        <v-list-item title="Fix taskOrder">
-            <v-list-item-subtitle>
-                Returning lost tasks to their lists
-            </v-list-item-subtitle>
-            <template v-slot:append>
-                <v-list-item-action
-                    ><v-btn
-                        @click="confirmFix = true"
-                        variant="text"
-                        color="warning"
-                        append-icon="mdi-tools"
-                        >FIX</v-btn
-                    >
-                </v-list-item-action>
-            </template>
-        </v-list-item>
         <v-list-subheader>APPEARANCE</v-list-subheader>
         <v-list-item title="Theme">
             <v-list-item-subtitle>
@@ -167,31 +151,17 @@
         @dialog:confirm="resetData"
     />
     <ConfirmDialog
-        v-model="confirmFix"
-        :title="'Fix Tasks?'"
-        :message="'Attempt to fix taskOrder?'"
-        @dialog:confirm="fixTasks"
-    />
-    <ConfirmDialog
         v-model="confirmImport"
         :title="'Import Data?'"
         :message="'Are you sure you want to import data? All current data will be lost after!'"
         @dialog:confirm="importData"
     />
-    <v-snackbar
-        :color="fixTasksSnackColor"
-        v-model="fixTasksSnack"
-        :close-on-content-click="true"
-        @after-leave="brokenTasksCount = 0"
-    >
-        {{ fixTasksSnackMsg }}
-    </v-snackbar>
 </template>
 <script setup lang="ts">
 import ConfirmDialog from '@/components/dialogs/ConfirmDialog.vue';
 import { useAppStore } from '@/stores/appStore';
 import { useUserStore } from '@/stores/userStore';
-import { computed, getCurrentInstance, ref } from 'vue';
+import { getCurrentInstance, ref } from 'vue';
 import { useTheme } from 'vuetify/lib/framework.mjs';
 import * as fs from '@/services/fs.service';
 
@@ -202,21 +172,7 @@ const loggedIn = userStore.isLoggedIn;
 const theme = useTheme();
 // Confirm Dialogs States
 const confirmReset = ref(false);
-const confirmFix = ref(false);
 const confirmImport = ref(false);
-// Fix Tasks Snackbar
-const fixTasksSnack = ref(false);
-const fixTasksSnackColor = computed(() =>
-    brokenTasksCount.value > 0 ? 'warning' : 'success'
-);
-const fixTasksSnackMsg = computed(() =>
-    brokenTasksCount.value > 0
-        ? `Fixed ${brokenTasksCount.value} broken task${
-              brokenTasksCount.value > 1 ? 's!' : '!'
-          }`
-        : 'No broken tasks found.'
-);
-const brokenTasksCount = ref(0);
 
 function exportData() {
     fs.writeFile(JSON.stringify(appStore.$state, null, 2));
@@ -229,12 +185,6 @@ function resetData() {
     appStore.resetState();
     instance?.proxy?.$forceUpdate();
 }
-
-function fixTasks() {
-    brokenTasksCount.value = appStore.fixTasks();
-    fixTasksSnack.value = true;
-}
-
 function saveTheme() {
     // TODO: implement me
 }
