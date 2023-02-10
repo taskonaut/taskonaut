@@ -6,7 +6,7 @@
 import { useAppStore } from '@/stores/appStore';
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
-import DisplayTasks from '../components/shared/DisplayTasks.vue';
+import DisplayTasks from '@/components/shared/DisplayTasks.vue';
 
 const store = useAppStore();
 
