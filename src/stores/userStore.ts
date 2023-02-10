@@ -8,7 +8,7 @@ import {
     type User,
 } from 'firebase/auth';
 import { defineStore } from 'pinia';
-import { destroyFirebaseAdapter, useAppStore } from './appStore';
+import { useAppStore } from './appStore';
 
 interface UserStore {
     uid: string | undefined;
@@ -26,7 +26,7 @@ export const useUserStore = defineStore({
         loading: false,
     }),
     getters: {
-        isLoggedIn: (state) => state.uid,
+        isLoggedIn: (state) => (state.uid ? true : false),
         isLoading: (state) => state.loading,
     },
     actions: {
@@ -40,10 +40,9 @@ export const useUserStore = defineStore({
                     this.photoURL = user.photoURL;
                     this.uid = user.uid;
                     this.displayName = user.displayName;
-                    useAppStore().$reset();
-                    useAppStore().disableLocalStorageSync();
                     router.push('/');
-                    useAppStore().syncFirebase(user.uid, user.email!);
+                    useAppStore().syncFirebase(user.uid);
+                    this.loading = false;
                 } else {
                     throw new Error('user is not defined');
                 }
@@ -55,9 +54,6 @@ export const useUserStore = defineStore({
             try {
                 await signOut(auth);
                 this.$reset();
-                useAppStore().$reset();
-                useAppStore().disableLocalStorageSync();
-                destroyFirebaseAdapter();
                 router.push('/');
             } catch (error) {
                 throw new Error((error as Error).message);
@@ -68,15 +64,15 @@ export const useUserStore = defineStore({
                 this.loading = true;
                 const unsubscribe = onAuthStateChanged(
                     auth,
-                    (user) => {
+                    async (user) => {
                         if (user) {
                             this.photoURL = user.photoURL;
                             this.uid = user.uid;
                             this.displayName = user.displayName;
-                            useAppStore().syncFirebase(user.uid, user.email!);
+                            useAppStore().syncFirebase(user.uid);
                             resolve(user as User);
+                            this.loading = false;
                         } else {
-                            useAppStore().syncLocalStorage();
                             resolve({
                                 photoURL: null,
                                 uid: undefined,
