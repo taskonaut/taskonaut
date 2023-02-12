@@ -148,6 +148,7 @@ export const useAppStore = defineStore({
                 dateCompleted: undefined,
                 dueDate: newTask.dueDate || undefined,
                 createdBy: useUserStore().uid || 'localUser',
+                taskOrder: [],
             };
 
             return task;

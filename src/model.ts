@@ -8,6 +8,7 @@ export interface Task {
     dueDate: undefined | number;
     complete: boolean;
     dateCompleted: undefined | null | number;
+    taskOrder: string[];
 }
 
 export interface Group {
@@ -15,9 +16,9 @@ export interface Group {
     createdBy: string;
     name: string;
     description: string;
-    taskOrder: string[];
     dateCreated: number;
     sharedWith: string[];
+    taskOrder: string[];
 }
 
 export interface ShareRequest {

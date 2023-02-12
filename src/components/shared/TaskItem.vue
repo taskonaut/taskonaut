@@ -91,12 +91,26 @@
                         {{ subTasks.length }} subtasks
                     </v-expansion-panel-title>
                     <v-expansion-panel-text>
-                        <TaskItem
-                            v-for="task in subTasks"
-                            :subtask="true"
-                            :key="task.uuid"
-                            :task="task"
-                        />
+                        <draggable
+                            item-key="uuid"
+                            v-model="subTasks"
+                            handle=".handle"
+                        >
+                            <template #item="{ index, element }">
+                                <div>
+                                    <TaskItem
+                                        :task="element!"
+                                        :isDraggable="true"
+                                        :subtask="true"
+                                    />
+
+                                    <v-divider
+                                        v-if="index < subTasks.length - 1"
+                                        :key="`${index}-divider`"
+                                    />
+                                </div>
+                            </template>
+                        </draggable>
                     </v-expansion-panel-text>
                 </v-expansion-panel>
             </v-expansion-panels>
@@ -110,10 +124,12 @@ import DateChip from '@/components/shared/DateChip.vue';
 import type { Task } from '@/model';
 import router from '@/router';
 import { useAppStore } from '@/stores/appStore';
-import { ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import ConfirmDialog from '../dialogs/ConfirmDialog.vue';
 import GroupChip from './GroupChip.vue';
 import { computed } from 'vue';
+import { sortArray } from '@/services/utils.service';
+import draggable from 'vuedraggable';
 
 const createDialog = ref(false);
 const editDialog = ref(false);
@@ -126,8 +142,22 @@ const props = defineProps<{
     subtask?: boolean;
     isDraggable?: boolean;
 }>();
+const order = ref<string[]>();
+const subTasks = computed({
+    get() {
+        return sortArray(
+            appStore.getGroupTasks(props.task.uuid),
+            order.value || []
+        );
+    },
+    set(tasks) {
+        order.value = tasks!.map((item) => item.uuid);
+    },
+});
 
-const subTasks = computed(() => appStore.getGroupTasks(props.task.uuid));
+onMounted(() => {
+    order.value = props.task.taskOrder;
+});
 
 function countLines(): 'one' | 'two' | 'three' {
     const numberNames = ['one', 'two', 'three'];
@@ -139,13 +169,22 @@ function countLines(): 'one' | 'two' | 'three' {
 }
 
 function toggleTask() {
-    appStore.updateTask({ ...props.task, complete: !props.task?.complete });
+    appStore.updateTask({
+        uuid: props.task.uuid,
+        complete: !props.task.complete,
+    });
 }
 
 function deleteTask(taskId: string) {
-    // TODO: merge updateTask and updateSubtask together
     appStore.deleteTask(taskId);
 }
+
+watch(order, (newVal) => {
+    appStore.updateTask({
+        uuid: props.task.uuid,
+        taskOrder: newVal,
+    });
+});
 </script>
 
 <style scoped>
