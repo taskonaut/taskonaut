@@ -83,23 +83,24 @@
                 @dialog:confirm="deleteTask(task!.uuid)"
             />
         </v-list-item>
-
-        <v-expansion-panels v-if="subTasks && subTasks.length">
-            <v-expansion-panel>
-                <v-expansion-panel-title class="subtasks-title"
-                    ><v-icon size="x-small">mdi-file-tree</v-icon>
-                    {{ subTasks.length }} subtasks
-                </v-expansion-panel-title>
-                <v-expansion-panel-text>
-                    <TaskItem
-                        v-for="task in subTasks"
-                        :subtask="true"
-                        :key="task.uuid"
-                        :task="task"
-                    />
-                </v-expansion-panel-text>
-            </v-expansion-panel>
-        </v-expansion-panels>
+        <div class="px-2 py-2">
+            <v-expansion-panels v-if="subTasks && subTasks.length">
+                <v-expansion-panel>
+                    <v-expansion-panel-title class="subtasks-title"
+                        ><v-icon size="x-small">mdi-file-tree</v-icon>
+                        {{ subTasks.length }} subtasks
+                    </v-expansion-panel-title>
+                    <v-expansion-panel-text>
+                        <TaskItem
+                            v-for="task in subTasks"
+                            :subtask="true"
+                            :key="task.uuid"
+                            :task="task"
+                        />
+                    </v-expansion-panel-text>
+                </v-expansion-panel>
+            </v-expansion-panels>
+        </div>
     </div>
 </template>
 
