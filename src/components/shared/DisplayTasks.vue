@@ -43,6 +43,7 @@ import TaskItem from './TaskItem.vue';
 import AddListItem from './AddListItem.vue';
 import { useDisplay } from 'vuetify';
 import { useAppStore } from '@/stores/appStore';
+import { sortArray } from '@/services/utils.service';
 
 const { smAndDown } = useDisplay();
 
@@ -89,11 +90,5 @@ watch(order, (newVal) => {
 const completeTasks = computed(() =>
     props.tasks.filter((task) => task.complete)
 );
-
-function sortArray(array: Task[], sortArray: string[]): Task[] {
-    return [...array].sort(
-        (a, b) => sortArray.indexOf(a.uuid) - sortArray.indexOf(b.uuid)
-    );
-}
 </script>
 <style scoped></style>

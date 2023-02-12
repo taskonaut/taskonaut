@@ -28,7 +28,7 @@ import GroupDialog from '@/components/dialogs/GroupDialog.vue';
 import GroupItem from './partials/GroupItem.vue';
 import { useAppStore } from '@/stores/appStore';
 import { ref, onMounted, watch, computed } from 'vue';
-import type { Group } from '@/model';
+import { sortArray } from '@/services/utils.service';
 
 const store = useAppStore();
 const openDialog = ref(false);
@@ -50,12 +50,6 @@ const groups = computed({
 watch(order, (newVal) => {
     store.setGroupOrder(newVal!.map((item) => item));
 });
-
-function sortArray(array: Group[], sortArray: string[]): Group[] {
-    return [...array].sort(
-        (a, b) => sortArray.indexOf(a.uuid) - sortArray.indexOf(b.uuid)
-    );
-}
 </script>
 
 <style scoped></style>
