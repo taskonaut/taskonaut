@@ -132,7 +132,7 @@ import DateChip from '@/components/shared/DateChip.vue';
 import type { Task } from '@/model';
 import router from '@/router';
 import { useAppStore } from '@/stores/appStore';
-import { onMounted, ref, watch } from 'vue';
+import { ref } from 'vue';
 import ConfirmDialog from '../dialogs/ConfirmDialog.vue';
 import GroupChip from './GroupChip.vue';
 import { computed } from 'vue';
@@ -151,20 +151,19 @@ const props = defineProps<{
     subtask?: boolean;
     isDraggable?: boolean;
 }>();
-const order = ref<string[]>([]);
+
 const tasks = computed(() => appStore.getGroupTasks(props.task.uuid));
 
 const subTasks = computed({
     get() {
-        return sortArray(tasks.value, order.value);
+        return sortArray(tasks.value, props.task.taskOrder);
     },
     set(newTasks) {
-        order.value = newTasks!.map((item) => item.uuid);
+        appStore.updateTask({
+            uuid: props.task.uuid,
+            taskOrder: newTasks.map((task) => task.uuid),
+        });
     },
-});
-
-onMounted(() => {
-    order.value = props.task.taskOrder;
 });
 
 function countLines(): 'one' | 'two' | 'three' {
@@ -185,13 +184,6 @@ function toggleTask() {
 function deleteTask(taskId: string) {
     appStore.deleteTask(taskId);
 }
-
-watch(order, (newVal) => {
-    appStore.updateTask({
-        uuid: props.task.uuid,
-        taskOrder: newVal,
-    });
-});
 
 function handleChange(e: any) {
     if (e.added) {
