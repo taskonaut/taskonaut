@@ -83,8 +83,8 @@
                 @dialog:confirm="deleteTask(task!.uuid)"
             />
         </v-list-item>
-        <div class="px-2 py-2">
-            <v-expansion-panels v-if="subTasks && subTasks.length">
+        <div class="px-2 py-2" v-if="subTasks && subTasks.length">
+            <v-expansion-panels>
                 <v-expansion-panel>
                     <v-expansion-panel-title class="subtasks-title"
                         ><v-icon size="x-small">mdi-file-tree</v-icon>
@@ -92,9 +92,12 @@
                     </v-expansion-panel-title>
                     <v-expansion-panel-text>
                         <draggable
+                            @change="handleChange"
+                            :component-data="{ parentUuid: props.task.uuid }"
                             item-key="uuid"
                             v-model="subTasks"
                             handle=".handle"
+                            group="items"
                         >
                             <template #item="{ index, element }">
                                 <div>
@@ -111,6 +114,11 @@
                                 </div>
                             </template>
                         </draggable>
+                        <!-- <display-tasks
+                            :tasks="subTasks"
+                            :subtasks="true"
+                            :group-id="props.task.uuid"
+                        /> -->
                     </v-expansion-panel-text>
                 </v-expansion-panel>
             </v-expansion-panels>
@@ -130,6 +138,7 @@ import GroupChip from './GroupChip.vue';
 import { computed } from 'vue';
 import { sortArray } from '@/services/utils.service';
 import draggable from 'vuedraggable';
+// import DisplayTasks from '@/components/shared/DisplayTasks.vue';
 
 const createDialog = ref(false);
 const editDialog = ref(false);
@@ -142,16 +151,15 @@ const props = defineProps<{
     subtask?: boolean;
     isDraggable?: boolean;
 }>();
-const order = ref<string[]>();
+const order = ref<string[]>([]);
+const tasks = computed(() => appStore.getGroupTasks(props.task.uuid));
+
 const subTasks = computed({
     get() {
-        return sortArray(
-            appStore.getGroupTasks(props.task.uuid),
-            order.value || []
-        );
+        return sortArray(tasks.value, order.value);
     },
-    set(tasks) {
-        order.value = tasks!.map((item) => item.uuid);
+    set(newTasks) {
+        order.value = newTasks!.map((item) => item.uuid);
     },
 });
 
@@ -167,7 +175,6 @@ function countLines(): 'one' | 'two' | 'three' {
 
     return numberNames[count] as 'one' | 'two' | 'three';
 }
-
 function toggleTask() {
     appStore.updateTask({
         uuid: props.task.uuid,
@@ -185,6 +192,15 @@ watch(order, (newVal) => {
         taskOrder: newVal,
     });
 });
+
+function handleChange(e: any) {
+    if (e.added) {
+        appStore.updateTask({
+            uuid: e.added.element.uuid,
+            parentId: props.task.uuid,
+        });
+    }
+}
 </script>
 
 <style scoped>
