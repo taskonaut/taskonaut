@@ -1,31 +1,31 @@
 <template>
     <div>
         <v-list-item
-            v-if="task"
+            v-if="taskRef"
             :lines="countLines()"
             :rounded="true"
-            :title="task?.header"
-            :value="task?.uuid"
+            :title="taskRef?.header"
+            :value="taskRef?.uuid"
             :active="false"
             :class="task.complete && 'complete'"
             @dblclick="editDialog = true"
         >
             <v-list-item-subtitle>
-                <div v-if="task.body">{{ task.body }}</div>
+                <div v-if="taskRef.body">{{ task.body }}</div>
                 <div class="metadata">
                     <DateChip
-                        v-if="task.dueDate || task.dateCompleted"
-                        :task="task"
+                        v-if="taskRef.dueDate || taskRef.dateCompleted"
+                        :task="taskRef"
                         class="mt-1"
                     />
                     <GroupChip
                         v-if="
                             !props.subtask &&
-                            task.parentId &&
+                            taskRef.parentId &&
                             router.currentRoute.value.params.id !==
-                                task.parentId
+                                taskRef.parentId
                         "
-                        :groupId="task.parentId"
+                        :groupId="taskRef.parentId"
                         class="mt-1"
                     />
                 </div>
@@ -71,16 +71,20 @@
             </template>
             <TaskDialog
                 v-if="createDialog"
-                :parent-id="task.uuid"
+                :parent-id="taskRef.uuid"
                 v-model="createDialog"
             />
-            <TaskDialog v-if="editDialog" :task="task" v-model="editDialog" />
+            <TaskDialog
+                v-if="editDialog"
+                :task="taskRef"
+                v-model="editDialog"
+            />
             <ConfirmDialog
                 v-if="confirmDialog"
                 v-model="confirmDialog"
                 :title="'Delete Task?'"
                 :message="'Are you sure you want to delete this task?'"
-                @dialog:confirm="deleteTask(task!.uuid)"
+                @dialog:confirm="deleteTask(taskRef!.uuid)"
             />
         </v-list-item>
         <div class="px-2 py-2" v-if="subTasks && subTasks.length">
@@ -151,7 +155,7 @@ const props = defineProps<{
     subtask?: boolean;
     isDraggable?: boolean;
 }>();
-
+const taskRef = appStore.getTaskById(props.task.uuid);
 const tasks = computed(() => appStore.getGroupTasks(props.task.uuid));
 
 const subTasks = computed({
