@@ -68,14 +68,15 @@ export const useAppStore = defineStore({
             [...state.groups, ...state.sharedGroups].find(
                 (group) => group.uuid == parentId
             ),
-        getGroupTasks: (state) => (parentId: string) =>
-            [...state.tasks, ...state.sharedTasks].filter(
+        getGroupTasks: (state) => (parentId: string) => {
+            return [...state.tasks, ...state.sharedTasks].filter(
                 (task) => task.parentId == parentId
-            ),
-        getTaskOrderById: (state) => (parentId: string) =>
-            [...state.groups, ...state.sharedGroups].find(
+            );
+        },
+        getTaskOrder: (state) => (parentId: string) =>
+            [...state.groups, ...state.sharedGroups, ...state.tasks].find(
                 (group) => group.uuid == parentId
-            )?.taskOrder,
+            )?.taskOrder as string[],
         getInboxTasks: (state) => () =>
             state.tasks.filter((task) => !task.parentId),
         getTodayTasks: (state) => () => {

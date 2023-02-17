@@ -1,31 +1,31 @@
 <template>
     <div>
         <v-list-item
-            v-if="taskRef"
+            v-if="task"
             :lines="countLines()"
             :rounded="true"
-            :title="taskRef?.header"
-            :value="taskRef?.uuid"
+            :title="task?.header"
+            :value="task?.uuid"
             :active="false"
             :class="task.complete && 'complete'"
             @dblclick="editDialog = true"
         >
             <v-list-item-subtitle>
-                <div v-if="taskRef.body">{{ task.body }}</div>
+                <div v-if="task.body">{{ task.body }}</div>
                 <div class="metadata">
                     <DateChip
-                        v-if="taskRef.dueDate || taskRef.dateCompleted"
-                        :task="taskRef"
+                        v-if="task.dueDate || task.dateCompleted"
+                        :task="task"
                         class="mt-1"
                     />
                     <GroupChip
                         v-if="
-                            !props.subtask &&
-                            taskRef.parentId &&
+                            !subtask &&
+                            task.parentId &&
                             router.currentRoute.value.params.id !==
-                                taskRef.parentId
+                                task.parentId
                         "
-                        :groupId="taskRef.parentId"
+                        :groupId="task.parentId"
                         class="mt-1"
                     />
                 </div>
@@ -71,23 +71,19 @@
             </template>
             <TaskDialog
                 v-if="createDialog"
-                :parent-id="taskRef.uuid"
+                :parent-id="task.uuid"
                 v-model="createDialog"
             />
-            <TaskDialog
-                v-if="editDialog"
-                :task="taskRef"
-                v-model="editDialog"
-            />
+            <TaskDialog v-if="editDialog" :task="task" v-model="editDialog" />
             <ConfirmDialog
                 v-if="confirmDialog"
                 v-model="confirmDialog"
                 :title="'Delete Task?'"
                 :message="'Are you sure you want to delete this task?'"
-                @dialog:confirm="deleteTask(taskRef!.uuid)"
+                @dialog:confirm="deleteTask(task!.uuid)"
             />
         </v-list-item>
-        <div class="px-2 py-2" v-if="subTasks && subTasks.length">
+        <div class="px-4 py-4" v-if="subTasks && subTasks.length">
             <v-expansion-panels>
                 <v-expansion-panel>
                     <v-expansion-panel-title class="subtasks-title"
@@ -95,9 +91,8 @@
                         {{ subTasks.length }} subtasks
                     </v-expansion-panel-title>
                     <v-expansion-panel-text>
-                        <draggable
+                        <!-- <draggable
                             @change="handleChange"
-                            :component-data="{ parentUuid: props.task.uuid }"
                             item-key="uuid"
                             v-model="subTasks"
                             handle=".handle"
@@ -117,12 +112,13 @@
                                     />
                                 </div>
                             </template>
-                        </draggable>
-                        <!-- <display-tasks
+                        </draggable> -->
+                        <display-tasks
                             :tasks="subTasks"
                             :subtasks="true"
                             :group-id="props.task.uuid"
-                        /> -->
+                            :hide-add-button="true"
+                        />
                     </v-expansion-panel-text>
                 </v-expansion-panel>
             </v-expansion-panels>
@@ -140,9 +136,8 @@ import { ref } from 'vue';
 import ConfirmDialog from '../dialogs/ConfirmDialog.vue';
 import GroupChip from './GroupChip.vue';
 import { computed } from 'vue';
-import { sortArray } from '@/services/utils.service';
-import draggable from 'vuedraggable';
-// import DisplayTasks from '@/components/shared/DisplayTasks.vue';
+// import draggable from 'vuedraggable';
+import DisplayTasks from './DisplayTasks.vue';
 
 const createDialog = ref(false);
 const editDialog = ref(false);
@@ -155,20 +150,8 @@ const props = defineProps<{
     subtask?: boolean;
     isDraggable?: boolean;
 }>();
-const taskRef = appStore.getTaskById(props.task.uuid);
-const tasks = computed(() => appStore.getGroupTasks(props.task.uuid));
 
-const subTasks = computed({
-    get() {
-        return sortArray(tasks.value, props.task.taskOrder);
-    },
-    set(newTasks) {
-        appStore.updateTask({
-            uuid: props.task.uuid,
-            taskOrder: newTasks.map((task) => task.uuid),
-        });
-    },
-});
+const subTasks = computed(() => appStore.getGroupTasks(props.task.uuid));
 
 function countLines(): 'one' | 'two' | 'three' {
     const numberNames = ['one', 'two', 'three'];
@@ -179,6 +162,7 @@ function countLines(): 'one' | 'two' | 'three' {
     return numberNames[count] as 'one' | 'two' | 'three';
 }
 function toggleTask() {
+    // eslint-disable-next-line vue/no-mutating-props
     appStore.updateTask({
         uuid: props.task.uuid,
         complete: !props.task.complete,
@@ -189,14 +173,21 @@ function deleteTask(taskId: string) {
     appStore.deleteTask(taskId);
 }
 
-function handleChange(e: any) {
-    if (e.added) {
-        appStore.updateTask({
-            uuid: e.added.element.uuid,
-            parentId: props.task.uuid,
-        });
-    }
-}
+// function handleChange(e: any) {
+//     if (e.added) {
+//         appStore.updateTask({
+//             uuid: e.added.element.uuid,
+//             parentId: props.task.uuid,
+//             taskOrder: subTasks.value.map((task) => task.uuid),
+//         });
+//     }
+//     if (e.moved) {
+//         appStore.updateTask({
+//             uuid: props.task.uuid,
+//             taskOrder: subTasks.value.map((task) => task.uuid),
+//         });
+//     }
+// }
 </script>
 
 <style scoped>

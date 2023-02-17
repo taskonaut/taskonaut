@@ -1,11 +1,23 @@
 <template>
     <!-- Ongoing Tasks -->
     <v-list select-strategy="leaf" bg-color="background">
-        <v-list-subheader> Ongoing </v-list-subheader>
-        <draggable item-key="uuid" v-model="ongoingTasks" handle=".handle">
+        <v-list-subheader v-if="!subtasks && ongoingTasks.length">
+            Ongoing
+        </v-list-subheader>
+        <draggable
+            item-key="uuid"
+            v-model="ongoingTasks"
+            handle=".handle"
+            group="items"
+            @change="handleChange"
+        >
             <template #item="{ index, element }">
                 <div>
-                    <TaskItem :task="element!" :isDraggable="props.draggable" />
+                    <TaskItem
+                        :task="element!"
+                        :isDraggable="props.draggable"
+                        :subtask="props.subtasks"
+                    />
 
                     <v-divider
                         v-if="index < ongoingTasks.length - 1"
@@ -21,10 +33,19 @@
         <v-list-subheader v-if="completeTasks.length">
             Complete
         </v-list-subheader>
-        <draggable item-key="uuid" v-model="completeTasks" handle=".handle">
+        <draggable
+            item-key="uuid"
+            v-model="completeTasks"
+            handle=".handle"
+            group="items"
+        >
             <template #item="{ index, element }">
                 <div>
-                    <TaskItem :task="element!" :isDraggable="false" />
+                    <TaskItem
+                        :task="element!"
+                        :isDraggable="false"
+                        :subtask="props.subtasks"
+                    />
 
                     <v-divider
                         v-if="index < completeTasks.length - 1"
@@ -52,6 +73,7 @@ const props = defineProps({
         required: true,
         type: Array<Task>,
     },
+    subtasks: { type: Boolean, default: false },
     groupId: { type: String },
     draggable: {
         type: Boolean,
@@ -66,7 +88,8 @@ const props = defineProps({
 const order = ref<string[]>([]);
 
 onMounted(() => {
-    if (props.groupId) order.value = useAppStore().getGroupOrder(props.groupId);
+    if (props.groupId)
+        order.value = useAppStore().getTaskOrder(props.groupId) || [];
 });
 const ongoingTasks = computed({
     get() {
@@ -80,15 +103,32 @@ const ongoingTasks = computed({
     },
 });
 
-watch(order, (newVal) => {
-    useAppStore().updateGroup({
-        uuid: props.groupId,
-        taskOrder: newVal,
-    });
-});
-
 const completeTasks = computed(() =>
     props.tasks.filter((task) => task.complete)
 );
+
+function handleChange(e: any) {
+    if (e.added) {
+        console.log(e.added);
+        useAppStore().updateTask({
+            uuid: e.added.element.uuid,
+            parentId: props.groupId,
+        });
+    }
+}
+
+watch(order, (newVal) => {
+    if (!props.subtasks) {
+        useAppStore().updateGroup({
+            uuid: props.groupId,
+            taskOrder: newVal,
+        });
+    } else {
+        useAppStore().updateTask({
+            uuid: props.groupId,
+            taskOrder: newVal,
+        });
+    }
+});
 </script>
 <style scoped></style>
