@@ -10,7 +10,8 @@ const props = defineProps<{
     groupId: string;
 }>();
 
-const groupName = computed(
-    () => useAppStore().getGroupById(props.groupId)!.name
+const group = computed(() => useAppStore().getGroupById(props.groupId));
+const groupName = computed(() =>
+    group.value ? useAppStore().getGroupById(props.groupId)!.name : ''
 );
 </script>

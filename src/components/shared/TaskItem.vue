@@ -91,28 +91,6 @@
                         {{ subTasks.length }} subtasks
                     </v-expansion-panel-title>
                     <v-expansion-panel-text>
-                        <!-- <draggable
-                            @change="handleChange"
-                            item-key="uuid"
-                            v-model="subTasks"
-                            handle=".handle"
-                            group="items"
-                        >
-                            <template #item="{ index, element }">
-                                <div>
-                                    <TaskItem
-                                        :task="element!"
-                                        :isDraggable="true"
-                                        :subtask="true"
-                                    />
-
-                                    <v-divider
-                                        v-if="index < subTasks.length - 1"
-                                        :key="`${index}-divider`"
-                                    />
-                                </div>
-                            </template>
-                        </draggable> -->
                         <display-tasks
                             :tasks="subTasks"
                             :subtasks="true"
@@ -136,7 +114,6 @@ import { ref } from 'vue';
 import ConfirmDialog from '../dialogs/ConfirmDialog.vue';
 import GroupChip from './GroupChip.vue';
 import { computed } from 'vue';
-// import draggable from 'vuedraggable';
 import DisplayTasks from './DisplayTasks.vue';
 
 const createDialog = ref(false);
@@ -162,7 +139,6 @@ function countLines(): 'one' | 'two' | 'three' {
     return numberNames[count] as 'one' | 'two' | 'three';
 }
 function toggleTask() {
-    // eslint-disable-next-line vue/no-mutating-props
     appStore.updateTask({
         uuid: props.task.uuid,
         complete: !props.task.complete,
@@ -172,22 +148,6 @@ function toggleTask() {
 function deleteTask(taskId: string) {
     appStore.deleteTask(taskId);
 }
-
-// function handleChange(e: any) {
-//     if (e.added) {
-//         appStore.updateTask({
-//             uuid: e.added.element.uuid,
-//             parentId: props.task.uuid,
-//             taskOrder: subTasks.value.map((task) => task.uuid),
-//         });
-//     }
-//     if (e.moved) {
-//         appStore.updateTask({
-//             uuid: props.task.uuid,
-//             taskOrder: subTasks.value.map((task) => task.uuid),
-//         });
-//     }
-// }
 </script>
 
 <style scoped>
