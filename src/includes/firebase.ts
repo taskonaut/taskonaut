@@ -1,6 +1,11 @@
 import { initializeApp } from '@firebase/app';
 import { getAuth } from '@firebase/auth';
-import { getFirestore, initializeFirestore } from '@firebase/firestore';
+import {
+    getFirestore,
+    initializeFirestore,
+    enableIndexedDbPersistence,
+} from '@firebase/firestore';
+import { markRaw } from 'vue';
 
 export const firebaseConfig = {
     apiKey: 'AIzaSyAii3SGdXCYvTLoaaF1uRRv4jdxMKEuo-Y',
@@ -21,7 +26,8 @@ const app = initializeApp(firebaseConfig);
 
 initializeFirestore(app, { ignoreUndefinedProperties: true });
 
-const db = getFirestore(app);
+const db = markRaw(getFirestore(app));
+enableIndexedDbPersistence(db);
 const auth = getAuth(app);
 
 export { app, db, auth };
