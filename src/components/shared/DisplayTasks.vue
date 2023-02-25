@@ -21,7 +21,7 @@
                     />
 
                     <v-divider
-                        v-if="index < localTasks.length - 1"
+                        v-if="index < ongoingTasksCount - 1"
                         :key="`${index}-divider`"
                     />
                 </div>
@@ -32,12 +32,7 @@
         <v-divider v-if="localTasks.length && !smAndDown" />
         <!-- Completed Tasks -->
         <v-list-subheader v-if="localTasks.length"> Complete </v-list-subheader>
-        <draggable
-            item-key="uuid"
-            v-model="localTasks"
-            handle=".handle"
-            group="items"
-        >
+        <draggable item-key="uuid" v-model="localTasks" handle=".handle">
             <template #item="{ index, element }">
                 <div>
                     <TaskItem
@@ -59,7 +54,7 @@
 <script setup lang="ts">
 import draggable from 'vuedraggable';
 import type { Task } from '@/model';
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import TaskItem from './TaskItem.vue';
 import AddListItem from './AddListItem.vue';
 import { useDisplay } from 'vuetify';
@@ -84,26 +79,10 @@ const props = defineProps({
         default: false,
     },
 });
+const localOrder = ref<string[]>(useAppStore().getTaskOrder(props.groupId!));
+const localTasks = ref<Task[]>(sortArray(props.tasks, localOrder.value));
 
-const localTasks = ref<Task[]>(
-    sortArray(props.tasks, useAppStore().getTaskOrder(props.groupId!))
-);
-
-// const ongoingTasks = computed({
-//     get() {
-//         return sortArray(
-//             props.tasks.filter((task) => !task.complete),
-//             order.value!
-//         );
-//     },
-//     set(tasks) {
-//         order.value = tasks.map((task) => task.uuid);
-//     },
-// });
-
-// const completeTasks = computed(() =>
-//     props.tasks.filter((task) => task.complete)
-// );
+const ongoingTasksCount = computed(() => props.tasks.length);
 
 function handleChange(e: any) {
     if (e.added) {
@@ -124,15 +103,12 @@ function handleChange(e: any) {
             taskOrder: localTasks.value.map((task) => task.uuid),
         });
     }
+    localOrder.value = localTasks.value.map((task) => task.uuid);
 }
 
 watch(
     () => props.tasks,
-    () =>
-        (localTasks.value = sortArray(
-            props.tasks,
-            useAppStore().getTaskOrder(props.groupId!)
-        ))
+    () => (localTasks.value = sortArray(props.tasks, localOrder.value))
 );
 </script>
 <style scoped></style>
