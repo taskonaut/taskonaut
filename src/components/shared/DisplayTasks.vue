@@ -24,10 +24,19 @@
             </template>
         </draggable>
         <AddListItem v-if="!props.hideAddButton && !smAndDown" />
-        <!-- Divider -->
-        <v-divider v-if="localTasks.length && !smAndDown" />
-        <!-- Completed Tasks -->
-        <v-list-subheader v-if="localTasks.length"> Complete </v-list-subheader>
+        <div
+            v-if="
+                localTasks.filter((task) => task.complete).length && !smAndDown
+            "
+        >
+            <!-- Divider -->
+            <v-divider />
+            <!-- Completed Tasks -->
+            <v-list-subheader v-if="localTasks.length">
+                Complete
+            </v-list-subheader>
+        </div>
+
         <draggable
             item-key="uuid"
             v-model="localTasks"
