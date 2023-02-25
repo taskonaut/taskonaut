@@ -1,7 +1,9 @@
 <template>
     <!-- Ongoing Tasks -->
     <v-list select-strategy="leaf" bg-color="background">
-        <v-list-subheader v-if="!subtasks && localTasks.length">
+        <v-list-subheader
+            v-if="localTasks.filter((task) => !task.complete).length"
+        >
             Ongoing
         </v-list-subheader>
         <draggable
