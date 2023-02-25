@@ -94,7 +94,7 @@
                         <display-tasks
                             :tasks="subTasks"
                             :subtasks="true"
-                            :group-id="props.task.uuid"
+                            :meta-id="props.task.uuid"
                             :hide-add-button="true"
                         />
                     </v-expansion-panel-text>

@@ -33,12 +33,14 @@ export interface AppStore {
     user: any;
     tasks: Task[];
     groups: Group[];
+    meta: any[];
     sharedGroups: Group[];
     sharedTasks: Task[];
     fb: {
         user: DocumentReference | null;
         tasks: CollectionReference | null;
         groups: CollectionReference | null;
+        meta: CollectionReference | null;
     };
 }
 
@@ -49,12 +51,14 @@ export const useAppStore = defineStore({
         user: null,
         tasks: [],
         groups: [],
+        meta: [],
         sharedGroups: [],
         sharedTasks: [],
         fb: {
             user: null,
             tasks: null,
             groups: null,
+            meta: null,
         },
     }),
     getters: {
@@ -73,10 +77,9 @@ export const useAppStore = defineStore({
                 (task) => task.parentId == parentId
             );
         },
-        getTaskOrder: (state) => (parentId: string) =>
-            [...state.groups, ...state.sharedGroups, ...state.tasks].find(
-                (group) => group.uuid == parentId
-            )?.taskOrder as string[],
+        getMeta: (state) => (uuid: string) => {
+            return state.meta.find((meta) => meta.id == uuid);
+        },
         getInboxTasks: (state) => () =>
             state.tasks.filter((task) => !task.parentId),
         getTodayTasks: (state) => () => {
@@ -84,10 +87,6 @@ export const useAppStore = defineStore({
                 task.dueDate ? date.isToday(task.dueDate) : false
             );
         },
-        getGroupOrder: (state) => (parentId: string) =>
-            [...state.groups, ...state.sharedGroups].find(
-                (group) => group.uuid == parentId
-            )?.taskOrder as string[],
         // View Getters
         getUpcomingTasks: (state) => () => {
             return state.tasks
@@ -110,6 +109,7 @@ export const useAppStore = defineStore({
             this.fb.user = doc(db, 'users', userId);
             this.fb.tasks = collection(db, 'users', userId, 'tasks');
             this.fb.groups = collection(db, 'users', userId, 'groups');
+            this.fb.meta = collection(db, 'users', userId, 'meta');
 
             const { data: userData, promise: userPromise } = useDocument(
                 this.fb.user
@@ -120,6 +120,9 @@ export const useAppStore = defineStore({
             const { data: groupData, promise: groupPromise } = useCollection(
                 this.fb.groups
             );
+            const { data: metaData, promise: metaPromise } = useCollection(
+                this.fb.meta
+            );
 
             Promise.allSettled([
                 userPromise.value.then(() => (this.user = userData)),
@@ -129,6 +132,8 @@ export const useAppStore = defineStore({
                 groupPromise.value.then(
                     () => (this.groups = groupData as unknown as Group[])
                 ),
+                //TODO: finish typing for meta
+                metaPromise.value.then(() => (this.meta = metaData as any)),
             ])
                 .then(() => {
                     this.ready = true;
@@ -217,6 +222,10 @@ export const useAppStore = defineStore({
                 );
                 updateDoc(docRef, { complete: false });
             });
+        },
+        setMeta(uuid: string, payload: any, update: boolean = true) {
+            const metaRef = doc(this.fb.meta as CollectionReference, uuid);
+            setDoc(metaRef, payload, { merge: update });
         },
         [SET_GROUP_ORDER](order: string[]) {
             setDoc(this.fb.user as DocumentReference, { order });

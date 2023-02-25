@@ -35,10 +35,15 @@ const openDialog = ref(false);
 
 const groups = computed({
     get() {
-        return sortArray(appStore.groups, appStore.user.order);
+        return sortArray(
+            appStore.groups,
+            appStore.getMeta('sidebar') ? appStore.getMeta('sidebar').order : []
+        );
     },
     set(groups) {
-        appStore.setGroupOrder(groups.map((group) => group.uuid));
+        appStore.setMeta('sidebar', {
+            order: groups.map((group) => group.uuid),
+        });
     },
 });
 </script>

@@ -1,5 +1,5 @@
 <template>
-    <DisplayTasks :tasks="tasks" :group-id="groupId" />
+    <DisplayTasks :tasks="tasks" :meta-id="groupId" />
 </template>
 
 <script setup lang="ts">

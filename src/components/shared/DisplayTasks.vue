@@ -69,7 +69,7 @@ const props = defineProps({
         type: Array<Task>,
     },
     subtasks: { type: Boolean, default: false },
-    groupId: { type: String },
+    metaId: { type: String },
     draggable: {
         type: Boolean,
         default: true,
@@ -79,31 +79,28 @@ const props = defineProps({
         default: false,
     },
 });
-const localOrder = ref<string[]>(useAppStore().getTaskOrder(props.groupId!));
+const localOrder = ref<string[]>(
+    useAppStore().getMeta(props.metaId!)
+        ? useAppStore().getMeta(props.metaId!).order
+        : []
+);
 const localTasks = ref<Task[]>(sortArray(props.tasks, localOrder.value));
 
 const ongoingTasksCount = computed(() => props.tasks.length);
 
+//TODO: refactor, looks more complicated than it should
 function handleChange(e: any) {
+    localOrder.value = localTasks.value.map((task) => task.uuid);
     if (e.added) {
-        e.added.element.parentId = props.groupId;
+        e.added.element.parentId = props.metaId;
         useAppStore().updateTask({
             uuid: e.added.element.uuid,
-            parentId: props.groupId,
+            parentId: props.metaId,
         });
     }
-    if (props.groupId && !props.subtasks) {
-        useAppStore().updateGroup({
-            uuid: props.groupId,
-            taskOrder: localTasks.value.map((task) => task.uuid),
-        });
-    } else if (props.subtasks) {
-        useAppStore().updateTask({
-            uuid: props.groupId,
-            taskOrder: localTasks.value.map((task) => task.uuid),
-        });
+    if (props.metaId) {
+        useAppStore().setMeta(props.metaId, { order: localOrder.value });
     }
-    localOrder.value = localTasks.value.map((task) => task.uuid);
 }
 
 watch(

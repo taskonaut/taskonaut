@@ -1,5 +1,5 @@
 <template>
-    <DisplayTasks :tasks="tasks" :draggable="false" />
+    <DisplayTasks :tasks="tasks" :meta-id="'today'" />
 </template>
 
 <script setup lang="ts">
