@@ -10,20 +10,16 @@
             handle=".handle"
             group="items"
             @change="handleChange"
+            class="hide-last-hr"
         >
-            <template #item="{ index, element }">
-                <div>
+            <template #item="{ element }">
+                <div v-if="!element.complete">
                     <TaskItem
-                        v-if="!element.complete"
                         :task="element"
                         :isDraggable="props.draggable"
                         :subtask="props.subtasks"
                     />
-
-                    <v-divider
-                        v-if="index < ongoingTasksCount - 1"
-                        :key="`${index}-divider`"
-                    />
+                    <v-divider class="last" />
                 </div>
             </template>
         </draggable>
@@ -32,20 +28,20 @@
         <v-divider v-if="localTasks.length && !smAndDown" />
         <!-- Completed Tasks -->
         <v-list-subheader v-if="localTasks.length"> Complete </v-list-subheader>
-        <draggable item-key="uuid" v-model="localTasks" handle=".handle">
-            <template #item="{ index, element }">
-                <div>
+        <draggable
+            item-key="uuid"
+            v-model="localTasks"
+            handle=".handle"
+            class="hide-last-hr"
+        >
+            <template #item="{ element }">
+                <div v-if="element.complete">
                     <TaskItem
-                        v-if="element.complete"
                         :task="element!"
                         :isDraggable="false"
                         :subtask="props.subtasks"
                     />
-
-                    <v-divider
-                        v-if="index < localTasks.length - 1"
-                        :key="`${index}-divider`"
-                    />
+                    <v-divider />
                 </div>
             </template>
         </draggable>
@@ -54,7 +50,7 @@
 <script setup lang="ts">
 import draggable from 'vuedraggable';
 import type { Task } from '@/model';
-import { computed, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import TaskItem from './TaskItem.vue';
 import AddListItem from './AddListItem.vue';
 import { useDisplay } from 'vuetify';
@@ -86,8 +82,6 @@ const localOrder = ref<string[]>(
 );
 const localTasks = ref<Task[]>(sortArray(props.tasks, localOrder.value));
 
-const ongoingTasksCount = computed(() => props.tasks.length);
-
 //TODO: refactor, looks more complicated than it should
 function handleChange(e: any) {
     localOrder.value = localTasks.value.map((task) => task.uuid);
@@ -108,4 +102,8 @@ watch(
     () => (localTasks.value = sortArray(props.tasks, localOrder.value))
 );
 </script>
-<style scoped></style>
+<style scoped>
+.hide-last-hr > :last-child > hr {
+    display: none;
+}
+</style>
