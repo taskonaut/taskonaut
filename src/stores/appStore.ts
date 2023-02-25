@@ -160,12 +160,10 @@ export const useAppStore = defineStore({
             setDoc(docRef, task);
             return task;
         },
-        [UPDATE_TASK](updatedTask: Partial<Task>, parentUuid?: string) {
+        [UPDATE_TASK](updatedTask: Partial<Task>) {
             const taskRef = doc(
                 this.fb.tasks as CollectionReference,
-                parentUuid
-                    ? `${parentUuid}, ${updatedTask.uuid}`
-                    : updatedTask.uuid
+                updatedTask.uuid
             );
             updateDoc(taskRef, { ...updatedTask });
         },
