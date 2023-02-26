@@ -49,12 +49,12 @@
                         @keydown="textareaHandler($event)"
                     ></v-textarea>
                     <v-select
-                        v-if="!props.taskId"
+                        v-if="!props.parentId"
                         density="compact"
                         variant="outlined"
                         :clearable="true"
                         no-data-text="No groups available :("
-                        v-model="formData.groupId"
+                        v-model="formData.parentId"
                         :items="taskGroups"
                         item-title="name"
                         item-value="uuid"
@@ -63,7 +63,7 @@
                         single-line
                     ></v-select>
                     <Datepicker
-                        v-if="!props.taskId"
+                        v-if="!props.parentId"
                         v-model="formData.dueDate"
                         modelType="timestamp"
                         :enableTimePicker="false"
@@ -120,8 +120,8 @@ import * as date from '@/services/date.service';
 
 const props = defineProps<{
     task?: Task;
+    parentId?: string;
     modelValue: boolean;
-    taskId?: string;
 }>();
 
 const emits = defineEmits<{
@@ -151,7 +151,7 @@ const isFormValid = ref(false);
 const formData = reactive({
     header: props.task?.header || '',
     body: props.task?.body || '',
-    groupId: (props.task?.groupId || selectedGroup) as any,
+    parentId: (props.parentId || selectedGroup) as any,
     dueDate,
 });
 
@@ -163,24 +163,13 @@ onMounted(() => {
 
 function formSubmit() {
     if (props.task) {
-        if (props.taskId) {
-            // TODO: merge updateTask and updateSubtask together
-            appStore.updateSubTask(
-                { ...formData, uuid: props.task!.uuid } as Task,
-                props.taskId
-            );
-        } else {
-            appStore.updateTask({ uuid: props.task.uuid, ...formData });
-        }
+        appStore.updateTask({ uuid: props.task.uuid, ...formData });
         closeDialog();
     } else {
-        if (props.taskId) {
-            appStore.addSubTask(props.taskId, formData as Task);
-        } else {
-            appStore.createTask(formData);
-        }
+        appStore.addTask({ ...formData });
+
         form.value.reset();
-        formData.groupId = selectedGroup || undefined;
+        formData.parentId = selectedGroup || undefined;
         headerInput.value.focus();
     }
 }
@@ -198,12 +187,7 @@ function textareaHandler(event: KeyboardEvent) {
 }
 
 function deleteTask() {
-    // TODO: merge deleteTask and deleteSubtask together
-    if (props.taskId) {
-        appStore.deleteSubTask(props.task?.uuid as string, props.taskId);
-    } else {
-        appStore.deleteTask(props.task?.uuid as string);
-    }
+    appStore.deleteTask(props.task?.uuid as string);
 }
 </script>
 <style scoped>

@@ -1,5 +1,5 @@
 <template>
-    <DisplayTasks :tasks="tasks" />
+    <DisplayTasks :tasks="tasks" :meta-id="'inbox'" />
 </template>
 
 <script setup lang="ts">

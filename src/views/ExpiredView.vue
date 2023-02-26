@@ -1,5 +1,5 @@
 <template>
-    <DisplayTasks :tasks="tasks" :hideAddButton="true" />
+    <DisplayTasks :tasks="tasks" :hideAddButton="true" :draggable="false" />
 </template>
 
 <script setup lang="ts">

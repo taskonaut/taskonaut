@@ -28,16 +28,23 @@ import GroupDialog from '@/components/dialogs/GroupDialog.vue';
 import GroupItem from './partials/GroupItem.vue';
 import { useAppStore } from '@/stores/appStore';
 import { ref, computed } from 'vue';
+import { sortArray } from '@/services/utils.service';
 
-const store = useAppStore();
+const appStore = useAppStore();
 const openDialog = ref(false);
 
 const groups = computed({
-    get: () =>
-        store.groupOrder.map((id) =>
-            store.groups.find((group) => group.uuid == id)
-        ),
-    set: (groups) => store.setGroupOrder(groups.map((group) => group!.uuid)),
+    get() {
+        return sortArray(
+            appStore.groups,
+            appStore.getMeta('sidebar') ? appStore.getMeta('sidebar').order : []
+        );
+    },
+    set(groups) {
+        appStore.setMeta('sidebar', {
+            order: groups.map((group) => group.uuid),
+        });
+    },
 });
 </script>
 

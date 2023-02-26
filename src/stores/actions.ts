@@ -1,4 +1,5 @@
 export const CREATE_TASK = 'createTask';
+export const ADD_TASK = 'addTask';
 export const DELETE_TASK = 'deleteTask';
 export const TOGGLE_TASK = 'toggleTask';
 export const UPDATE_TASK = 'updateTask';

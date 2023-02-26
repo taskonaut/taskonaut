@@ -1,12 +1,12 @@
 <template>
-    <DisplayTasks :tasks="tasks" :group-id="groupId" />
+    <DisplayTasks :tasks="tasks" :meta-id="groupId" />
 </template>
 
 <script setup lang="ts">
 import { useAppStore } from '@/stores/appStore';
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
-import DisplayTasks from '../components/shared/DisplayTasks.vue';
+import DisplayTasks from '@/components/shared/DisplayTasks.vue';
 
 const store = useAppStore();
 
