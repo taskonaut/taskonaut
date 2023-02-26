@@ -97,11 +97,20 @@ const localTasks = ref<Task[]>(sortArray(props.tasks, localOrder.value));
 function handleChange(e: any) {
     localOrder.value = localTasks.value.map((task) => task.uuid);
     if (e.added) {
-        e.added.element.parentId = props.metaId;
-        useAppStore().updateTask({
-            uuid: e.added.element.uuid,
-            parentId: props.metaId,
-        });
+        if (props.metaId == 'inbox' || props.metaId == 'today') {
+            e.added.element.parendId = '';
+            console.log(e.added.element.parendId);
+            useAppStore().updateTask({
+                uuid: e.added.element.uuid,
+                parentId: '',
+            });
+        } else {
+            e.added.element.parentId = props.metaId;
+            useAppStore().updateTask({
+                uuid: e.added.element.uuid,
+                parentId: props.metaId,
+            });
+        }
     }
     if (props.metaId) {
         useAppStore().setMeta(props.metaId, { order: localOrder.value });
