@@ -44,7 +44,10 @@
     </v-app>
     <v-app v-else>
         <v-container class="d-flex justify-center align-center flex-grow-1">
-            <div class="d-flex flex-column align-center">
+            <div
+                class="d-flex flex-column align-center"
+                v-if="!userStore.isLoggedIn"
+            >
                 <v-img
                     src="./assets/icons/icon-144x144.png"
                     :width="144"
@@ -52,12 +55,17 @@
                 ></v-img>
                 <v-btn
                     class="mt-4"
-                    v-if="!userStore.isLoggedIn"
                     @click="userStore.login"
                     append-icon="mdi-login"
                     >LOGIN WITH GOOGLE</v-btn
                 >
-                <div class="mt-4" v-else>Loading...</div>
+            </div>
+            <div class="mt-4" v-else>
+                <v-progress-circular
+                    indeterminate
+                    model-value="20"
+                    :size="128"
+                ></v-progress-circular>
             </div>
         </v-container>
     </v-app>
