@@ -43,14 +43,22 @@
         <ReloadPrompt />
     </v-app>
     <v-app v-else>
-        <v-container class="d-flex flex-col justify-center pa-0 h-full">
-            <v-btn
-                v-if="!userStore.isLoggedIn"
-                @click="userStore.login"
-                append-icon="mdi-login"
-                >LOGIN WITH GOOGLE</v-btn
-            >
-            <div v-else>Loading...</div>
+        <v-container class="d-flex justify-center align-center flex-grow-1">
+            <div class="d-flex flex-column align-center">
+                <v-img
+                    src="./assets/icons/icon-144x144.png"
+                    :width="144"
+                    aspect-ratio="1/1"
+                ></v-img>
+                <v-btn
+                    class="mt-4"
+                    v-if="!userStore.isLoggedIn"
+                    @click="userStore.login"
+                    append-icon="mdi-login"
+                    >LOGIN WITH GOOGLE</v-btn
+                >
+                <div class="mt-4" v-else>Loading...</div>
+            </div>
         </v-container>
     </v-app>
 </template>
