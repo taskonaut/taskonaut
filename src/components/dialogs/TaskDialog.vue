@@ -70,7 +70,7 @@
                         showNowButton
                         nowButtonLabel="Today"
                         placeholder="Due Date"
-                        dark
+                        :dark="useTheme().global.current.value.dark"
                         autoApply
                     />
                 </v-form>
@@ -114,7 +114,7 @@ import type { Task } from '@/model';
 import router from '@/router';
 import { useAppStore } from '@/stores/appStore';
 import { reactive, ref, computed, onMounted } from 'vue';
-import { useDisplay } from 'vuetify';
+import { useDisplay, useTheme } from 'vuetify';
 import ConfirmDialog from './ConfirmDialog.vue';
 import * as date from '@/services/date.service';
 
