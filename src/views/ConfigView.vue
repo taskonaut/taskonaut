@@ -96,6 +96,7 @@
                         color="deep-purple accent-3"
                         group
                         v-model="theme.global.name.value"
+                        @update:modelValue="saveTheme"
                         variant="outlined"
                     >
                         <v-btn value="customLightTheme"> Light </v-btn>
@@ -164,6 +165,7 @@ import { useUserStore } from '@/stores/userStore';
 import { getCurrentInstance, ref } from 'vue';
 import { useTheme } from 'vuetify/lib/framework.mjs';
 import * as fs from '@/services/fs.service';
+import { DataStorage } from '@/plugins/dataStorage';
 
 const instance = getCurrentInstance();
 const userStore = useUserStore();
@@ -186,7 +188,7 @@ function resetData() {
     instance?.proxy?.$forceUpdate();
 }
 function saveTheme() {
-    // TODO: implement me
+    DataStorage.save('theme', theme.global.name.value);
 }
 </script>
 <style scoped>

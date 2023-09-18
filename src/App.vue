@@ -73,7 +73,7 @@
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
-import { onBeforeMount, ref } from 'vue';
+import { onBeforeMount, onMounted, ref } from 'vue';
 import { useUserStore } from './stores/userStore';
 import { useAppStore } from './stores/appStore';
 import { useDisplay, useTheme } from 'vuetify';
@@ -82,6 +82,7 @@ import TaskDialog from '@/components/dialogs/TaskDialog.vue';
 import ReloadPrompt from '@/components/ReloadPrompt.vue';
 import router from './router';
 import NavigationDrawer from '@/components/NavigationDrawer.vue';
+import { DataStorage } from './plugins/dataStorage';
 
 const { lgAndUp, smAndDown } = useDisplay();
 const showDialog = ref(false);
@@ -92,6 +93,13 @@ const userStore = useUserStore();
 
 onBeforeMount(async () => {
     await useUserStore().getAuthState();
+});
+
+onMounted(() => {
+    const currentTheme = DataStorage.get('theme');
+    if (currentTheme !== null) {
+        useTheme().global.name.value = currentTheme;
+    }
 });
 
 function toggleDrawer() {
