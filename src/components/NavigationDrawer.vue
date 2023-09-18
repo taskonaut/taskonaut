@@ -131,7 +131,7 @@ function switchRoute(routeName: string) {
     width: 100%;
     z-index: 1;
     height: 64px;
-    background: #212121;
+    background-color: var(--v-theme-background);
     box-shadow: 0px 2px 4px 2px
             var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.2)),
         0px 4px 5px 0px
