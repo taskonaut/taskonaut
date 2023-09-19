@@ -8,17 +8,17 @@ export interface Task {
     dueDate: undefined | number;
     complete: boolean;
     dateCompleted: undefined | null | number;
-    taskOrder: string[];
+    subtasks: Task[];
 }
 
 export interface Group {
     uuid: string;
-    createdBy: string;
+    ownerId: string;
     name: string;
     description: string;
     dateCreated: number;
     sharedWith: string[];
-    taskOrder: string[];
+    tasks: Task[];
 }
 
 export interface ShareRequest {
