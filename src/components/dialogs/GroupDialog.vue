@@ -24,12 +24,11 @@
                         <v-btn
                             :disabled="!isFormValid"
                             type="submit"
-                            text
                             dark
                             v-if="!props.group"
                             >Add</v-btn
                         >
-                        <v-btn text dark type="submit" v-if="props.group"
+                        <v-btn dark type="submit" v-if="props.group"
                             >Save</v-btn
                         >
                     </v-toolbar-items>
