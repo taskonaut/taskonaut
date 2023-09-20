@@ -11,9 +11,9 @@ const isCI = process.env.CI;
 // https://vitejs.dev/config/
 export default defineConfig({
     base: '/',
-    server: { https: !isCI },
+    server: { https: isCI === undefined },
     plugins: [
-        ...(!isCI ? [mkcert()] : []),
+        ...(isCI === undefined ? [mkcert()] : []),
         vue(),
         vueJsx(),
         VitePWA({
