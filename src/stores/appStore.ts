@@ -105,11 +105,7 @@ export const useAppStore = defineStore({
         },
     },
     actions: {
-        async syncFirebase(userId: string) {
-            this.fb.user = doc(db, 'users', userId);
-            this.fb.tasks = collection(db, 'users', userId, 'tasks');
-            this.fb.groups = collection(db, 'users', userId, 'groups');
-            this.fb.meta = collection(db, 'users', userId, 'meta');
+            const { uid } = storeToRefs(useUserStore());
 
             const { data: userData, promise: userPromise } = useDocument(
                 this.fb.user

@@ -8,7 +8,6 @@ import {
     type User,
 } from 'firebase/auth';
 import { defineStore } from 'pinia';
-import { useAppStore } from './appStore';
 
 interface UserStore {
     uid: string | undefined;
@@ -41,7 +40,7 @@ export const useUserStore = defineStore({
                     this.uid = user.uid;
                     this.displayName = user.displayName;
                     router.push('/');
-                    useAppStore().syncFirebase(user.uid);
+                    // useAppStore().syncFirebase(user.uid);
                     this.loading = false;
                 } else {
                     throw new Error('user is not defined');
@@ -69,7 +68,6 @@ export const useUserStore = defineStore({
                             this.photoURL = user.photoURL;
                             this.uid = user.uid;
                             this.displayName = user.displayName;
-                            useAppStore().syncFirebase(user.uid);
                             resolve(user as User);
                             this.loading = false;
                         } else {
