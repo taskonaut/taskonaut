@@ -62,7 +62,11 @@
             </div>
         </v-sheet>
         <v-sheet rounded>
-            <task-list :display-tasks="showTasks" :tasks="task.subtasks" />
+            <task-list
+                :display-tasks="showTasks"
+                :tasks="taskRef.subtasks"
+                @update="updateSubtasks"
+            />
         </v-sheet>
     </div>
 </template>
@@ -89,6 +93,9 @@ const subtaskCount = computed(() => taskRef.value.subtasks.length);
 
 function toggleTask() {
     taskRef.value.complete = !taskRef.value.complete;
+}
+function updateSubtasks(tasks: Task[]) {
+    taskRef.value.subtasks = tasks;
 }
 </script>
 
