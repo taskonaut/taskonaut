@@ -85,7 +85,6 @@ const props = defineProps<{
 
 const emit = defineEmits<{
     (e: 'delete', id: string): void;
-    (e: 'update', task: Task): void;
 }>();
 
 const taskRef = ref<Task>(props.task);
