@@ -1,164 +1,99 @@
 <template>
     <div>
-        <v-list-item
-            v-if="task"
-            :lines="countLines()"
-            :rounded="true"
-            :title="task?.header"
-            :value="task?.uuid"
-            :active="false"
-            :class="task.complete && 'complete'"
-            @dblclick="editDialog = true"
+        <v-sheet
+            class="task-item ma-1"
+            rounded="rounded"
+            color="transparent"
+            :class="taskRef.complete && 'complete'"
+            @click="showTasks = !showTasks"
         >
-            <v-list-item-subtitle>
-                <div v-if="task.body">{{ task.body }}</div>
-                <div class="metadata">
-                    <DateChip
-                        v-if="task.dueDate || task.dateCompleted"
-                        :task="task"
-                        class="mt-1"
-                    />
-                    <GroupChip
-                        v-if="
-                            !subtask &&
-                            task.parentId &&
-                            router.currentRoute.value.params.id !==
-                                task.parentId
-                        "
-                        :groupId="task.parentId"
-                        class="mt-1"
-                    />
-                </div>
-            </v-list-item-subtitle>
-            <template v-slot:prepend>
-                <v-list-item-action>
-                    <v-icon
-                        v-if="props.isDraggable"
-                        class="handle mr-2"
-                        :end="true"
-                        icon="mdi-drag"
-                    />
-                    <v-checkbox-btn
-                        @change="toggleTask()"
-                        :model-value="task!.complete"
-                        true-icon="mdi-checkbox-marked-circle-outline"
-                        false-icon="mdi-checkbox-blank-circle-outline"
-                    ></v-checkbox-btn>
-                </v-list-item-action>
-            </template>
-            <template v-slot:append>
-                <v-btn
-                    size="small"
-                    icon="mdi-plus"
-                    variant="text"
-                    @click="createDialog = true"
-                    class="show-on-hover"
-                />
-                <v-btn
-                    size="small"
-                    icon="mdi-dots-horizontal"
-                    variant="text"
-                    @click="editDialog = true"
-                    class="show-on-hover"
-                />
-                <v-btn
-                    size="small"
-                    icon="mdi-delete"
-                    variant="text"
-                    @click="confirmDialog = true"
-                    class="show-on-hover"
-                />
-            </template>
-            <TaskDialog
-                v-if="createDialog"
-                :parent-id="task.uuid"
-                v-model="createDialog"
-            />
-            <TaskDialog v-if="editDialog" :task="task" v-model="editDialog" />
-            <ConfirmDialog
-                v-if="confirmDialog"
-                v-model="confirmDialog"
-                :title="'Delete Task?'"
-                :message="'Are you sure you want to delete this task?'"
-                @dialog:confirm="deleteTask(task!.uuid)"
-            />
-        </v-list-item>
-        <div class="px-4 py-4" v-if="subTasks && subTasks.length">
-            <v-expansion-panels>
-                <v-expansion-panel>
-                    <v-expansion-panel-title class="subtasks-title"
-                        ><v-icon size="x-small">mdi-file-tree</v-icon>
-                        {{ subTasks.length }} subtasks
-                    </v-expansion-panel-title>
-                    <v-expansion-panel-text>
-                        <display-tasks
-                            :tasks="subTasks"
-                            :subtasks="true"
-                            :meta-id="props.task.uuid"
-                            :hide-add-button="true"
+            <div class="d-flex flex-column flex-col pa-2">
+                <div class="d-flex">
+                    <div class="d-flex align-center">
+                        <v-icon
+                            v-if="props.isDraggable"
+                            class="handle mr-2"
+                            :end="true"
+                            icon="mdi-drag"
                         />
-                    </v-expansion-panel-text>
-                </v-expansion-panel>
-            </v-expansion-panels>
-        </div>
+                        <v-checkbox-btn
+                            @change="toggleTask()"
+                            :model-value="taskRef.complete"
+                            true-icon="mdi-checkbox-marked-circle-outline"
+                            false-icon="mdi-checkbox-blank-circle-outline"
+                        />
+                    </div>
+                    <div
+                        class="d-flex flex-column flex-grow-1 ml-3 justify-center"
+                    >
+                        <div class="text-body-1">{{ taskRef.header }}</div>
+                        <div v-if="taskRef.body" class="text-caption">
+                            {{ taskRef.body }}
+                        </div>
+                    </div>
+                    <div class="d-flex align-center">
+                        <v-btn
+                            size="small"
+                            icon="mdi-plus"
+                            variant="text"
+                            @click="createDialog = true"
+                            class="show-on-hover"
+                        />
+                        <v-btn
+                            size="small"
+                            icon="mdi-dots-horizontal"
+                            variant="text"
+                            class="show-on-hover"
+                        />
+                        <v-btn
+                            size="small"
+                            icon="mdi-delete"
+                            variant="text"
+                            @click="confirmDialog = true"
+                            class="show-on-hover"
+                        />
+                        <v-badge
+                            v-if="subtaskCount > 0"
+                            :content="subtaskCount"
+                            inline
+                            class="hide-on-hover"
+                        ></v-badge>
+                    </div>
+                </div>
+            </div>
+        </v-sheet>
+        <v-sheet rounded>
+            <display-tasks :display-tasks="showTasks" :tasks="task.subtasks" />
+        </v-sheet>
     </div>
 </template>
 
 <script setup lang="ts">
-import TaskDialog from '@/components/dialogs/TaskDialog.vue';
-import DateChip from '@/components/shared/DateChip.vue';
 import type { Task } from '@/model';
-import router from '@/router';
-import { useAppStore } from '@/stores/appStore';
-import { ref } from 'vue';
-import ConfirmDialog from '../dialogs/ConfirmDialog.vue';
-import GroupChip from './GroupChip.vue';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import DisplayTasks from './DisplayTasks.vue';
 
+const showTasks = ref(true);
 const createDialog = ref(false);
-const editDialog = ref(false);
 const confirmDialog = ref(false);
-
-const appStore = useAppStore();
-
 const props = defineProps<{
     task: Task;
-    subtask?: boolean;
     isDraggable?: boolean;
 }>();
+const taskRef = ref<Task>(props.task);
+const subtaskCount = computed(() => taskRef.value.subtasks.length);
 
-const subTasks = computed(() => appStore.getGroupTasks(props.task.uuid));
-
-function countLines(): 'one' | 'two' | 'three' {
-    const numberNames = ['one', 'two', 'three'];
-    let count = 0;
-    if (props.task && props.task.dueDate) count++;
-    if (props.task && props.task.body) count++;
-
-    return numberNames[count] as 'one' | 'two' | 'three';
-}
 function toggleTask() {
-    appStore.updateTask({
-        uuid: props.task.uuid,
-        complete: !props.task.complete,
-    });
-}
-
-function deleteTask(taskId: string) {
-    appStore.deleteTask(taskId);
+    taskRef.value.complete = !taskRef.value.complete;
 }
 </script>
 
 <style scoped>
-.v-list-item {
-    padding-bottom: 10px;
-}
 .hidden-opacity {
     opacity: 0%;
 }
 
-.v-list-item:hover .shown-opacity {
+.task-item:hover .shown-opacity {
     opacity: 100%;
 }
 
@@ -166,7 +101,7 @@ function deleteTask(taskId: string) {
     display: none;
 }
 
-.v-list-item:hover .show-on-hover {
+.task-item:hover .show-on-hover {
     display: flex;
 }
 
@@ -174,26 +109,11 @@ function deleteTask(taskId: string) {
     display: flex;
 }
 
-.v-list-item:hover .hide-on-hover {
+.task-item:hover .hide-on-hover {
     display: none;
 }
 
 .complete {
     opacity: 40%;
-}
-
-.metadata {
-    display: flex;
-    gap: 5px;
-}
-
-.v-expansion-panel {
-    border-radius: 0;
-}
-
-.subtasks-title {
-    gap: 10px;
-    font-size: 0.9em;
-    color: #999;
 }
 </style>
