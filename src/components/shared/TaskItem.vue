@@ -16,6 +16,11 @@
                             :end="true"
                             icon="mdi-drag"
                         />
+                        <v-badge
+                            v-if="subtaskCount > 0 && !showTasks"
+                            :content="subtaskCount"
+                            inline
+                        />
                         <v-checkbox-btn
                             @change="toggleTask()"
                             :model-value="taskRef.complete"
@@ -36,7 +41,7 @@
                             size="small"
                             icon="mdi-plus"
                             variant="text"
-                            @click="createDialog = true"
+                            @click="null"
                             class="show-on-hover"
                         />
                         <v-btn
@@ -49,21 +54,15 @@
                             size="small"
                             icon="mdi-delete"
                             variant="text"
-                            @click="confirmDialog = true"
+                            @click="emit('delete', props.task.uuid)"
                             class="show-on-hover"
                         />
-                        <v-badge
-                            v-if="subtaskCount > 0"
-                            :content="subtaskCount"
-                            inline
-                            class="hide-on-hover"
-                        ></v-badge>
                     </div>
                 </div>
             </div>
         </v-sheet>
         <v-sheet rounded>
-            <display-tasks :display-tasks="showTasks" :tasks="task.subtasks" />
+            <task-list :display-tasks="showTasks" :tasks="task.subtasks" />
         </v-sheet>
     </div>
 </template>
@@ -71,15 +70,20 @@
 <script setup lang="ts">
 import type { Task } from '@/model';
 import { computed, ref } from 'vue';
-import DisplayTasks from './DisplayTasks.vue';
+import TaskList from './TaskList.vue';
 
 const showTasks = ref(true);
-const createDialog = ref(false);
-const confirmDialog = ref(false);
+
 const props = defineProps<{
     task: Task;
     isDraggable?: boolean;
 }>();
+
+const emit = defineEmits<{
+    (e: 'delete', id: string): void;
+    (e: 'update', task: Task): void;
+}>();
+
 const taskRef = ref<Task>(props.task);
 const subtaskCount = computed(() => taskRef.value.subtasks.length);
 
