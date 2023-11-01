@@ -7,9 +7,9 @@
         :group="{ name: 'subtasks' }"
     >
         <template #item="{ element }">
-            <div v-show="displayTasks" class="ml-5">
+            <v-expand-transition v-show="displayTasks" class="ml-5">
                 <task-item :task="element" :is-draggable="true" />
-            </div>
+            </v-expand-transition>
         </template>
     </draggable>
     <task-dialog v-model="showTaskDialog" />
