@@ -87,12 +87,13 @@ import { DataStorage } from './plugins/dataStorage';
 const { lgAndUp, smAndDown } = useDisplay();
 const showDialog = ref(false);
 const drawer = ref(true);
+const userStore = useUserStore();
 const appStore = useAppStore();
 const theme = useTheme();
-const userStore = useUserStore();
 
 onBeforeMount(async () => {
-    await useUserStore().getAuthState();
+    await userStore.getAuthState();
+    await appStore.syncFirebase();
 });
 
 onMounted(() => {
