@@ -67,7 +67,6 @@ export const useAppStore = defineStore({
         async syncFirebase() {
             //TODO export this
             const { uid } = storeToRefs(useUserStore());
-            console.log(uid.value);
             this.fb.user = doc(db, 'users', uid.value!);
             this.fb.groups = collection(db, 'groups');
 
