@@ -5,6 +5,11 @@ import {
     doc,
     DocumentReference,
     updateDoc,
+    CollectionReference,
+    setDoc,
+    where,
+    query,
+    onSnapshot,
 } from '@firebase/firestore';
 import { defineStore, storeToRefs } from 'pinia';
 import { v4 as uuidv4 } from 'uuid';
@@ -20,13 +25,6 @@ import {
 import { db } from '@/includes/firebase';
 import { useUserStore } from './userStore';
 import * as date from '@/services/date.service';
-import {
-    CollectionReference,
-    setDoc,
-    where,
-    query,
-    onSnapshot,
-} from 'firebase/firestore';
 
 export interface AppStore {
     ready: boolean;
@@ -69,30 +67,52 @@ export const useAppStore = defineStore({
             const { uid } = storeToRefs(useUserStore());
             this.fb.user = doc(db, 'users', uid.value!);
             this.fb.groups = collection(db, 'groups');
-
             const groupsQuery = query(
                 this.fb.groups,
                 where('ownerId', '==', uid.value)
             );
 
-            const snapshotInbox = new Promise<void>((resolve) => {
-                onSnapshot(this.fb.user!, (userDoc) => {
-                    const inboxArray = userDoc.data()?.tasks || [];
-                    this.inbox = inboxArray;
-                    resolve();
-                });
-            });
+            // const snapshotInbox = new Promise<void>((resolve) => {
+            //     onSnapshot(this.fb.user!, (userDoc) => {
+            //         const inboxArray = userDoc.data()?.tasks || [];
+            //         this.inbox = inboxArray;
+            //         resolve();
+            //     });
+            // });
 
             const snapshotGroup = new Promise<void>((resolve) => {
                 onSnapshot(groupsQuery, (snapshot) => {
-                    this.groups = [];
-                    snapshot.forEach((group) => {
-                        this.groups.push(group.data() as unknown as Group);
+                    this.$patch((state) => {
+                        snapshot.docChanges().forEach((change) => {
+                            if (change.type === 'added') {
+                                // Add new groups to the state
+                                state.groups.push(
+                                    change.doc.data() as unknown as Group
+                                );
+                            } else if (change.type === 'modified') {
+                                // Find the existing group and update it
+                                const index = state.groups.findIndex(
+                                    (group) => group.id === change.doc.id
+                                );
+                                if (index !== -1) {
+                                    state.groups[index] =
+                                        change.doc.data() as unknown as Group;
+                                }
+                            } else if (change.type === 'removed') {
+                                // Find the existing group and remove it
+                                const index = state.groups.findIndex(
+                                    (group) => group.id === change.doc.id
+                                );
+                                if (index !== -1) {
+                                    state.groups.splice(index, 1);
+                                }
+                            }
+                        });
                     });
                     resolve();
                 });
             });
-            await snapshotInbox;
+            // await snapshotInbox;
             await snapshotGroup;
 
             this.ready = true;
@@ -136,12 +156,12 @@ export const useAppStore = defineStore({
 
             return group;
         },
-        [UPDATE_GROUP](updatedGroup: Partial<Group>) {
+        async [UPDATE_GROUP](updatedGroup: Partial<Group>) {
             const docRef = doc(
                 this.fb.groups as CollectionReference,
                 updatedGroup.uuid
             );
-            updateDoc(docRef, { ...updatedGroup });
+            return updateDoc(docRef, { ...updatedGroup });
         },
         [DELETE_GROUP](uuid: string) {
             //TODO: implement
