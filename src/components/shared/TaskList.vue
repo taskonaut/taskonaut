@@ -1,31 +1,45 @@
 <template>
-    <!-- Ongoing Tasks -->
     <draggable
         item-key="uuid"
         handle=".handle"
-        :list="tasksRef"
+        :list="localTasks"
         :group="{ name: 'subtasks' }"
     >
         <template #item="{ element }">
-            <v-expand-transition v-show="displayTasks" class="ml-5">
+            <div>
                 <task-item
                     :task="element"
                     :is-draggable="true"
-                    @delete="deleteTask"
+                    @delete="handleDeleteEvent"
                 />
-            </v-expand-transition>
+                <v-sheet rounded>
+                    <div class="ml-5">
+                        <task-list :tasks="element.subtasks" />
+                    </div>
+                </v-sheet>
+            </div>
         </template>
     </draggable>
-    <task-dialog v-model="showTaskDialog" />
+    <confirm-dialog
+        v-model="showConfirmDialog"
+        title="Delete?"
+        message="Are you sure you want to delete this task?"
+        @confirm="deleteTask"
+    ></confirm-dialog>
 </template>
 <script setup lang="ts">
-import TaskDialog from '../dialogs/TaskDialog.vue';
 import draggable from 'vuedraggable';
 import type { Task } from '@/model';
 import { ref, watch } from 'vue';
 import TaskItem from './TaskItem.vue';
+import ConfirmDialog from '../dialogs/ConfirmDialog.vue';
 
 const props = defineProps({
+    topLevel: {
+        required: false,
+        type: Boolean,
+        default: false,
+    },
     displayTasks: {
         required: false,
         type: Boolean,
@@ -39,30 +53,40 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
-    hideAddButton: {
-        type: Boolean,
-        default: false,
-    },
-    subtasks: {
-        type: Boolean,
-        default: false,
-    },
 });
+
+let localTasks = ref(props.tasks);
 
 const emit = defineEmits<{
     update: [tasks: Task[]];
+    delete: [uuid: string];
 }>();
-const showTaskDialog = ref(false);
 
-function deleteTask(id: string) {
-    tasksRef.value = tasksRef.value.filter((task) => task.uuid !== id);
+const showConfirmDialog = ref(false);
+const taskId = ref();
+
+function handleDeleteEvent(id: string) {
+    taskId.value = id;
+    showConfirmDialog.value = true;
 }
-
-const tasksRef = ref<Task[]>(props.tasks);
+function deleteTask() {
+    const index = localTasks.value.findIndex(
+        (task) => task.uuid === taskId.value
+    );
+    localTasks.value.splice(index, 1);
+}
 watch(
-    () => tasksRef.value,
-    async (newState) => {
-        emit('update', newState);
+    () => props.tasks,
+    (tasks: Task[]) => {
+        localTasks.value = tasks;
+    },
+    { deep: true }
+);
+
+watch(
+    localTasks,
+    (tasks) => {
+        if (props.topLevel) emit('update', tasks);
     },
     { deep: true }
 );
