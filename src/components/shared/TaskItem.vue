@@ -4,8 +4,7 @@
             class="task-item ma-1"
             rounded="rounded"
             color="transparent"
-            :class="taskRef.complete && 'complete'"
-            @click="showTasks = !showTasks"
+            :class="task.complete && 'complete'"
         >
             <div class="d-flex flex-column flex-col pa-2">
                 <div class="d-flex">
@@ -22,13 +21,14 @@
                             inline
                         />
                         <v-checkbox-btn
-                            @change="toggleTask()"
+                            @change="toggleTask"
                             :model-value="taskRef.complete"
                             true-icon="mdi-checkbox-marked-circle-outline"
                             false-icon="mdi-checkbox-blank-circle-outline"
                         />
                     </div>
                     <div
+                        @click="showTasks = !showTasks"
                         class="d-flex flex-column flex-grow-1 ml-3 justify-center"
                     >
                         <div class="text-body-1">{{ taskRef.header }}</div>
@@ -61,22 +61,18 @@
                 </div>
             </div>
         </v-sheet>
-        <v-sheet rounded>
-            <task-list
-                :display-tasks="showTasks"
-                :tasks="taskRef.subtasks"
-                @update="updateSubtasks"
-            />
-        </v-sheet>
+        <v-expand-transition
+            v-show="showTasks"
+            :disabled="task.subtasks.length === 0"
+        >
+            <slot></slot>
+        </v-expand-transition>
     </div>
 </template>
 
 <script setup lang="ts">
 import type { Task } from '@/model';
 import { computed, ref } from 'vue';
-import TaskList from './TaskList.vue';
-
-const showTasks = ref(true);
 
 const props = defineProps<{
     task: Task;
@@ -85,16 +81,16 @@ const props = defineProps<{
 
 const emit = defineEmits<{
     (e: 'delete', id: string): void;
+    (e: 'update'): void;
 }>();
-
-const taskRef = ref<Task>(props.task);
-const subtaskCount = computed(() => taskRef.value.subtasks.length);
+const showTasks = ref(true);
+const taskRef = ref(props.task);
+const subtaskCount = computed(() => props.task.subtasks.length);
 
 function toggleTask() {
-    taskRef.value.complete = !taskRef.value.complete;
-}
-function updateSubtasks(tasks: Task[]) {
-    taskRef.value.subtasks = tasks;
+    // eslint-disable-next-line vue/no-mutating-props
+    props.task.complete = !props.task.complete;
+    emit('update');
 }
 </script>
 
