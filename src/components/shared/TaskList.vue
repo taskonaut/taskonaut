@@ -4,6 +4,9 @@
         handle=".handle"
         :list="localTasks"
         :group="{ name: 'subtasks' }"
+        @add="emitUpdate"
+        @remove="emitUpdate"
+        @update="emitUpdate"
     >
         <template #item="{ element }">
             <div>
@@ -11,12 +14,17 @@
                     :task="element"
                     :is-draggable="true"
                     @delete="handleDeleteEvent"
-                />
-                <v-sheet rounded>
-                    <div class="ml-5">
-                        <task-list :tasks="element.subtasks" />
-                    </div>
-                </v-sheet>
+                    @update="emitUpdate"
+                >
+                    <v-sheet rounded>
+                        <div class="ml-5">
+                            <task-list
+                                :tasks="element.subtasks"
+                                @update="emitUpdate"
+                            />
+                        </div>
+                    </v-sheet>
+                </task-item>
             </div>
         </template>
     </draggable>
@@ -33,6 +41,7 @@ import type { Task } from '@/model';
 import { ref, watch } from 'vue';
 import TaskItem from './TaskItem.vue';
 import ConfirmDialog from '../dialogs/ConfirmDialog.vue';
+import { useAppStore } from '@/stores/appStore';
 
 const props = defineProps({
     topLevel: {
@@ -55,7 +64,7 @@ const props = defineProps({
     },
 });
 
-let localTasks = ref(props.tasks);
+const localTasks = ref(props.tasks);
 
 const emit = defineEmits<{
     update: [tasks: Task[]];
@@ -74,20 +83,20 @@ function deleteTask() {
         (task) => task.uuid === taskId.value
     );
     localTasks.value.splice(index, 1);
+    emit('update', localTasks.value);
+}
+function emitUpdate() {
+    emit('update', localTasks.value);
+    console.log('emit update');
 }
 watch(
-    () => props.tasks,
-    (tasks: Task[]) => {
-        localTasks.value = tasks;
-    },
-    { deep: true }
-);
-
-watch(
-    localTasks,
-    (tasks) => {
-        if (props.topLevel) emit('update', tasks);
-    },
-    { deep: true }
+    () => useAppStore().isChanged,
+    (value) => {
+        if (value && props.topLevel) {
+            console.log('props updated');
+            localTasks.value = props.tasks;
+            useAppStore().isChanged = false;
+        }
+    }
 );
 </script>
