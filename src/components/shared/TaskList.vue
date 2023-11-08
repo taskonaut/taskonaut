@@ -1,12 +1,17 @@
 <template>
+    <div
+        v-if="props.modelValue!.length < 1 && props.isTopLevel"
+        class="d-flex h-100 justify-center align-center text-h4"
+    >
+        List is empty...
+    </div>
     <draggable
+        v-else
         item-key="uuid"
         handle=".handle"
-        :list="localTasks"
-        :group="{ name: 'subtasks' }"
-        @add="emitUpdate"
-        @remove="emitUpdate"
-        @update="emitUpdate"
+        :model-value="props.modelValue"
+        @update:modelValue="(tasks) => emit('update:modelValue', tasks)"
+        :group="{ name: 'tasks' }"
     >
         <template #item="{ element }">
             <div>
@@ -14,13 +19,12 @@
                     :task="element"
                     :is-draggable="true"
                     @delete="handleDeleteEvent"
-                    @update="emitUpdate"
                 >
                     <v-sheet rounded>
                         <div class="ml-5">
                             <task-list
-                                :tasks="element.subtasks"
-                                @update="emitUpdate"
+                                v-model="element.subtasks"
+                                :is-top-level="false"
                             />
                         </div>
                     </v-sheet>
@@ -37,38 +41,22 @@
 </template>
 <script setup lang="ts">
 import draggable from 'vuedraggable';
-import type { Task } from '@/model';
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import TaskItem from './TaskItem.vue';
 import ConfirmDialog from '../dialogs/ConfirmDialog.vue';
-import { useAppStore } from '@/stores/appStore';
 
 const props = defineProps({
-    topLevel: {
-        required: false,
-        type: Boolean,
-        default: false,
+    modelValue: {
+        type: Array<any>,
     },
-    displayTasks: {
-        required: false,
-        type: Boolean,
-        default: true,
-    },
-    tasks: {
-        required: true,
-        type: Array<Task>,
-    },
-    drag: {
+    isTopLevel: {
         type: Boolean,
         default: true,
     },
 });
 
-const localTasks = ref(props.tasks);
-
 const emit = defineEmits<{
-    update: [tasks: Task[]];
-    delete: [uuid: string];
+    'update:modelValue': [any[]];
 }>();
 
 const showConfirmDialog = ref(false);
@@ -79,24 +67,9 @@ function handleDeleteEvent(id: string) {
     showConfirmDialog.value = true;
 }
 function deleteTask() {
-    const index = localTasks.value.findIndex(
-        (task) => task.uuid === taskId.value
+    const updatedTasks = props.modelValue?.filter(
+        (task) => task.uuid !== taskId.value
     );
-    localTasks.value.splice(index, 1);
-    emit('update', localTasks.value);
+    emit('update:modelValue', updatedTasks!);
 }
-function emitUpdate() {
-    emit('update', localTasks.value);
-    console.log('emit update');
-}
-watch(
-    () => useAppStore().isChanged,
-    (value) => {
-        if (value && props.topLevel) {
-            console.log('props updated');
-            localTasks.value = props.tasks;
-            useAppStore().isChanged = false;
-        }
-    }
-);
 </script>
