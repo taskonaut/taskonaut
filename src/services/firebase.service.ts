@@ -22,8 +22,7 @@ const GROUPS = collection(db, 'groups');
 export async function getInbox() {
     const userSnapshot = await getDoc(doc(USERS, auth.currentUser?.uid));
 
-    const inbox = userSnapshot.data()!.inbox || [];
-    console.log(auth.currentUser?.uid, inbox);
+    const inbox = ref(userSnapshot.data()!.inbox || []);
     return { inbox };
 }
 
@@ -48,7 +47,7 @@ export async function updateInbox(tasks: Task[]) {
 
 export async function getGroupList() {
     const userSnapshot = await getDoc(doc(USERS, auth.currentUser?.uid));
-    const groupList = userSnapshot.data()!.groupList || [];
+    const groupList = ref(userSnapshot.data()!.groupList || []);
     return { groupList };
 }
 
