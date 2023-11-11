@@ -1,11 +1,11 @@
-import { auth } from '@/includes/firebase';
+import { db, auth } from '@/includes/firebase';
+import { getDoc, doc, setDoc } from '@firebase/firestore';
 import router from '@/router';
 import {
     GoogleAuthProvider,
     onAuthStateChanged,
     signInWithPopup,
     signOut,
-    type User,
 } from 'firebase/auth';
 import { defineStore } from 'pinia';
 
@@ -30,23 +30,13 @@ export const useUserStore = defineStore({
     },
     actions: {
         async login() {
-            try {
-                this.loading = true;
-                const provider = new GoogleAuthProvider();
-                const { user } = await signInWithPopup(auth, provider);
-
-                if (user) {
-                    this.photoURL = user.photoURL;
-                    this.uid = user.uid;
-                    this.displayName = user.displayName;
-                    router.push('/');
-                    // useAppStore().syncFirebase(user.uid);
-                    this.loading = false;
-                } else {
-                    throw new Error('user is not defined');
-                }
-            } catch (error) {
-                throw new Error((error as Error).message);
+            this.loading = true;
+            const provider = new GoogleAuthProvider();
+            const { user } = await signInWithPopup(auth, provider);
+            if (user) {
+                return { user };
+            } else {
+                throw new Error('user is not defined');
             }
         },
         async logout() {
@@ -59,35 +49,25 @@ export const useUserStore = defineStore({
             }
         },
         async getAuthState() {
-            return new Promise<User>((resolve, reject) => {
-                this.loading = true;
-                const unsubscribe = onAuthStateChanged(
-                    auth,
-                    async (user) => {
-                        if (user) {
-                            this.photoURL = user.photoURL;
-                            this.uid = user.uid;
-                            this.displayName = user.displayName;
-                            resolve(user as User);
-                            this.loading = false;
-                        } else {
-                            resolve({
-                                photoURL: null,
-                                uid: undefined,
-                                displayName: null,
-                            } as unknown as User);
-                            this.loading = false;
-                        }
-                    },
-                    (error) => {
-                        reject(error);
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    this.loading = true;
+                    const userRef = doc(db, 'users', user.uid);
+                    const userDoc = await getDoc(userRef);
+                    if (!userDoc.exists()) {
+                        await setDoc(userRef, {
+                            inbox: [],
+                            groupList: [],
+                        });
                     }
-                );
-                unsubscribe();
+                    this.photoURL = user.photoURL;
+                    this.uid = user.uid;
+                    this.displayName = user.displayName;
+
+                    this.loading = false;
+                    return user;
+                }
             });
-        },
-        setLoading(value: boolean) {
-            this.loading = value;
         },
     },
 });
