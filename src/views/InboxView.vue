@@ -1,14 +1,23 @@
 <template>
-    <DisplayTasks :tasks="tasks" :meta-id="'inbox'" />
+    <task-list v-if="inbox" v-model="inbox" />
 </template>
 
 <script setup lang="ts">
-import DisplayTasks from '@/components/shared/DisplayTasks.vue';
-import { useAppStore } from '@/stores/appStore';
-import { computed } from 'vue';
+import TaskList from '@/components/shared/TaskList.vue';
+import { onUnmounted, watch } from 'vue';
+import { onInbox, updateInbox } from '@/services/firebase.service';
 
-const store = useAppStore();
-const tasks = computed(() => store.getInboxTasks());
+const { inbox, unsubscribe } = onInbox();
+
+onUnmounted(() => {
+    unsubscribe();
+});
+
+watch(
+    inbox,
+    (tasks) => {
+        updateInbox(tasks);
+    },
+    { deep: true }
+);
 </script>
-
-<style scoped></style>
