@@ -1,13 +1,12 @@
-import { initializeApp } from '@firebase/app';
+import { initializeApp, type FirebaseOptions } from '@firebase/app';
 import { getAuth } from '@firebase/auth';
 import {
+    persistentLocalCache,
+    persistentSingleTabManager,
     getFirestore,
     initializeFirestore,
-    enableIndexedDbPersistence,
 } from '@firebase/firestore';
-import { markRaw } from 'vue';
-
-export const firebaseConfig = {
+export const firebaseConfig: FirebaseOptions = {
     apiKey: 'AIzaSyAii3SGdXCYvTLoaaF1uRRv4jdxMKEuo-Y',
     authDomain: 'taskominator.firebaseapp.com',
     projectId: 'taskominator',
@@ -22,12 +21,15 @@ export enum FirebaseCollections {
     ShareRequests = 'share-requests',
 }
 
-const app = initializeApp(firebaseConfig);
+const firebaseApp = initializeApp(firebaseConfig);
 
-initializeFirestore(app, { ignoreUndefinedProperties: true });
+initializeFirestore(firebaseApp, {
+    ignoreUndefinedProperties: true,
+    localCache: persistentLocalCache({
+        tabManager: persistentSingleTabManager({}),
+    }),
+});
+const db = getFirestore(firebaseApp);
+const auth = getAuth(firebaseApp);
 
-const db = markRaw(getFirestore(app));
-enableIndexedDbPersistence(db);
-const auth = getAuth(app);
-
-export { app, db, auth };
+export { firebaseApp, db, auth };
