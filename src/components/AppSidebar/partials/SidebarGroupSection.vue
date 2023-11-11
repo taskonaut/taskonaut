@@ -1,5 +1,10 @@
 <template>
-    <v-list density="compact" nav select-strategy="single-leaf">
+    <v-list
+        density="compact"
+        nav
+        select-strategy="single-leaf"
+        v-if="groupList"
+    >
         <v-row class="justify-space-between align-center my-1 mx-1">
             <v-list-subheader
                 class="d-flex align-content-center"
@@ -13,39 +18,38 @@
                 @click="openDialog = true"
             />
         </v-row>
-        <draggable item-key="uuid" v-model="groups" handle=".group-drag">
+        <draggable
+            @update="handleUpdate"
+            item-key="uuid"
+            :animation="150"
+            v-model="groupList"
+            handle=".group-drag"
+        >
             <template #item="{ element }">
-                <GroupItem :key="element.uuid" :group="element"></GroupItem>
+                <group-item :key="element.uuid" :group="element"></group-item>
             </template>
         </draggable>
     </v-list>
-    <GroupDialog v-model="openDialog"></GroupDialog>
+    <group-dialog v-model="openDialog"></group-dialog>
 </template>
 
 <script setup lang="ts">
 import Draggable from 'vuedraggable';
 import GroupDialog from '@/components/dialogs/GroupDialog.vue';
 import GroupItem from './partials/GroupItem.vue';
-import { useAppStore } from '@/stores/appStore';
-import { ref, computed } from 'vue';
-import { sortArray } from '@/services/utils.service';
+import { ref } from 'vue';
+import { onGroupList, updateGroupList } from '@/services/firebase.service';
+import { onBeforeUnmount } from 'vue';
 
-const appStore = useAppStore();
 const openDialog = ref(false);
 
-const groups = computed({
-    get() {
-        return sortArray(
-            appStore.groups,
-            appStore.getMeta('sidebar') ? appStore.getMeta('sidebar').order : []
-        );
-    },
-    set(groups) {
-        appStore.setMeta('sidebar', {
-            order: groups.map((group) => group.uuid),
-        });
-    },
-});
-</script>
+const { groupList, unsubscribe } = onGroupList();
 
-<style scoped></style>
+onBeforeUnmount(() => {
+    unsubscribe();
+});
+
+async function handleUpdate() {
+    await updateGroupList(groupList.value);
+}
+</script>

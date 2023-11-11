@@ -1,5 +1,6 @@
 <template>
     <v-list-item
+        v-if="groupSnap"
         :title="props.group.name"
         :value="props.group.name"
         :active="props.group.uuid == router.currentRoute.value.params.id"
@@ -16,7 +17,7 @@
                 class="show-on-hover"
                 size="extra-small"
             />
-            <TaskCounter :count="taskCount" />
+            <TaskCounter :count="groupSnap.tasks.length" />
         </template>
         <GroupDialog
             v-if="showDialog"
@@ -27,31 +28,26 @@
 </template>
 
 <script setup lang="ts">
-import type { Group } from '@/model';
 import GroupDialog from '@/components/dialogs/GroupDialog.vue';
 import router from '@/router';
-import { computed, ref } from 'vue';
-import { useAppStore } from '@/stores/appStore';
+import { onBeforeUnmount, ref } from 'vue';
 import TaskCounter from './TaskCounter.vue';
+import { onGroup } from '@/services/firebase.service';
 
 const props = defineProps<{
-    group: Group;
+    group: any;
 }>();
 
+const { group: groupSnap, unsubscribe } = onGroup(props.group.uuid);
 const showDialog = ref(false);
-const taskCount = computed(() => {
-    if (props.group) {
-        return useAppStore()
-            .getGroupTasks(props.group.uuid)
-            .filter((task) => !task.complete).length;
-    } else {
-        return 0;
-    }
-});
 
 function switchGroupRoute(listId: string) {
     router.push({ name: 'group', params: { id: listId } });
 }
+
+onBeforeUnmount(() => {
+    unsubscribe();
+});
 </script>
 
 <style scoped>
