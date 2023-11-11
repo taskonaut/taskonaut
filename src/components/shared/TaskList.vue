@@ -9,6 +9,9 @@
         v-else
         item-key="uuid"
         handle=".handle"
+        :animation="150"
+        :swapThreshold="10"
+        easing="cubic-bezier(1, 0, 0, 1)"
         :model-value="props.modelValue"
         @update:modelValue="(tasks) => emit('update:modelValue', tasks)"
         :group="{ name: 'tasks' }"
@@ -25,9 +28,8 @@
                             <task-list
                                 v-model="element.subtasks"
                                 :is-top-level="false"
-                            />
-                        </div>
-                    </v-sheet>
+                            /></div
+                    ></v-sheet>
                 </task-item>
             </div>
         </template>
