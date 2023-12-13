@@ -6,53 +6,47 @@ import {
     onAuthStateChanged,
     signInWithPopup,
     signOut,
+    type User,
 } from 'firebase/auth';
 import { defineStore } from 'pinia';
+import { computed, ref } from 'vue';
+import { onSnapshot } from 'firebase/firestore';
+import type { Task } from '@/model';
 
-interface UserStore {
-    uid: string | undefined;
-    photoURL: string | null;
-    displayName: string | null;
-    loading: boolean;
-}
+export const useUserStore = defineStore('useUserStore', () => {
+    const user = ref<User>();
+    const loading = ref<boolean>(false);
+    const inbox = ref<Task[]>([]);
+    const groupList = ref<{ name: string; uuid: string }[]>([]);
 
-export const useUserStore = defineStore({
-    id: 'userStore',
-    state: (): UserStore => ({
-        uid: undefined,
-        photoURL: null,
-        displayName: null,
-        loading: false,
-    }),
-    getters: {
-        isLoggedIn: (state) => (state.uid ? true : false),
-        isLoading: (state) => state.loading,
-    },
-    actions: {
-        async login() {
-            this.loading = true;
-            const provider = new GoogleAuthProvider();
-            const { user } = await signInWithPopup(auth, provider);
-            if (user) {
-                return { user };
-            } else {
-                throw new Error('user is not defined');
-            }
-        },
-        async logout() {
-            try {
-                await signOut(auth);
-                this.$reset();
-                router.push('/');
-            } catch (error) {
-                throw new Error((error as Error).message);
-            }
-        },
-        async getAuthState() {
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    this.loading = true;
-                    const userRef = doc(db, 'users', user.uid);
+    const isLoggedIn = computed(() => (user.value ? true : false));
+    const isLoading = computed(() => loading.value);
+
+    async function login() {
+        const provider = new GoogleAuthProvider();
+        const { user } = await signInWithPopup(auth, provider);
+        if (user) {
+            return { user };
+        } else {
+            throw new Error('user is not defined');
+        }
+    }
+    async function logout() {
+        try {
+            await signOut(auth);
+            router.push('/');
+        } catch (error) {
+            throw new Error((error as Error).message);
+        }
+    }
+    async function getAuthState() {
+        //TODO: Add try catch
+        return new Promise((resolve) => {
+            const unsubscribe = onAuthStateChanged(auth, async (fUser) => {
+                loading.value = true;
+                if (fUser) {
+                    user.value = fUser;
+                    const userRef = doc(db, 'users', user.value.uid);
                     const userDoc = await getDoc(userRef);
                     if (!userDoc.exists()) {
                         await setDoc(userRef, {
@@ -60,14 +54,30 @@ export const useUserStore = defineStore({
                             groupList: [],
                         });
                     }
-                    this.photoURL = user.photoURL;
-                    this.uid = user.uid;
-                    this.displayName = user.displayName;
-
-                    this.loading = false;
-                    return user;
+                    onSnapshot(userRef, (userDoc) => {
+                        inbox.value = userDoc.data()!.inbox || [];
+                        groupList.value = userDoc.data()!.groupList || [];
+                    });
+                    unsubscribe();
+                    loading.value = false;
+                    resolve(fUser);
+                } else {
+                    loading.value = false;
+                    resolve(null);
                 }
             });
-        },
-    },
+        });
+    }
+
+    return {
+        user,
+        loading,
+        isLoggedIn,
+        isLoading,
+        inbox,
+        groupList,
+        login,
+        logout,
+        getAuthState,
+    };
 });
