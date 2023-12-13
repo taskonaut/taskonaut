@@ -3,15 +3,16 @@
 </template>
 
 <script setup lang="ts">
-import { useAppStore } from '@/stores/appStore';
+import { useUserStore } from '@/stores/userStore';
 import { computed } from 'vue';
 
 const props = defineProps<{
     groupId: string;
 }>();
 
-const group = computed(() => useAppStore().getGroupById(props.groupId));
-const groupName = computed(() =>
-    group.value ? useAppStore().getGroupById(props.groupId)!.name : ''
-);
+function getGroupName(id: string) {
+    return useUserStore().groupList.find((group) => group.uuid === id)?.name;
+}
+
+const groupName = computed(() => getGroupName(props.groupId));
 </script>

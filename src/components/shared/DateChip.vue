@@ -1,5 +1,7 @@
 <template>
-    <v-chip size="x-small" :color="color" label>{{ chipDate }}</v-chip>
+    <v-chip v-if="task.dueDate" size="small" :color="color" label>{{
+        chipDate
+    }}</v-chip>
 </template>
 
 <script setup lang="ts">
@@ -11,23 +13,17 @@ const props = defineProps<{
     task: Task;
 }>();
 
-const chipDate = computed(() =>
-    date.isPastDate(props.task.dueDate!) && !props.task.complete
-        ? `${date.daysPass(props.task.dueDate!)} day${
-              date.daysPass(props.task.dueDate!) > 1 ? 's' : ''
-          } overdue`
-        : props.task.complete
-        ? date.daysPass(props.task.dateCompleted!) === 0
-            ? `Completed today`
-            : `Completed ${date.daysPass(props.task.dateCompleted!)} days ago`
-        : date.isToday(props.task.dueDate!)
-        ? 'Today'
-        : date.isUpcomingDate(props.task.dueDate!, 1)
-        ? 'Tomorrow'
-        : date.isUpcomingDate(props.task.dueDate!, 7)
-        ? date.getWeekDay(props.task.dueDate!)
-        : date.getShortDate(props.task.dueDate!)
-);
+const chipDate = computed(() => {
+    if (date.isPastDate(props.task.dueDate!)) {
+        return `${date.daysPass(props.task.dueDate!)} day${
+            date.daysPass(props.task.dueDate!) > 1 ? 's' : ''
+        } overdue`;
+    }
+    if (date.isToday(props.task.dueDate!)) {
+        return `Due today`;
+    }
+    return `Due on ${date.getLocalDate(props.task.dueDate!)}`;
+});
 const color = computed(() => {
     if (date.isPastDate(props.task.dueDate!) && !props.task?.complete) {
         return 'red';
