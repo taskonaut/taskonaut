@@ -1,194 +1,235 @@
 <template>
     <v-dialog
         :max-width="!mobile ? '600' : '100vw'"
-        @update:model-value="emits('update:modelValue', $event)"
-        :model-value="props.modelValue"
+        :scrollable="false"
+        v-model="taskDialog.isOpen"
         :scrim="true"
         :fullscreen="mobile"
         transition="dialog-bottom-transition"
     >
-        <v-card :height="mobile ? '100vh' : 'auto'">
+        <v-card>
+            <!-- Header -->
             <v-toolbar dark color="primary" density="compact">
                 <v-btn icon dark @click="closeDialog()">
                     <v-icon>mdi-close</v-icon>
                 </v-btn>
-                <v-toolbar-title v-if="!props.task"> Add Task </v-toolbar-title>
-                <v-toolbar-title v-if="props.task"> Edit Task </v-toolbar-title>
+                <v-toolbar-title v-if="!taskDialog.task">
+                    Add Task
+                </v-toolbar-title>
+                <v-toolbar-title v-else> Edit Task </v-toolbar-title>
             </v-toolbar>
+            <!-- Body -->
             <v-card-text>
+                <!-- Form -->
                 <v-form
                     ref="form"
-                    v-model="isFormValid"
-                    :submit="formSubmit"
+                    v-model="formModel.isValid"
                     autocomplete="off"
                 >
+                    <!-- Name -->
                     <v-text-field
                         type="search"
-                        :autofocus="props.task ? false : true"
                         density="compact"
                         variant="outlined"
-                        v-model="formData.header"
+                        v-model="formModel.name"
                         label="Task Name"
                         :rules="formRules"
                         required
-                        ref="headerInput"
-                        @keyup.enter.prevent="
-                            if (!formData.header && !formData.body)
-                                closeDialog();
-                            else formSubmit();
-                        "
-                    ></v-text-field>
-
+                        ref="nameInput"
+                    />
+                    <!-- Description -->
                     <v-textarea
                         density="compact"
                         variant="outlined"
                         auto-grow
                         label="Description (optional)"
-                        v-model="formData.body"
+                        v-model="formModel.description"
                         rows="3"
-                        @keydown="textareaHandler($event)"
                     ></v-textarea>
+                    <!-- Group -->
                     <v-select
-                        v-if="!props.parentId"
+                        v-if="!taskDialog.task"
                         density="compact"
                         variant="outlined"
                         :clearable="true"
                         no-data-text="No groups available :("
-                        v-model="formData.parentId"
-                        :items="taskGroups"
+                        v-model="formModel.group.selected"
+                        :items="formModel.group.list"
                         item-title="name"
                         item-value="uuid"
                         label="Select group (optional)"
                         persistent-hint
                         single-line
-                    ></v-select>
-                    <Datepicker
-                        v-if="!props.parentId"
-                        v-model="formData.dueDate"
-                        modelType="timestamp"
-                        :enableTimePicker="false"
-                        showNowButton
-                        nowButtonLabel="Today"
-                        placeholder="Due Date"
-                        :dark="useTheme().global.current.value.dark"
-                        autoApply
+                    />
+                    <!-- Date -->
+                    <v-text-field
+                        v-model="formModel.dueDate"
+                        type="date"
+                        variant="outlined"
+                        density="compact"
                     />
                 </v-form>
             </v-card-text>
+            <!-- Footer -->
             <v-card-actions>
                 <v-btn
+                    text="Delete"
                     color="warning"
-                    @click="confirmDialog = true"
-                    v-if="props.task"
-                >
-                    Delete
-                </v-btn>
+                    @click="confirmDelete"
+                    v-if="taskDialog.task"
+                />
                 <v-spacer />
                 <v-btn
-                    v-if="!props.task"
-                    data-cy="add-task-button"
-                    :disabled="!isFormValid"
-                    @click="form.submit()"
-                    >Add</v-btn
-                >
+                    text="Add"
+                    v-if="!taskDialog.task"
+                    :disabled="!formModel.isValid"
+                    @click="sumbitForm"
+                />
                 <v-btn
+                    text="Save"
                     v-else
-                    data-cy="save-task-button"
-                    :disabled="!isFormValid"
-                    @click="form.submit()"
-                    >Save</v-btn
-                >
+                    :disabled="!formModel.isValid"
+                    @click="sumbitForm"
+                />
             </v-card-actions>
         </v-card>
     </v-dialog>
-    <ConfirmDialog
-        v-model="confirmDialog"
-        :title="'Delete Task?'"
-        :message="'Are you sure you want to delete this task?'"
-        @dialog:confirm="deleteTask()"
-    />
 </template>
 
 <script setup lang="ts">
-import type { Task } from '@/model';
+import { reactive, ref, computed, onMounted, watch } from 'vue';
+import { useDisplay } from 'vuetify';
+import { useUserStore } from '@/stores/userStore';
+import { storeToRefs } from 'pinia';
 import router from '@/router';
-import { useAppStore } from '@/stores/appStore';
-import { reactive, ref, computed, onMounted } from 'vue';
-import { useDisplay, useTheme } from 'vuetify';
-import ConfirmDialog from './ConfirmDialog.vue';
-import * as date from '@/services/date.service';
+import { createTask } from '@/services/data.service';
+import {
+    deleteTask,
+    getGroup,
+    getInbox,
+    updateGroup,
+    updateInbox,
+    updateTask,
+} from '@/services/firebase.service';
+import { getLocalDate, getTimestamp } from '@/services/date.service';
+import type { Task } from '@/model';
+import useConfirmDialog from '@/composables/confirmDialog';
+import useTaskDialog from '@/composables/taskDialog';
 
-const props = defineProps<{
-    task?: Task;
-    parentId?: string;
-    modelValue: boolean;
-}>();
-
-const emits = defineEmits<{
-    (e: 'update:modelValue', state: boolean): void;
-}>();
-
-const { mobile } = useDisplay();
-const appStore = useAppStore();
-
-const confirmDialog = ref(false);
-const form = ref();
-const headerInput = ref();
-const selectedGroup =
-    router.currentRoute.value.name === 'group'
-        ? (router.currentRoute?.value?.params?.id as string)
-        : undefined;
-const dueDate = props.task
-    ? props.task.dueDate
-        ? date.resetTime(props.task.dueDate)
-        : undefined
-    : router.currentRoute.value.name === 'today'
-    ? date.getToday()
-    : undefined;
-
-const formRules = [(v: any) => !!v || 'Name is required'];
-const isFormValid = ref(false);
-const formData = reactive({
-    header: props.task?.header || '',
-    body: props.task?.body || '',
-    parentId: (props.parentId || selectedGroup) as any,
-    dueDate,
-});
-
-const taskGroups = computed(() => appStore.getGroups);
+const { state: taskDialog } = useTaskDialog();
 
 onMounted(() => {
-    if (props.task) form.value.validate();
+    if (taskDialog.task) form.value.validate();
 });
 
-function formSubmit() {
-    if (props.task) {
-        appStore.updateTask({ uuid: props.task.uuid, ...formData });
-        closeDialog();
-    } else {
-        appStore.addTask({ ...formData });
+const { groupList } = storeToRefs(useUserStore());
+const { mobile } = useDisplay();
 
-        form.value.reset();
-        formData.parentId = selectedGroup || undefined;
-        headerInput.value.focus();
+const { openConfirmDialog, closeConfirmDialog } = useConfirmDialog();
+
+const form = ref();
+const nameInput = ref();
+
+const formRules = [(v: any) => !!v || 'Name is required'];
+
+function setformModelGroup() {
+    return router.currentRoute.value.name === 'group'
+        ? (router.currentRoute.value.params.id as string)
+        : null;
+}
+
+const formModel = reactive({
+    isValid: false,
+    name: '',
+    description: '',
+    group: {
+        selected: setformModelGroup(),
+        list: computed(() => groupList.value),
+    },
+    dueDate: '',
+});
+
+async function sumbitForm() {
+    const { name, description, dueDate, group } = formModel;
+    if (!taskDialog.task) {
+        // Add new Task
+        const task = await createTask({
+            name,
+            description,
+            dueDate: dueDate ? getTimestamp(dueDate) : null,
+            groupId: group.selected,
+        });
+
+        if (task.groupId) {
+            // Add new task to group
+            const group = await getGroup(task.groupId);
+            group.tasks.push(task);
+            await updateGroup(group);
+        } else {
+            // Add to inbox
+            const inbox = await getInbox();
+            inbox.push(task);
+            await updateInbox(inbox);
+        }
+    } else {
+        // Update existing task
+        const updatedTask: Task = {
+            ...taskDialog.task,
+            name,
+            description,
+            dueDate: dueDate ? getTimestamp(dueDate) : null,
+            groupId: group.selected,
+        };
+        await updateTask(updatedTask);
     }
+    closeDialog();
 }
 
 function closeDialog() {
-    emits('update:modelValue', false);
-}
-function textareaHandler(event: KeyboardEvent) {
-    if (event.ctrlKey && event.key === 'Enter') {
-        formData.body += '\n';
-    } else if (!event.ctrlKey && event.key === 'Enter') {
-        event.preventDefault();
-        if (formData.header) formSubmit();
-    }
+    taskDialog.isOpen = false;
+    taskDialog.task = null;
+    form.value.reset();
 }
 
-function deleteTask() {
-    appStore.deleteTask(props.task?.uuid as string);
+async function confirmDelete() {
+    const confirmDeleteDialog = {
+        message: 'Are you sure you want to delete this task?',
+        title: 'Delete task?',
+        callback: async () => {
+            deleteTask(taskDialog.task!);
+            closeConfirmDialog();
+            closeDialog();
+        },
+    };
+    openConfirmDialog(confirmDeleteDialog);
 }
+
+watch(
+    () => taskDialog.isOpen,
+    (isOpen) => {
+        if (isOpen) {
+            formModel.group.selected = setformModelGroup();
+            if (taskDialog.task) {
+                const { name, description, dueDate } = taskDialog.task;
+                formModel.name = name;
+                formModel.description = description || '';
+                formModel.dueDate = dueDate ? getLocalDate(dueDate) : '';
+            }
+        }
+    }
+);
+// TODO: make a better one
+
+// function textareaHandler(event: KeyboardEvent) {
+//     if (event.ctrlKey && event.key === 'Enter') {
+//         formModel.description += '\n';
+//     } else if (!event.ctrlKey && event.key === 'Enter') {
+//         event.preventDefault();
+//         if (formModel.name) {
+//             handleSubmit();
+//         }
+//     }
+// }
 </script>
 <style scoped>
 button {
