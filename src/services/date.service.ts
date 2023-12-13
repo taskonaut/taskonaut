@@ -1,7 +1,48 @@
-export function getToday(): number {
-    const today = new Date();
+/**
+ * Retrieves the timestamp in milliseconds for the start of the specified date or the current date.
+ *
+ * If a date string in "YYYY-MM-DD" format is provided, it creates a Date object for that date.
+ * Otherwise, it defaults to the current date.
+ * The time portion of the date is set to midnight (00:00:00.000).
+ *
+ * @param {string} [dateString] - An optional date string in "YYYY-MM-DD" format.
+ * @returns {number} The timestamp in milliseconds representing the start of the specified date or the current date.
+ *
+ * @example
+ * // Current date
+ * const currentTimestamp = getToday();
+ *
+ * // Custom date
+ * const customTimestamp = getToday("2023-11-24");
+ */
+export function getTimestamp(dateString?: string): number {
+    let today;
+    if (dateString) {
+        today = new Date(dateString);
+    } else {
+        today = new Date();
+    }
     today.setHours(0, 0, 0, 0);
     return today.getTime();
+}
+
+/**
+ * Converts a timestamp in milliseconds to a local date string in "YYYY-MM-DD" format.
+ *
+ * @param {number} timestampInMs - The timestamp in milliseconds.
+ * @returns {string} The local date string in "YYYY-MM-DD" format.
+ *
+ * @example
+ * const timestamp = Date.now(); // Current timestamp
+ * const dateString = formatLocalDate(timestamp);
+ * console.log(dateString); // Output: "2023-11-24" (example date)
+ */
+export function getLocalDate(timestampInMs: number): string {
+    const dateObject = new Date(timestampInMs);
+    const year = dateObject.getFullYear();
+    const month = (dateObject.getMonth() + 1).toString().padStart(2, '0');
+    const day = dateObject.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
 }
 
 export function resetTime(diMs: number): number {
@@ -74,11 +115,11 @@ export function isUpcomingDate(diMs: number, days: number): boolean {
 }
 
 export function isPastDate(diMs: number): boolean {
-    return resetTime(diMs) < getToday();
+    return resetTime(diMs) < getTimestamp();
 }
 export function daysPass(diMs: number): number {
-    return Math.ceil((getToday() - diMs) / (1000 * 3600 * 24));
+    return Math.ceil((getTimestamp() - diMs) / (1000 * 3600 * 24));
 }
 export function isToday(diMs: number): boolean {
-    return resetTime(diMs) == getToday();
+    return resetTime(diMs) == getTimestamp();
 }
