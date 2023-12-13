@@ -1,5 +1,5 @@
 <template>
-    <task-list v-if="group" v-model="group!.tasks" />
+    <task-list v-if="group" v-model="group.tasks" />
 </template>
 
 <script setup lang="ts">
@@ -9,18 +9,17 @@ import { computed, onUnmounted, watch } from 'vue';
 import { onGroup, updateGroup } from '@/services/firebase.service';
 
 const groupId = computed(() => router.currentRoute.value.params.id as string);
-
 const { group, unsubscribe } = onGroup(groupId.value);
+
+watch(
+    group,
+    (value) => {
+        updateGroup(value!);
+    },
+    { deep: true }
+);
 
 onUnmounted(() => {
     unsubscribe();
 });
-
-watch(
-    group,
-    (group) => {
-        updateGroup(group!);
-    },
-    { deep: true }
-);
 </script>

@@ -4,14 +4,11 @@
 
 <script setup lang="ts">
 import TaskList from '@/components/shared/TaskList.vue';
-import { onUnmounted, watch } from 'vue';
+import { watch } from 'vue';
 import { onInbox, updateInbox } from '@/services/firebase.service';
+import { onUnmounted } from 'vue';
 
 const { inbox, unsubscribe } = onInbox();
-
-onUnmounted(() => {
-    unsubscribe();
-});
 
 watch(
     inbox,
@@ -20,4 +17,8 @@ watch(
     },
     { deep: true }
 );
+
+onUnmounted(() => {
+    unsubscribe();
+});
 </script>
