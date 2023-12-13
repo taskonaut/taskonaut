@@ -1,5 +1,5 @@
 <template>
-    <v-app v-if="userStore.isLoggedIn && appStore.ready">
+    <v-app v-if="userStore.isLoggedIn">
         <v-app-bar
             :color="theme.global.current.value.dark ? 'accent' : 'primary'"
             :floating="true"
@@ -10,16 +10,16 @@
                 @click="toggleDrawer()"
             ></v-app-bar-nav-icon>
             <v-toolbar-title>
-                <span id="routeName">{{ getRouteName() }}</span>
+                <span id="routeName">{{ routeName }}</span>
             </v-toolbar-title>
             <v-btn
                 v-if="$router.currentRoute.value.name !== 'settings'"
-                @click="showDialog = true"
+                @click="taskDialog.isOpen = !taskDialog.isOpen"
                 variant="text"
                 icon="mdi-plus"
             ></v-btn>
         </v-app-bar>
-        <AppSidebar v-model="drawer" />
+        <app-sidebar v-model="drawer" />
         <v-main :scrollable="true" :class="smAndDown && 'pb-16'">
             <v-progress-linear
                 v-if="useUserStore().isLoading"
@@ -29,24 +29,29 @@
             ><v-container
                 v-else
                 :fluid="true"
-                class="pa-0"
+                class="pa-0 d-flex flex-column h-100"
                 :class="lgAndUp && 'w-75'"
             >
-                <router-view :key="useRoute().fullPath" />
+                <suspense>
+                    <router-view :key="useRoute().fullPath" />
+                </suspense>
             </v-container>
         </v-main>
-        <NavigationDrawer
+        <navigation-drawer
             v-if="smAndDown"
             @showAddDialog="showDialog = true"
-        ></NavigationDrawer>
-        <TaskDialog v-if="showDialog" v-model="showDialog" />
-        <ReloadPrompt />
+        />
+        <app-confirm-dialog />
+        <app-task-dialog />
+
+        <reload-prompt />
     </v-app>
+    <!-- Login Screen -->
     <v-app v-else>
         <v-container class="d-flex justify-center align-center flex-grow-1">
             <div
                 class="d-flex flex-column align-center"
-                v-if="!userStore.isLoggedIn"
+                v-if="!userStore.isLoggedIn && !userStore.isLoading"
             >
                 <v-img
                     src="./assets/icons/icon-144x144.png"
@@ -60,7 +65,10 @@
                     >LOGIN WITH GOOGLE</v-btn
                 >
             </div>
-            <div class="mt-4" v-else>
+            <div
+                class="mt-4"
+                v-if="!userStore.isLoggedIn && userStore.isLoading"
+            >
                 <v-progress-circular
                     indeterminate
                     model-value="20"
@@ -72,54 +80,47 @@
 </template>
 
 <script setup lang="ts">
+import AppTaskDialog from './components/dialogs/TaskDialog.vue';
+import AppConfirmDialog from './components/dialogs/ConfirmDialog.vue';
 import { useRoute } from 'vue-router';
-import { onBeforeMount, onMounted, ref } from 'vue';
+import { computed, onBeforeMount, ref } from 'vue';
 import { useUserStore } from './stores/userStore';
-import { useAppStore } from './stores/appStore';
 import { useDisplay, useTheme } from 'vuetify';
 import AppSidebar from '@/components/AppSidebar/AppSidebar.vue';
-import TaskDialog from '@/components/dialogs/TaskDialog.vue';
 import ReloadPrompt from '@/components/ReloadPrompt.vue';
-import router from './router';
 import NavigationDrawer from '@/components/NavigationDrawer.vue';
 import { DataStorage } from './plugins/dataStorage';
+import router from './router';
+import useTaskDialog from './composables/taskDialog';
 
 const { lgAndUp, smAndDown } = useDisplay();
 const showDialog = ref(false);
 const drawer = ref(true);
 const userStore = useUserStore();
-const appStore = useAppStore();
 const theme = useTheme();
+const { state: taskDialog } = useTaskDialog();
 
 onBeforeMount(async () => {
     await userStore.getAuthState();
-    await appStore.syncFirebase();
-});
-
-onMounted(() => {
     const currentTheme = DataStorage.get('theme');
     if (currentTheme !== null) {
         useTheme().global.name.value = currentTheme;
     }
 });
 
-function toggleDrawer() {
-    drawer.value = !drawer.value;
+const routeName = computed(() => {
+    const route = router.currentRoute.value;
+    return route.name === 'group'
+        ? getGroupName(route.params.id.toString())
+        : route.name;
+});
+
+function getGroupName(id: string) {
+    return useUserStore().groupList.find((group) => group.uuid === id)?.name;
 }
 
-function getRouteName(): string {
-    const name = router.currentRoute.value.name;
-    let result = '';
-    if (name) {
-        if (name == 'group') {
-            const id = router.currentRoute.value.params.id;
-            result = appStore.getGroupById(id as string)?.name as string;
-        } else {
-            result = router.currentRoute.value.name as string;
-        }
-    }
-
-    return result;
+function toggleDrawer() {
+    drawer.value = !drawer.value;
 }
 </script>
 
