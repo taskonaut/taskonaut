@@ -38,16 +38,12 @@ import Draggable from 'vuedraggable';
 import GroupDialog from '@/components/dialogs/GroupDialog.vue';
 import GroupItem from './partials/GroupItem.vue';
 import { ref } from 'vue';
-import { onGroupList, updateGroupList } from '@/services/firebase.service';
-import { onBeforeUnmount } from 'vue';
+import { updateGroupList } from '@/services/firebase.service';
+import { useUserStore } from '@/stores/userStore';
+import { storeToRefs } from 'pinia';
 
 const openDialog = ref(false);
-
-const { groupList, unsubscribe } = onGroupList();
-
-onBeforeUnmount(() => {
-    unsubscribe();
-});
+const { groupList } = storeToRefs(useUserStore());
 
 async function handleUpdate() {
     await updateGroupList(groupList.value);
