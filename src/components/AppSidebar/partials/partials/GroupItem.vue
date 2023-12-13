@@ -1,10 +1,10 @@
 <template>
     <v-list-item
-        v-if="groupSnap"
+        v-if="groupData"
         :title="props.group.name"
         :value="props.group.name"
         :active="props.group.uuid == router.currentRoute.value.params.id"
-        @click="switchGroupRoute(props.group.uuid)"
+        @click="handleClick()"
     >
         <template v-slot:prepend>
             <v-icon class="group-drag" icon="mdi-drag" />
@@ -17,7 +17,7 @@
                 class="show-on-hover"
                 size="extra-small"
             />
-            <TaskCounter :count="groupSnap.tasks.length" />
+            <TaskCounter :count="groupData.tasks.length" />
         </template>
         <GroupDialog
             v-if="showDialog"
@@ -37,12 +37,11 @@ import { onGroup } from '@/services/firebase.service';
 const props = defineProps<{
     group: any;
 }>();
-
-const { group: groupSnap, unsubscribe } = onGroup(props.group.uuid);
+const { group: groupData, unsubscribe } = onGroup(props.group.uuid);
 const showDialog = ref(false);
 
-function switchGroupRoute(listId: string) {
-    router.push({ name: 'group', params: { id: listId } });
+function handleClick() {
+    router.push({ name: 'group', params: { id: props.group.uuid } });
 }
 
 onBeforeUnmount(() => {
