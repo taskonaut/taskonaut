@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-mutating-props -->
 <template>
     <div>
         <v-sheet
@@ -14,6 +15,7 @@
                             class="handle mr-2"
                             :end="true"
                             icon="mdi-drag"
+                            :size="props.size || 'default'"
                         />
                         <v-badge
                             v-if="subtaskCount > 0 && !showTasks"
@@ -22,7 +24,7 @@
                         />
                         <v-checkbox-btn
                             @change="toggleTask"
-                            :model-value="taskRef.complete"
+                            :model-value="props.task.complete"
                             true-icon="mdi-checkbox-marked-circle-outline"
                             false-icon="mdi-checkbox-blank-circle-outline"
                         />
@@ -31,9 +33,9 @@
                         @click="showTasks = !showTasks"
                         class="d-flex flex-column flex-grow-1 ml-3 justify-center"
                     >
-                        <div class="text-body-1">{{ taskRef.header }}</div>
-                        <div v-if="taskRef.body" class="text-caption">
-                            {{ taskRef.body }}
+                        <div class="text-body-1">{{ props.task.name }}</div>
+                        <div v-if="props.task.description" class="text-caption">
+                            {{ props.task.description }}
                         </div>
                     </div>
                     <div class="d-flex align-center">
@@ -48,15 +50,17 @@
                             size="small"
                             icon="mdi-dots-horizontal"
                             variant="text"
+                            @click="editTask"
                             class="show-on-hover"
                         />
                         <v-btn
                             size="small"
                             icon="mdi-delete"
                             variant="text"
-                            @click="emit('delete', props.task.uuid)"
+                            @click="handleDeleteTask"
                             class="show-on-hover"
                         />
+                        <date-chip :task="props.task" class="hide-on-hover" />
                     </div>
                 </div>
             </div>
@@ -65,32 +69,58 @@
             v-show="showTasks"
             :disabled="task.subtasks.length === 0"
         >
-            <slot></slot>
+            <v-sheet rounded>
+                <div class="ml-5">
+                    <task-list
+                        v-model="task.subtasks"
+                        :is-top-level="false"
+                    /></div
+            ></v-sheet>
         </v-expand-transition>
     </div>
 </template>
 
 <script setup lang="ts">
+import TaskList from './TaskList.vue';
+import DateChip from './DateChip.vue';
+import useConfirmDialog from '@/composables/confirmDialog';
+import useTaskDialog from '@/composables/taskDialog';
 import type { Task } from '@/model';
+import { deleteTask } from '@/services/firebase.service';
 import { computed, ref } from 'vue';
 
 const props = defineProps<{
     task: Task;
     isDraggable?: boolean;
+    size?: string; // TODO: finish this
 }>();
 
-const emit = defineEmits<{
-    (e: 'delete', id: string): void;
-    (e: 'update'): void;
-}>();
+const { state: taskDialog } = useTaskDialog();
+const { openConfirmDialog, closeConfirmDialog } = useConfirmDialog();
+
 const showTasks = ref(true);
-const taskRef = ref(props.task);
 const subtaskCount = computed(() => props.task.subtasks.length);
 
 function toggleTask() {
     // eslint-disable-next-line vue/no-mutating-props
     props.task.complete = !props.task.complete;
-    emit('update');
+}
+
+function editTask() {
+    taskDialog.task = props.task;
+    taskDialog.isOpen = true;
+}
+
+async function handleDeleteTask() {
+    const deleteConfirmDialog = {
+        message: 'Are you sure you want to delete this task?',
+        title: 'Delete task?',
+        callback: async () => {
+            await deleteTask(props.task);
+            closeConfirmDialog();
+        },
+    };
+    openConfirmDialog(deleteConfirmDialog);
 }
 </script>
 
