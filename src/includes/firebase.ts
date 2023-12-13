@@ -6,6 +6,7 @@ import {
     getFirestore,
     initializeFirestore,
 } from '@firebase/firestore';
+import { collection, query, where } from 'firebase/firestore';
 export const firebaseConfig: FirebaseOptions = {
     apiKey: 'AIzaSyAii3SGdXCYvTLoaaF1uRRv4jdxMKEuo-Y',
     authDomain: 'taskominator.firebaseapp.com',
@@ -14,12 +15,6 @@ export const firebaseConfig: FirebaseOptions = {
     messagingSenderId: '537013467227',
     appId: '1:537013467227:web:99513c35a81b8d8d85a77e',
 };
-
-export enum FirebaseCollections {
-    Tasks = 'tasks',
-    Groups = 'groups',
-    ShareRequests = 'share-requests',
-}
 
 const firebaseApp = initializeApp(firebaseConfig);
 
@@ -32,4 +27,10 @@ initializeFirestore(firebaseApp, {
 const db = getFirestore(firebaseApp);
 const auth = getAuth(firebaseApp);
 
-export { firebaseApp, db, auth };
+const usersRef = collection(db, 'users');
+const groupsRef = collection(db, 'groups');
+const groupsQuery = query(
+    groupsRef,
+    where('ownerUid', '==', auth.currentUser?.uid)
+);
+export { firebaseApp, db, auth, usersRef, groupsRef, groupsQuery };
