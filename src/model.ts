@@ -1,22 +1,18 @@
 export interface Task {
     uuid: string;
-    parentId: undefined | string;
-    createdBy: string;
-    header: string;
-    body: undefined | string;
-    dateCreated: number;
-    dueDate: undefined | number;
+    ownerUid: string;
+    groupId: string | null;
     complete: boolean;
-    dateCompleted: undefined | null | number;
+    name: string;
+    description: string;
+    dueDate: number | null;
     subtasks: Task[];
 }
 
 export interface Group {
     uuid: string;
-    ownerId: string;
+    ownerUid: string;
     name: string;
-    description: string;
-    dateCreated: number;
     sharedWith: string[];
     tasks: Task[];
 }
