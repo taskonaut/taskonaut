@@ -10,9 +10,9 @@
             <v-list-item
                 class="pt-5 pb-2"
                 twoLine
-                :prepend-avatar="photoURL"
-                :title="displayName || 'Anonymous'"
-                :subtitle="displayName ? 'Logged in' : 'Not logged in'"
+                :prepend-avatar="user!.photoURL! || undefined"
+                :title="user!.displayName || 'Anonymous'"
+                :subtitle="user!.displayName ? 'Logged in' : 'Not logged in'"
             >
                 <template v-slot:append>
                     <v-btn
@@ -23,14 +23,15 @@
                 </template>
             </v-list-item>
         </template>
-        <SidebarMainSection />
-        <SidebarGroupSection />
-        <SidebarSharedGroupSection />
+        <sidebar-main-section />
+        <suspense>
+            <sidebar-group-section />
+        </suspense>
+        <sidebar-shared-group-section />
     </v-navigation-drawer>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
 import { useUserStore } from '@/stores/userStore';
 import SidebarMainSection from './partials/SidebarMainSection.vue';
 import SidebarGroupSection from './partials/SidebarGroupSection.vue';
@@ -45,8 +46,5 @@ const emits = defineEmits<{
     (e: 'update:modelValue', state: boolean): void;
 }>();
 
-const userStore = useUserStore();
-
-const displayName = computed(() => userStore.displayName);
-const photoURL = computed(() => userStore.photoURL as string);
+const { user } = useUserStore();
 </script>
